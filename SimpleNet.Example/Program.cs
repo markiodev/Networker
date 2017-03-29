@@ -29,8 +29,8 @@ namespace SimpleNet.Example
 
             client.Send(new ChatMessageDispatchPacket("Test App", "Hello from the Test App!"));
 
-            client.Send(new ServerInformationRequestPacket()).HandleResponsePacket(packet => Console.WriteLine($"I am sync. {packet.MachineName}"));
-            client.Send(new ServerInformationRequestPacket()).HandleResponsePacketAsync(packet => Console.WriteLine($"I am async. {packet.MachineName}"));
+            client.Send(new ServerInformationRequestPacket()).HandleResponsePacket<ServerInformationResponsePacket>(packet => Console.WriteLine($"I am sync. {packet.MachineName}"));
+            client.Send(new ServerInformationRequestPacket()).HandleResponsePacketAsync<ServerInformationResponsePacket>(packet => Console.WriteLine($"I am async. {packet.MachineName}"));
         }
     }
 }

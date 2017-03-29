@@ -16,5 +16,25 @@
         {
             throw new System.NotImplementedException();
         }
+
+        public ISimpleNetServerBuilder UseTcp()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public ISimpleNetServerBuilder UseUdp()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public ISimpleNetServerBuilder RegisterPacketHandler<TPacketType, TPacketHandlerType>() where TPacketHandlerType : ISimpleNetServerPacketHandler<TPacketType>
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public ISimpleNetServerBuilder RegisterPacketHandlerModule<TPacketHandlerModule>()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }
