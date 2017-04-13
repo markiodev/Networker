@@ -7,6 +7,15 @@ namespace SimpleNet.Example
     public class ExampleServer : SimpleNetServerBase
     {
         public ExampleServer(ServerConfiguration configuration, ISimpleNetLogger logger)
-            : base(configuration, logger) { }
+            : base(configuration, logger)
+        {
+            this.ClientConnected += this.ClientConnectedEvent;
+        }
+
+        private void ClientConnectedEvent(object sender,
+            SimpleNetServerConnectionConnectedEventArgs simpleNetServerConnectionConnectedEventArgs)
+        {
+            this.Logger.Trace("A new connection was established, this is the event!");
+        }
     }
 }

@@ -5,9 +5,9 @@ using SimpleNet.Interfaces;
 
 namespace SimpleNet.Server
 {
-    public class SimpleNetServerConnection : ISimpleNetConnection
+    public class SimpleNetServerTcpConnection : ISimpleNetConnection
     {
-        public SimpleNetServerConnection(Socket socket)
+        public SimpleNetServerTcpConnection(Socket socket)
         {
             this.Socket = socket;
             this.Serializer = new PacketSerializer();

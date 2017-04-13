@@ -12,6 +12,11 @@ namespace SimpleNet.Client
             this.Handle(ZeroFormatterSerializer.Deserialize<T>(bytes));
         }
 
+        public Type GetPacketType()
+        {
+            return typeof(T);
+        }
+
         public abstract void Handle(T packet);
     }
 }

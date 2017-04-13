@@ -13,9 +13,9 @@ namespace SimpleNet.Server
     public abstract class SimpleNetServerBase : ISimpleNetServer
     {
         private readonly ServerConfiguration _configuration;
-        private readonly List<ISimpleNetConnection> _connections;
+        private readonly List<SimpleNetServerTcpConnection> _connections;
         private readonly DryIocContainer _container;
-        private readonly ISimpleNetLogger _logger;
+        public readonly ISimpleNetLogger Logger;
         private readonly PacketDeserializer packetDeserializer;
         private readonly Dictionary<string, Type> packetHandlers;
         private readonly PacketSerializer packetSerializer;
@@ -27,9 +27,9 @@ namespace SimpleNet.Server
         protected SimpleNetServerBase(ServerConfiguration configuration, ISimpleNetLogger logger)
         {
             this._configuration = configuration;
-            this._logger = logger;
+            this.Logger = logger;
             this._container = new DryIocContainer();
-            this._connections = new List<ISimpleNetConnection>();
+            this._connections = new List<SimpleNetServerTcpConnection>();
             this.packetSerializer = new PacketSerializer();
             this.packetDeserializer = new PacketDeserializer();
             this._container.RegisterSingleton(logger);
@@ -49,6 +49,9 @@ namespace SimpleNet.Server
             this._configuration.PacketHandlers = null;
             this._configuration.PacketHandlerModules = null;
         }
+
+        public EventHandler<SimpleNetServerConnectionConnectedEventArgs> ClientConnected { get; set; }
+        public EventHandler<SimpleNetServerConnectionDisconnectedEventArgs> ClientDisconnected { get; set; }
 
         public void Broadcast<T>(T packet)
             where T: SimpleNetPacketBase
@@ -90,7 +93,7 @@ namespace SimpleNet.Server
         {
             if(this._configuration.UseTcp)
             {
-                this._logger.Trace($"Starting TCP Listener on port {this._configuration.TcpPort}.");
+                this.Logger.Trace($"Starting TCP Listener on port {this._configuration.TcpPort}.");
 
                 this._tcpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 this._tcpSocket.Bind(new IPEndPoint(IPAddress.Parse(this._configuration.IpAddresses[0]),
@@ -105,9 +108,12 @@ namespace SimpleNet.Server
                                    {
                                        var acceptedSocket = this._tcpSocket.Accept();
 
-                                       this._logger.Trace($"New Connection Detected");
+                                       this.Logger.Trace($"New Connection Detected");
 
-                                       this._connections.Add(new SimpleNetServerConnection(acceptedSocket));
+                                       this._connections.Add(
+                                           new SimpleNetServerTcpConnection(acceptedSocket));
+                                       this.ClientConnected?.Invoke(this,
+                                           new SimpleNetServerConnectionConnectedEventArgs());
                                    }
 
                                    Thread.Sleep(this._configuration.Advanced.ConnectionPollIntervalMs);
@@ -137,7 +143,8 @@ namespace SimpleNet.Server
                                            }
                                        }
 
-                                       Thread.Sleep(this._configuration.Advanced.IncomingSocketPollIntervalMs);
+                                       Thread.Sleep(this
+                                           ._configuration.Advanced.IncomingSocketPollIntervalMs);
                                    }
                                }
                            }).Start();
@@ -145,8 +152,8 @@ namespace SimpleNet.Server
 
             if(this._configuration.UseUdp)
             {
-                this._logger.Trace($"Starting UDP Listener on port {this._configuration.UdpPortLocal}.");
-                this._logger.Trace($"Starting UDP Sender on port {this._configuration.UdpPortRemote}.");
+                this.Logger.Trace($"Starting UDP Listener on port {this._configuration.UdpPortLocal}.");
+                this.Logger.Trace($"Starting UDP Sender on port {this._configuration.UdpPortRemote}.");
 
                 this._udpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
                 this._udpClient = new UdpClient(this._configuration.UdpPortLocal);
@@ -164,7 +171,8 @@ namespace SimpleNet.Server
                                    {
                                        Task.Factory.StartNew(() =>
                                                              {
-                                                                 this.HandlePacket(null,
+                                                                 this.HandlePacket(
+                                                                     new SimpleNetServerUdpConnection(this._udpSocket, result),
                                                                      packet.Item1,
                                                                      packet.Item2);
                                                              });

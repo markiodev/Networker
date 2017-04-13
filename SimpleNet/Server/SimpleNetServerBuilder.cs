@@ -35,6 +35,13 @@ namespace SimpleNet.Server
             return this;
         }
 
+        public ISimpleNetServerBuilder RegisterPacketHandler(string packetName, Type handlerType)
+        {
+            this.logger.Trace($"Registered packet handler {packetName} for type {handlerType.Name}.");
+            this.configuration.PacketHandlers.Add(packetName, handlerType);
+            return this;
+        }
+
         public ISimpleNetServerBuilder RegisterPacketHandlerModule<TPacketHandlerModule>()
         {
             this.logger.Trace($"Registered packet handler module {typeof(TPacketHandlerModule).Name}.");

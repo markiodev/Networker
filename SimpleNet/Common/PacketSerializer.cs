@@ -9,6 +9,8 @@ namespace SimpleNet.Common
         public byte[] Serialize<T>(T packet)
             where T: SimpleNetPacketBase
         {
+            packet.UniqueKey = typeof(T).Name;
+
             using(var memoryStream = new MemoryStream())
             {
                 using(var binaryWriter = new BinaryWriter(memoryStream))

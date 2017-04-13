@@ -9,6 +9,7 @@ namespace SimpleNet.Interfaces
 
         ISimpleNetClientBuilder RegisterLogger(ISimpleNetLoggerAdapter loggerAdapter);
         ISimpleNetClientBuilder RegisterPacketHandler<TPacketType, TPacketHandlerType>();
+        ISimpleNetClientBuilder RegisterPacketHandler(string packetName, Type handlerType);
         ISimpleNetClientBuilder RegisterPacketHandlerModule<TPacketHandlerModule>();
         ISimpleNetClientBuilder UseDryIoc();
         ISimpleNetClientBuilder UseIp(string ip);

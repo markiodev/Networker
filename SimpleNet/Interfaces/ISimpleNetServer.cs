@@ -1,5 +1,6 @@
 ﻿using System;
 using SimpleNet.Common;
+using SimpleNet.Server;
 
 namespace SimpleNet.Interfaces
 {
@@ -15,5 +16,8 @@ namespace SimpleNet.Interfaces
 
         ISimpleNetServer Start();
         void Stop();
+
+        EventHandler<SimpleNetServerConnectionConnectedEventArgs> ClientConnected { get; set; }
+        EventHandler<SimpleNetServerConnectionDisconnectedEventArgs> ClientDisconnected { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using System.Threading;
 using SimpleNet.Client;
 using SimpleNet.Common;
@@ -19,6 +20,7 @@ namespace SimpleNet.Example
                                                          ChatMessageDispatchPacketHandler>()
                                                      .RegisterPacketHandler<ServerInformationRequestPacket,
                                                          ServerInformationRequestPacketHandler>()
+                                                     //.AutoRegisterPacketHandlers(typeof(ChatMessageDispatchPacketHandler).GetTypeInfo().Assembly)
                                                      .Build<ExampleServer>()
                                                      .Start();
 
@@ -30,21 +32,20 @@ namespace SimpleNet.Example
                                                          ChatMessageReceivedPacketHandler>()
                                                      .RegisterPacketHandler<ServerInformationResponsePacket,
                                                          ServerInformationResponsePacketHandler>()
+                                                     //.AutoRegisterPacketHandlers(typeof(ChatMessageDispatchPacketHandler).GetTypeInfo().Assembly)
                                                      .Build<ExampleClient>()
                                                      .Connect();
 
             client.Send(new ChatMessageDispatchPacket
                         {
                             Message = "I am the message",
-                            Sender = "The Sender",
-                            UniqueKey = "ChatMessageDispatchPacket"
+                            Sender = "The Sender"
                         });
 
             client.Send(new ChatMessageDispatchPacket
                         {
                             Message = "I am a UDP message",
-                            Sender = "The Sender (UDP)",
-                            UniqueKey = "ChatMessageDispatchPacket"
+                            Sender = "The Sender (UDP)"
                         },
                 SimpleNetProtocol.Udp);
 
@@ -56,9 +57,7 @@ namespace SimpleNet.Example
                                                 {
                                                     MachineName =
                                                         Environment
-                                                            .MachineName,
-                                                    UniqueKey =
-                                                        "ServerInformationResponsePacket"
+                                                            .MachineName
                                                 });
 
                                Thread.Sleep(5000);
