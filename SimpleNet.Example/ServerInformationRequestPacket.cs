@@ -1,6 +1,7 @@
-﻿namespace SimpleNet.Example
+﻿using System;
+using SimpleNet.Common;
+
+namespace SimpleNet.Example
 {
-    public class ServerInformationRequestPacket : SimpleNetPacketBase
-    {
-    }
+    public class ServerInformationRequestPacket : SimpleNetPacketBase { }
 }

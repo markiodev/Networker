@@ -1,50 +1,71 @@
-﻿namespace SimpleNet
+﻿using System;
+using SimpleNet.Common;
+using SimpleNet.Interfaces;
+
+namespace SimpleNet.Client
 {
     public class SimpleNetClientBuilder : ISimpleNetClientBuilder
     {
-        public ISimpleNetClientBuilder UseIp(string ip)
-        {
-            throw new System.NotImplementedException();
-        }
+        private readonly SimpleNetClientConfiguration configuration;
+        private readonly ISimpleNetLogger logger;
 
-        public ISimpleNetClientBuilder UsePort(int port)
+        public SimpleNetClientBuilder()
         {
-            throw new System.NotImplementedException();
-        }
-
-        public ISimpleNetClientBuilder UseTcp()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public ISimpleNetClientBuilder UseUdp()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public ISimpleNetClient Build()
-        {
-            throw new System.NotImplementedException();
+            this.configuration = new SimpleNetClientConfiguration();
+            this.logger = new SimpleNetLogger();
         }
 
         public ISimpleNetClient Build<T>()
+            where T: ISimpleNetClient
         {
-            throw new System.NotImplementedException();
+            return (T)Activator.CreateInstance(typeof(T), this.configuration, this.logger);
         }
 
-        public ISimpleNetClientBuilder RegisterPacketHandler<TPacketType, TPacketHandlerType>() where TPacketHandlerType : ISimpleNetClientPacketHandler<TPacketType>
+        public ISimpleNetClientBuilder RegisterLogger(ISimpleNetLoggerAdapter loggerAdapter)
         {
-            throw new System.NotImplementedException();
+            this.logger.RegisterLogger(loggerAdapter);
+            return this;
+        }
+
+        public ISimpleNetClientBuilder RegisterPacketHandler<TPacketType, TPacketHandlerType>()
+        {
+            this.logger.Trace(
+                $"Registered packet handler {typeof(TPacketHandlerType).Name} for type {typeof(TPacketType).Name}.");
+            this.configuration.PacketHandlers.Add(typeof(TPacketType).Name, typeof(TPacketHandlerType));
+            return this;
         }
 
         public ISimpleNetClientBuilder RegisterPacketHandlerModule<TPacketHandlerModule>()
         {
-            throw new System.NotImplementedException();
+            this.logger.Trace($"Registered packet handler module {typeof(TPacketHandlerModule).Name}.");
+            this.configuration.PacketHandlerModules.Add(typeof(TPacketHandlerModule));
+            return this;
         }
 
         public ISimpleNetClientBuilder UseDryIoc()
         {
-            throw new System.NotImplementedException();
+            return this;
+        }
+
+        public ISimpleNetClientBuilder UseIp(string ip)
+        {
+            this.configuration.Ip = ip;
+            return this;
+        }
+
+        public ISimpleNetClientBuilder UseTcp(int port)
+        {
+            this.configuration.UseTcp = true;
+            this.configuration.TcpPort = port;
+            return this;
+        }
+
+        public ISimpleNetClientBuilder UseUdp(int remotePort, int? localPort)
+        {
+            this.configuration.UseUdp = true;
+            this.configuration.UdpPortRemote = remotePort;
+            this.configuration.UdpPortLocal = localPort ?? remotePort;
+            return this;
         }
     }
 }

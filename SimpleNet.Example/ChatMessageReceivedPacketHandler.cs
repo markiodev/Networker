@@ -1,10 +1,22 @@
-﻿namespace SimpleNet.Example
+﻿using System;
+using SimpleNet.Client;
+using SimpleNet.Interfaces;
+
+namespace SimpleNet.Example
 {
-    public class ChatMessageReceivedPacketHandler : ISimpleNetClientPacketHandler<ChatMessageReceivedPacket>
+    public class ChatMessageReceivedPacketHandler : SimpleNetClientPacketHandlerBase<ChatMessageReceivedPacket
+    >
     {
-        public void Handle(ISimpleNetConnection connection, ChatMessageReceivedPacket packet)
+        private readonly ISimpleNetLogger _logger;
+
+        public ChatMessageReceivedPacketHandler(ISimpleNetLogger logger)
         {
-            throw new System.NotImplementedException();
+            this._logger = logger;
+        }
+
+        public override void Handle(ChatMessageReceivedPacket packet)
+        {
+            this._logger.Trace($"I got a response from server - {packet.Message}");
         }
     }
 }

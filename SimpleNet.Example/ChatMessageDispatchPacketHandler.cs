@@ -1,12 +1,28 @@
 ﻿using System;
+using SimpleNet.Interfaces;
+using SimpleNet.Server;
 
 namespace SimpleNet.Example
 {
-    public class ChatMessageDispatchPacketHandler : ISimpleNetServerPacketHandler<ChatMessageDispatchPacket>
+    public class ChatMessageDispatchPacketHandler : SimpleNetServerPacketHandlerBase<ChatMessageDispatchPacket
+    >
     {
-        public void Handle(ChatMessageDispatchPacket packet)
+        private readonly ISimpleNetLogger _logger;
+
+        public ChatMessageDispatchPacketHandler(ISimpleNetLogger logger)
         {
-            throw new NotImplementedException();
+            this._logger = logger;
+        }
+
+        public override void Handle(ISimpleNetConnection sender, ChatMessageDispatchPacket packet)
+        {
+            this._logger.Trace($"Chat Message Handled: {packet.Sender} - {packet.Message}");
+
+            sender?.Send(new ChatMessageReceivedPacket
+                         {
+                             Message = "Got it, thanks",
+                             UniqueKey = "ChatMessageReceivedPacket"
+                         });
         }
     }
 }

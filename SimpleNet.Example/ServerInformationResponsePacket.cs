@@ -1,7 +1,12 @@
-﻿namespace SimpleNet.Example
+﻿using System;
+using SimpleNet.Common;
+using ZeroFormatter;
+
+namespace SimpleNet.Example
 {
     public class ServerInformationResponsePacket : SimpleNetPacketBase
     {
-        public string MachineName { get; set; }
+        [Index(0)]
+        public virtual string MachineName { get; set; }
     }
 }

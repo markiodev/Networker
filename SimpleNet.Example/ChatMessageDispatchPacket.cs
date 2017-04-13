@@ -1,14 +1,15 @@
-﻿namespace SimpleNet.Example
+﻿using System;
+using SimpleNet.Common;
+using ZeroFormatter;
+
+namespace SimpleNet.Example
 {
+    [ZeroFormattable]
     public class ChatMessageDispatchPacket : SimpleNetPacketBase
     {
-        public string Sender { get; set; }
-        public string Message { get; set; }
-
-        public ChatMessageDispatchPacket(string sender, string message)
-        {
-            Sender = sender;
-            Message = message;
-        }
+        [Index(1)]
+        public virtual string Message { get; set; }
+        [Index(0)]
+        public virtual string Sender { get; set; }
     }
 }

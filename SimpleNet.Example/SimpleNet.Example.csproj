@@ -6,7 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SimpleNet.DryIoc\SimpleNet.DryIoc.csproj" />
+    <PackageReference Include="ZeroFormatter.Analyzer" Version="1.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\SimpleNet\SimpleNet.csproj" />
   </ItemGroup>
 

@@ -1,11 +1,12 @@
-﻿using SimpleNet;
+﻿using System;
+using SimpleNet.Client;
+using SimpleNet.Interfaces;
 
 namespace SimpleNet.Example
 {
     public class ExampleClient : SimpleNetClientBase
     {
-        public ExampleClient(string ip, int port) : base(ip, port)
-        {
-        }
+        public ExampleClient(SimpleNetClientConfiguration clientConfiguration, ISimpleNetLogger logger)
+            : base(clientConfiguration, logger) { }
     }
 }

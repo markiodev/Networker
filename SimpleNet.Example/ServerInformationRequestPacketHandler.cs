@@ -1,10 +1,20 @@
-﻿namespace SimpleNet.Example
+﻿using System;
+using SimpleNet.Interfaces;
+using SimpleNet.Server;
+
+namespace SimpleNet.Example
 {
-    public class ServerInformationRequestPacketHandler : ISimpleNetServerPacketHandler<ServerInformationRequestPacket>
+    public class
+        ServerInformationRequestPacketHandler : SimpleNetServerPacketHandlerBase<
+            ServerInformationRequestPacket>
     {
-        public void Handle(ServerInformationRequestPacket packet)
+        public override void Handle(ISimpleNetConnection sender, ServerInformationRequestPacket packet)
         {
-            throw new System.NotImplementedException();
+            sender.CreatePacket(new ServerInformationResponsePacket
+                                {
+                                    MachineName = Environment.MachineName
+                                })
+                  .Send();
         }
     }
 }
