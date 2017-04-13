@@ -7,6 +7,8 @@ A simple to use TCP and UDP networking library for .NET Core and .NET Framework.
 * TCP
 * UDP
 * Incredibly fast serialization using ZeroNetFormatter
+* Plug in your choice of IOC
+* Plug in your choice of logging
 * Encryption (WIP)
 
 ## Supported Frameworks
@@ -17,16 +19,19 @@ A simple to use TCP and UDP networking library for .NET Core and .NET Framework.
 ## Installing
 Install-Package SimpleNet
 
+### NLog Adapter
+Install-Package SimpleNet.NLog
+
+### Latency Simulator
+Install-Package SimpleNet.LatencySimulator
+
 ## Getting Started
 
-### Create a TCP Server
+SimpleNet uses a client-server architecture for communication.
 
-`new SimpleNetServerBuilder().UseConsoleLogger()
-                                                     .UseIpAddresses(new[] {"127.0.0.1"})
-                                                     .UseTcp(1000)
-                                                     .RegisterPacketHandler<ChatMessageDispatchPacket, ChatMessageDispatchPacketHandler>()
-                                                     .Build<DefaultServer>()
-                                                     .Start();`
+Many clients can connect to a single server.
+
+### Create a TCP Server
 
 #### Create a Packet
 
