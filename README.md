@@ -19,10 +19,10 @@ A simple to use TCP and UDP networking library for .NET Core and .NET Framework.
 ## Installing
 Install-Package SimpleNet
 
-### NLog Adapter
+#### NLog Adapter
 Install-Package SimpleNet.NLog
 
-### Latency Simulator
+#### Latency Simulator
 Install-Package SimpleNet.LatencySimulator
 
 ## Getting Started
@@ -30,11 +30,3 @@ Install-Package SimpleNet.LatencySimulator
 SimpleNet uses a client-server architecture for communication.
 
 Many clients can connect to a single server.
-
-### Create a TCP Server
-
-#### Create a Packet
-
-#### Create a Packet Handler
-
-### Create a Client
