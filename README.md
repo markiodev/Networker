@@ -1,12 +1,10 @@
-![CI Status](https://travis-ci.org/MarkioE/SimpleNet.svg?branch=master)
-
 # SimpleNet
 A simple to use TCP and UDP networking library for .NET Core and .NET Framework.
 
 ## Features
 * TCP
 * UDP
-* Incredibly fast serialization using ZeroNetFormatter
+* Incredibly fast serialization using ZeroFormatter
 * Plug in your choice of IOC
 * Plug in your choice of logging
 * Encryption (WIP)
@@ -18,9 +16,6 @@ A simple to use TCP and UDP networking library for .NET Core and .NET Framework.
 
 ## Installing
 Install-Package SimpleNet
-
-#### NLog Adapter
-Install-Package SimpleNet.NLog
 
 #### Latency Simulator
 Install-Package SimpleNet.LatencySimulator
