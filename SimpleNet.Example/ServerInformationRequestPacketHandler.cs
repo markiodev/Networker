@@ -10,11 +10,10 @@ namespace SimpleNet.Example
     {
         public override void Handle(ISimpleNetConnection sender, ServerInformationRequestPacket packet)
         {
-            sender.CreatePacket(new ServerInformationResponsePacket
+            sender.Send(new ServerInformationResponsePacket
                                 {
                                     MachineName = Environment.MachineName
-                                })
-                  .Send();
+                                });
         }
     }
 }

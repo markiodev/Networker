@@ -15,12 +15,7 @@ namespace SimpleNet.Server
             this.socket = socket;
             this.result = result;
         }
-
-        public ISimpleNetServerPacketReceipt CreatePacket(SimpleNetPacketBase packet)
-        {
-            return null;
-        }
-
+        
         public void Send<T>(T packet)
             where T: SimpleNetPacketBase
         {

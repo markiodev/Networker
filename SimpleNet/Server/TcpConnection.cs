@@ -15,12 +15,7 @@ namespace SimpleNet.Server
 
         public PacketSerializer Serializer { get; }
         public Socket Socket { get; }
-
-        public ISimpleNetServerPacketReceipt CreatePacket(SimpleNetPacketBase packet)
-        {
-            throw new NotImplementedException();
-        }
-
+        
         public void Send<T>(T packet)
             where T: SimpleNetPacketBase
         {
