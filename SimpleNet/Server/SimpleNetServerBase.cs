@@ -13,7 +13,7 @@ namespace SimpleNet.Server
     public abstract class SimpleNetServerBase : ISimpleNetServer
     {
         private readonly ServerConfiguration _configuration;
-        private readonly List<SimpleNetServerTcpConnection> _connections;
+        private readonly List<TcpConnection> _connections;
         private readonly DryIocContainer _container;
         public readonly ISimpleNetLogger Logger;
         private readonly PacketDeserializer packetDeserializer;
@@ -29,7 +29,7 @@ namespace SimpleNet.Server
             this._configuration = configuration;
             this.Logger = logger;
             this._container = new DryIocContainer();
-            this._connections = new List<SimpleNetServerTcpConnection>();
+            this._connections = new List<TcpConnection>();
             this.packetSerializer = new PacketSerializer();
             this.packetDeserializer = new PacketDeserializer();
             this._container.RegisterSingleton(logger);
@@ -50,8 +50,8 @@ namespace SimpleNet.Server
             this._configuration.PacketHandlerModules = null;
         }
 
-        public EventHandler<SimpleNetServerConnectionConnectedEventArgs> ClientConnected { get; set; }
-        public EventHandler<SimpleNetServerConnectionDisconnectedEventArgs> ClientDisconnected { get; set; }
+        public EventHandler<TcpConnectionConnectedEventArgs> ClientConnected { get; set; }
+        public EventHandler<TcpConnectionDisconnectedEventArgs> ClientDisconnected { get; set; }
 
         public void Broadcast<T>(T packet)
             where T: SimpleNetPacketBase
@@ -67,7 +67,7 @@ namespace SimpleNet.Server
         }
 
         public ISimpleNetServer RegisterPacketHandler<TPacketType, TPacketHandlerType>()
-            where TPacketHandlerType: ISimpleNetServerPacketHandler
+            where TPacketHandlerType: IServerPacketHandler
         {
             var handler = typeof(TPacketHandlerType);
             this.packetHandlers.Add(typeof(TPacketType).Name, handler);
@@ -111,9 +111,9 @@ namespace SimpleNet.Server
                                        this.Logger.Trace($"New Connection Detected");
 
                                        this._connections.Add(
-                                           new SimpleNetServerTcpConnection(acceptedSocket));
+                                           new TcpConnection(acceptedSocket));
                                        this.ClientConnected?.Invoke(this,
-                                           new SimpleNetServerConnectionConnectedEventArgs());
+                                           new TcpConnectionConnectedEventArgs());
                                    }
 
                                    Thread.Sleep(this._configuration.Advanced.ConnectionPollIntervalMs);
@@ -172,7 +172,7 @@ namespace SimpleNet.Server
                                        Task.Factory.StartNew(() =>
                                                              {
                                                                  this.HandlePacket(
-                                                                     new SimpleNetServerUdpConnection(this._udpSocket, result),
+                                                                     new UdpConnection(this._udpSocket, result),
                                                                      packet.Item1,
                                                                      packet.Item2);
                                                              });
@@ -202,7 +202,7 @@ namespace SimpleNet.Server
 
             var packetHandlerType = this.packetHandlers[deserialized.UniqueKey];
 
-            var packetHandler = this._container.Resolve<ISimpleNetServerPacketHandler>(packetHandlerType);
+            var packetHandler = this._container.Resolve<IServerPacketHandler>(packetHandlerType);
             packetHandler.Handle(connection, deserialized, bytes);
         }
 

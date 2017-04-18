@@ -4,7 +4,7 @@ using SimpleNet.Interfaces;
 
 namespace SimpleNet.Example
 {
-    public class ServerInformationResponsePacketHandler : SimpleNetClientPacketHandlerBase<
+    public class ServerInformationResponsePacketHandler : PacketHandlerBase<
         ServerInformationResponsePacket>
     {
         private readonly ISimpleNetLogger _logger;

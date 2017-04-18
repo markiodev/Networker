@@ -6,7 +6,7 @@ namespace SimpleNet.Example
 {
     public class ExampleClient : SimpleNetClientBase
     {
-        public ExampleClient(SimpleNetClientConfiguration clientConfiguration, ISimpleNetLogger logger)
+        public ExampleClient(ClientConfiguration clientConfiguration, ISimpleNetLogger logger)
             : base(clientConfiguration, logger) { }
     }
 }

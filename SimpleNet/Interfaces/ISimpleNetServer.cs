@@ -17,7 +17,7 @@ namespace SimpleNet.Interfaces
         ISimpleNetServer Start();
         void Stop();
 
-        EventHandler<SimpleNetServerConnectionConnectedEventArgs> ClientConnected { get; set; }
-        EventHandler<SimpleNetServerConnectionDisconnectedEventArgs> ClientDisconnected { get; set; }
+        EventHandler<TcpConnectionConnectedEventArgs> ClientConnected { get; set; }
+        EventHandler<TcpConnectionDisconnectedEventArgs> ClientDisconnected { get; set; }
     }
 }

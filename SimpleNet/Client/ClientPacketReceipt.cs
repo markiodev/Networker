@@ -3,20 +3,20 @@ using SimpleNet.Interfaces;
 
 namespace SimpleNet.Client
 {
-    public class SimpleNetClientPacketReceipt : ISimpleNetClientPacketReceipt
+    public class ClientPacketReceipt : IClientPacketReceipt
     {
-        public ISimpleNetClientPacketReceipt HandleResponse<T>(Action<T> responseHandler,
+        public IClientPacketReceipt HandleResponse<T>(Action<T> responseHandler,
             int timeoutMsec = 30000)
         {
             throw new NotImplementedException();
         }
 
-        public ISimpleNetClientPacketReceipt HandleResponseAsync<T>(Action<T> responseHandler)
+        public IClientPacketReceipt HandleResponseAsync<T>(Action<T> responseHandler)
         {
             throw new NotImplementedException();
         }
 
-        public ISimpleNetClientPacketReceipt Send()
+        public IClientPacketReceipt Send()
         {
             throw new NotImplementedException();
         }

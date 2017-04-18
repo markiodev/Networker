@@ -10,7 +10,7 @@ namespace SimpleNet.Client
 {
     public abstract class SimpleNetClientBase : ISimpleNetClient
     {
-        private readonly SimpleNetClientConfiguration _clientConfiguration;
+        private readonly ClientConfiguration _clientConfiguration;
         private readonly ISimpleNetLogger _logger;
         private readonly Dictionary<string, Type> _packetHandlers;
         private readonly IContainerIoc container;
@@ -19,7 +19,7 @@ namespace SimpleNet.Client
         private Socket _tcpSocket;
         private UdpClient _udpClient;
 
-        protected SimpleNetClientBase(SimpleNetClientConfiguration clientConfiguration,
+        protected SimpleNetClientBase(ClientConfiguration clientConfiguration,
             ISimpleNetLogger logger)
         {
             this._clientConfiguration = clientConfiguration;
@@ -106,7 +106,7 @@ namespace SimpleNet.Client
             return this;
         }
 
-        public ISimpleNetClientPacketReceipt CreatePacket(SimpleNetPacketBase packet)
+        public IClientPacketReceipt CreatePacket(SimpleNetPacketBase packet)
         {
             throw new NotImplementedException();
         }
@@ -149,7 +149,7 @@ namespace SimpleNet.Client
 
             var packetHandlerType = this._packetHandlers[deserialized.UniqueKey];
 
-            var packetHandler = this.container.Resolve<ISimpleNetClientPacketHandler>(packetHandlerType);
+            var packetHandler = this.container.Resolve<IClientPacketHandler>(packetHandlerType);
 
             packetHandler.Handle(deserialized, bytes);
         }

@@ -5,7 +5,7 @@ namespace SimpleNet.Client
 {
     public class DefaultClient : SimpleNetClientBase
     {
-        public DefaultClient(SimpleNetClientConfiguration clientConfiguration, ISimpleNetLogger logger)
+        public DefaultClient(ClientConfiguration clientConfiguration, ISimpleNetLogger logger)
             : base(clientConfiguration, logger) { }
     }
 }

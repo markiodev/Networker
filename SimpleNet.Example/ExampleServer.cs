@@ -13,7 +13,7 @@ namespace SimpleNet.Example
         }
 
         private void ClientConnectedEvent(object sender,
-            SimpleNetServerConnectionConnectedEventArgs simpleNetServerConnectionConnectedEventArgs)
+            TcpConnectionConnectedEventArgs simpleNetServerConnectionConnectedEventArgs)
         {
             this.Logger.Trace("A new connection was established, this is the event!");
         }

@@ -5,12 +5,12 @@ using SimpleNet.Interfaces;
 
 namespace SimpleNet.Server
 {
-    public class SimpleNetServerUdpConnection : ISimpleNetConnection
+    public class UdpConnection : ISimpleNetConnection
     {
         private readonly UdpReceiveResult result;
         private readonly Socket socket;
 
-        public SimpleNetServerUdpConnection(Socket socket, UdpReceiveResult result)
+        public UdpConnection(Socket socket, UdpReceiveResult result)
         {
             this.socket = socket;
             this.result = result;

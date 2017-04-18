@@ -5,7 +5,7 @@ using SimpleNet.Server;
 namespace SimpleNet.Example
 {
     public class
-        ServerInformationRequestPacketHandler : SimpleNetServerPacketHandlerBase<
+        ServerInformationRequestPacketHandler : ServerPacketHandlerBase<
             ServerInformationRequestPacket>
     {
         public override void Handle(ISimpleNetConnection sender, ServerInformationRequestPacket packet)

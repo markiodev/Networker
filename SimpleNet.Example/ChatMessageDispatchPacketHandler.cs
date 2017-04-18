@@ -4,7 +4,7 @@ using SimpleNet.Server;
 
 namespace SimpleNet.Example
 {
-    public class ChatMessageDispatchPacketHandler : SimpleNetServerPacketHandlerBase<ChatMessageDispatchPacket
+    public class ChatMessageDispatchPacketHandler : ServerPacketHandlerBase<ChatMessageDispatchPacket
     >
     {
         private readonly ISimpleNetLogger _logger;

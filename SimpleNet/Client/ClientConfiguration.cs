@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace SimpleNet.Client
 {
-    public class SimpleNetClientConfiguration
+    public class ClientConfiguration
     {
-        public SimpleNetClientConfiguration()
+        public ClientConfiguration()
         {
             this.PacketHandlers = new Dictionary<string, Type>();
             this.PacketHandlerModules = new List<Type>();

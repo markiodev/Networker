@@ -5,7 +5,7 @@ using ZeroFormatter;
 
 namespace SimpleNet.Client
 {
-    public abstract class SimpleNetClientPacketHandlerBase<T> : ISimpleNetClientPacketHandler
+    public abstract class PacketHandlerBase<T> : IClientPacketHandler
     {
         public void Handle(SimpleNetPacketBase packet, byte[] bytes)
         {

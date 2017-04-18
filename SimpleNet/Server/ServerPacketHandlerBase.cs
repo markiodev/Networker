@@ -5,7 +5,7 @@ using ZeroFormatter;
 
 namespace SimpleNet.Server
 {
-    public abstract class SimpleNetServerPacketHandlerBase<T> : ISimpleNetServerPacketHandler
+    public abstract class ServerPacketHandlerBase<T> : IServerPacketHandler
     {
         public Type GetPacketType()
         {

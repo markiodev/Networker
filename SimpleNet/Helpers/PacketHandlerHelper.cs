@@ -11,7 +11,7 @@ namespace SimpleNet.Helpers
         public static ISimpleNetServerBuilder AutoRegisterPacketHandlers(this ISimpleNetServerBuilder builder,
             Assembly assembly)
         {
-            var packetHandlerType = typeof(ISimpleNetServerPacketHandler);
+            var packetHandlerType = typeof(IServerPacketHandler);
 
             var types = assembly.GetTypes()
                                 .Where(p => packetHandlerType.GetTypeInfo()
@@ -19,7 +19,7 @@ namespace SimpleNet.Helpers
 
             foreach(var type in types)
             {
-                var instance = (ISimpleNetServerPacketHandler)Activator.CreateInstance(type);
+                var instance = (IServerPacketHandler)Activator.CreateInstance(type);
 
                 builder.RegisterPacketHandler(instance.GetPacketType()
                                                       .Name,
@@ -31,7 +31,7 @@ namespace SimpleNet.Helpers
         public static ISimpleNetClientBuilder AutoRegisterPacketHandlers(this ISimpleNetClientBuilder builder,
             Assembly assembly)
         {
-            var packetHandlerType = typeof(ISimpleNetClientPacketHandler);
+            var packetHandlerType = typeof(IClientPacketHandler);
 
             var types = assembly.GetTypes()
                                 .Where(p => packetHandlerType.GetTypeInfo()
@@ -39,7 +39,7 @@ namespace SimpleNet.Helpers
 
             foreach(var type in types)
             {
-                var instance = (ISimpleNetClientPacketHandler)Activator.CreateInstance(type);
+                var instance = (IClientPacketHandler)Activator.CreateInstance(type);
 
                 builder.RegisterPacketHandler(instance.GetPacketType()
                                                       .Name,

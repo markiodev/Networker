@@ -6,12 +6,12 @@ namespace SimpleNet.Client
 {
     public class SimpleNetClientBuilder : ISimpleNetClientBuilder
     {
-        private readonly SimpleNetClientConfiguration configuration;
+        private readonly ClientConfiguration configuration;
         private readonly ISimpleNetLogger logger;
 
         public SimpleNetClientBuilder()
         {
-            this.configuration = new SimpleNetClientConfiguration();
+            this.configuration = new ClientConfiguration();
             this.logger = new SimpleNetLogger();
         }
 
