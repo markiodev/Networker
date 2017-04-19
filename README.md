@@ -4,6 +4,8 @@ A simple to use TCP and UDP networking library for .NET Core and .NET Framework.
 ## Features
 * TCP
 * UDP
+* Low memory footprint
+* Handle thousands of simultaneous connections
 * Incredibly fast serialization using ZeroFormatter
 * Plug in your choice of IOC
 * Plug in your choice of logging
