@@ -1,4 +1,4 @@
-# SimpleNet
+# Networker
 A simple to use TCP and UDP networking library for .NET Core and .NET Framework.
 
 ## Features
@@ -15,13 +15,13 @@ A simple to use TCP and UDP networking library for .NET Core and .NET Framework.
 * .NET Framework 4.5.2
 
 ## Installing
-Install-Package SimpleNet
+Install-Package Networker
 
 #### Latency Simulator
-Install-Package SimpleNet.LatencySimulator
+Install-Package Networker.LatencySimulator
 
 ## Getting Started
 
-SimpleNet uses a client-server architecture for communication.
+Networker uses a client-server architecture for communication.
 
 Many clients can connect to a single server.
