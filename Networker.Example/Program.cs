@@ -20,7 +20,6 @@ namespace Networker.Example
                                                          ChatMessageDispatchPacketHandler>()
                                                      .RegisterPacketHandler<ServerInformationRequestPacket,
                                                          ServerInformationRequestPacketHandler>()
-                                                     //.AutoRegisterPacketHandlers(typeof(ChatMessageDispatchPacketHandler).GetTypeInfo().Assembly)
                                                      .Build<ExampleServer>()
                                                      .Start();
 
@@ -32,7 +31,6 @@ namespace Networker.Example
                                                          ChatMessageReceivedPacketHandler>()
                                                      .RegisterPacketHandler<ServerInformationResponsePacket,
                                                          ServerInformationResponsePacketHandler>()
-                                                     //.AutoRegisterPacketHandlers(typeof(ChatMessageDispatchPacketHandler).GetTypeInfo().Assembly)
                                                      .Build<ExampleClient>()
                                                      .Connect();
 
