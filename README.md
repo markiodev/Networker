@@ -19,9 +19,6 @@ A simple to use TCP and UDP networking library for .NET Core and .NET Framework.
 ## Installing
 Install-Package Networker
 
-#### Latency Simulator
-Install-Package Networker.LatencySimulator
-
 ## Getting Started
 
 Networker uses a client-server architecture for communication.
