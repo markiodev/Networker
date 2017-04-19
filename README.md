@@ -24,3 +24,17 @@ Install-Package Networker
 Networker uses a client-server architecture for communication.
 
 Many clients can connect to a single server.
+
+### Creating a TCP Server
+```csharp
+public class Program
+    {
+        static void Main(string[] args)
+        {
+            var server = new NetworkerServerBuilder().UseConsoleLogger()
+                                                     .UseTcp(1050)
+                                                     .Build<DefaultServer>();
+            server.Start();
+        }
+    }
+```
