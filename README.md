@@ -1,3 +1,5 @@
+Note: Networker is currently a WIP. Not suitable for production.
+
 # Networker
 A simple to use TCP and UDP networking library for .NET Core and .NET Framework.
 
