@@ -20,7 +20,8 @@ namespace Networker.Client
         private UdpClient _udpClient;
 
         protected NetworkerClientBase(ClientConfiguration clientConfiguration,
-            INetworkerLogger logger)
+            INetworkerLogger logger,
+            IList<INetworkerPacketHandlerModule> packetHandlerModules)
         {
             this._clientConfiguration = clientConfiguration;
             this._logger = logger;
@@ -28,21 +29,12 @@ namespace Networker.Client
             this.isRunning = true;
             this.packetDeserializer = new PacketDeserializer();
             this.container.RegisterSingleton(logger);
-
-            this._packetHandlers = this._clientConfiguration.PacketHandlers;
-
-            foreach(var packetHandlerModule in clientConfiguration.PacketHandlerModules)
+            this._packetHandlers = new Dictionary<string, Type>();
+            
+            foreach(var packetHandlerModule in packetHandlerModules)
             {
                 this.RegisterTypesFromModule(packetHandlerModule);
             }
-
-            foreach(var packetHandler in clientConfiguration.PacketHandlers)
-            {
-                this.container.RegisterType(packetHandler.Value);
-            }
-
-            clientConfiguration.PacketHandlers = null;
-            clientConfiguration.PacketHandlerModules = null;
         }
 
         public INetworkerClient Connect()
@@ -154,13 +146,12 @@ namespace Networker.Client
             packetHandler.Handle(deserialized, bytes);
         }
 
-        private void RegisterTypesFromModule(Type packetHandlerModule)
+        private void RegisterTypesFromModule(INetworkerPacketHandlerModule packetHandlerModule)
         {
-            var module = (INetworkerPacketBaseHandlerModule)Activator.CreateInstance(packetHandlerModule);
-
-            foreach(var packetHandler in module.RegisterPacketHandlers())
+            foreach(var packetHandler in packetHandlerModule.RegisterPacketHandlers())
             {
                 this._packetHandlers.Add(packetHandler.Key.Name, packetHandler.Value);
+                this.container.RegisterType(packetHandler.Value);
             }
         }
     }

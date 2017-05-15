@@ -9,7 +9,6 @@ namespace Networker.Interfaces
 
         INetworkerServerBuilder RegisterLogger(INetworkerLoggerAdapter logAdapter);
         INetworkerServerBuilder RegisterPacketHandler<TPacketType, TPacketHandlerType>();
-        INetworkerServerBuilder RegisterPacketHandler(string packetName, Type handlerType);
         INetworkerServerBuilder RegisterPacketHandlerModule<TPacketHandlerModule>();
         INetworkerServerBuilder UseIpAddresses(string[] ipAddresses);
         INetworkerServerBuilder UseTcp(int port);

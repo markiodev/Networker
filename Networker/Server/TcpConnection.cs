@@ -11,11 +11,14 @@ namespace Networker.Server
         {
             this.Socket = socket;
             this.Serializer = new PacketSerializer();
+            this.Identifier = Guid.NewGuid()
+                                  .ToString();
         }
 
+        public string Identifier { get; }
         public PacketSerializer Serializer { get; }
         public Socket Socket { get; }
-        
+
         public void Send<T>(T packet)
             where T: NetworkerPacketBase
         {

@@ -13,7 +13,6 @@ namespace Networker.Server
     public abstract class NetworkerServerBase : INetworkerServer
     {
         private readonly ServerConfiguration _configuration;
-        private readonly List<TcpConnection> _connections;
         private readonly DryIocContainer _container;
         public readonly INetworkerLogger Logger;
         private readonly PacketDeserializer packetDeserializer;
@@ -24,31 +23,26 @@ namespace Networker.Server
         private UdpClient _udpClient;
         private Socket _udpSocket;
 
-        protected NetworkerServerBase(ServerConfiguration configuration, INetworkerLogger logger)
+        protected NetworkerServerBase(ServerConfiguration configuration,
+            INetworkerLogger logger,
+            IList<INetworkerPacketHandlerModule> modules)
         {
             this._configuration = configuration;
             this.Logger = logger;
             this._container = new DryIocContainer();
-            this._connections = new List<TcpConnection>();
+            this.Connections = new List<TcpConnection>();
             this.packetSerializer = new PacketSerializer();
             this.packetDeserializer = new PacketDeserializer();
             this._container.RegisterSingleton(logger);
+            this.packetHandlers = new Dictionary<string, Type>();
 
-            this.packetHandlers = this._configuration.PacketHandlers;
-
-            foreach(var packetHandlerModule in this._configuration.PacketHandlerModules)
+            foreach(var module in modules)
             {
-                this.RegisterTypesFromModule(packetHandlerModule);
+                this.RegisterTypesFromModule(module);
             }
-
-            foreach(var packetHandler in this._configuration.PacketHandlers)
-            {
-                this._container.RegisterType(packetHandler.Value);
-            }
-
-            this._configuration.PacketHandlers = null;
-            this._configuration.PacketHandlerModules = null;
         }
+
+        public List<TcpConnection> Connections { get; }
 
         public EventHandler<TcpConnectionConnectedEventArgs> ClientConnected { get; set; }
         public EventHandler<TcpConnectionDisconnectedEventArgs> ClientDisconnected { get; set; }
@@ -77,16 +71,10 @@ namespace Networker.Server
 
         public INetworkerServer RegisterPacketHandlerModule<TPacketHandlerModule>()
         {
-            this.RegisterTypesFromModule(typeof(TPacketHandlerModule));
+            var module =
+                (INetworkerPacketHandlerModule)Activator.CreateInstance(typeof(TPacketHandlerModule));
+            this.RegisterTypesFromModule(module);
             return this;
-        }
-
-        public void Send<T>(INetworkerConnection connection,
-            T packet,
-            NetworkerProtocol protocol = NetworkerProtocol.Tcp)
-            where T: NetworkerPacketBase
-        {
-            throw new NotImplementedException();
         }
 
         public INetworkerServer Start()
@@ -96,8 +84,10 @@ namespace Networker.Server
                 this.Logger.Trace($"Starting TCP Listener on port {this._configuration.TcpPort}.");
 
                 this._tcpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+
                 this._tcpSocket.Bind(new IPEndPoint(IPAddress.Parse(this._configuration.IpAddresses[0]),
                     this._configuration.TcpPort));
+
                 this._tcpSocket.Listen(this._configuration.Advanced.MaxTcpConnections);
 
                 new Thread(() =>
@@ -107,13 +97,14 @@ namespace Networker.Server
                                    if(this._tcpSocket.Poll(10, SelectMode.SelectRead))
                                    {
                                        var acceptedSocket = this._tcpSocket.Accept();
+                                       var connection = new TcpConnection(acceptedSocket);
 
-                                       this.Logger.Trace($"New Connection Detected");
+                                       this.Logger.Trace(
+                                           $"TCP Client Connected. IP: {(connection.Socket.RemoteEndPoint as IPEndPoint).Address}");
 
-                                       this._connections.Add(
-                                           new TcpConnection(acceptedSocket));
+                                       this.Connections.Add(connection);
                                        this.ClientConnected?.Invoke(this,
-                                           new TcpConnectionConnectedEventArgs());
+                                           new TcpConnectionConnectedEventArgs(connection));
                                    }
 
                                    Thread.Sleep(this._configuration.Advanced.ConnectionPollIntervalMs);
@@ -124,8 +115,19 @@ namespace Networker.Server
                            {
                                while(this._isRunning)
                                {
-                                   foreach(var connection in this._connections.ToList())
+                                   foreach(var connection in this.Connections.ToList())
                                    {
+                                       if(!connection.Socket.Connected)
+                                       {
+                                           this.Logger.Trace(
+                                               $"TCP Client Disconnected. IP: {(connection.Socket.RemoteEndPoint as IPEndPoint).Address}");
+
+                                           this.Connections.Remove(connection);
+                                           this.ClientDisconnected?.Invoke(this,
+                                               new TcpConnectionDisconnectedEventArgs(connection));
+                                           continue;
+                                       }
+
                                        if(connection.Socket.Poll(10, SelectMode.SelectRead))
                                        {
                                            var packets =
@@ -172,7 +174,8 @@ namespace Networker.Server
                                        Task.Factory.StartNew(() =>
                                                              {
                                                                  this.HandlePacket(
-                                                                     new UdpConnection(this._udpSocket, result),
+                                                                     new UdpConnection(this._udpSocket,
+                                                                         result),
                                                                      packet.Item1,
                                                                      packet.Item2);
                                                              });
@@ -206,13 +209,12 @@ namespace Networker.Server
             packetHandler.Handle(connection, deserialized, bytes);
         }
 
-        private void RegisterTypesFromModule(Type packetHandlerModule)
+        private void RegisterTypesFromModule(INetworkerPacketHandlerModule packetHandlerModule)
         {
-            var module = (INetworkerPacketBaseHandlerModule)Activator.CreateInstance(packetHandlerModule);
-
-            foreach(var packetHandler in module.RegisterPacketHandlers())
+            foreach(var packetHandler in packetHandlerModule.RegisterPacketHandlers())
             {
                 this.packetHandlers.Add(packetHandler.Key.Name, packetHandler.Value);
+                this._container.RegisterType(packetHandler.Value);
             }
         }
     }

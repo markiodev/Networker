@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Networker.Common;
 using Networker.Interfaces;
 
@@ -8,17 +9,22 @@ namespace Networker.Server
     {
         private readonly ServerConfiguration configuration;
         private readonly INetworkerLogger logger;
+        private readonly IList<INetworkerPacketHandlerModule> modules;
+        private readonly DefaultPacketHandlerModule packetHandlerModule;
 
         public NetworkerServerBuilder()
         {
             this.configuration = new ServerConfiguration();
             this.logger = new NetworkerLogger();
+            this.packetHandlerModule = new DefaultPacketHandlerModule();
+            this.modules = new List<INetworkerPacketHandlerModule>();
+            this.modules.Add(this.packetHandlerModule);
         }
 
         public INetworkerServer Build<T>()
             where T: INetworkerServer
         {
-            return (T)Activator.CreateInstance(typeof(T), this.configuration, this.logger);
+            return (T)Activator.CreateInstance(typeof(T), this.configuration, this.logger, this.modules);
         }
 
         public INetworkerServerBuilder RegisterLogger(INetworkerLoggerAdapter logAdapter)
@@ -31,21 +37,17 @@ namespace Networker.Server
         {
             this.logger.Trace(
                 $"Registered packet handler {typeof(TPacketHandlerType).Name} for type {typeof(TPacketType).Name}.");
-            this.configuration.PacketHandlers.Add(typeof(TPacketType).Name, typeof(TPacketHandlerType));
-            return this;
-        }
-
-        public INetworkerServerBuilder RegisterPacketHandler(string packetName, Type handlerType)
-        {
-            this.logger.Trace($"Registered packet handler {packetName} for type {handlerType.Name}.");
-            this.configuration.PacketHandlers.Add(packetName, handlerType);
+            this.packetHandlerModule.Modules.Add(typeof(TPacketType), typeof(TPacketHandlerType));
             return this;
         }
 
         public INetworkerServerBuilder RegisterPacketHandlerModule<TPacketHandlerModule>()
         {
             this.logger.Trace($"Registered packet handler module {typeof(TPacketHandlerModule).Name}.");
-            this.configuration.PacketHandlerModules.Add(typeof(INetworkerPacketBaseHandlerModule));
+            var module =
+                (INetworkerPacketHandlerModule)Activator.CreateInstance(typeof(TPacketHandlerModule));
+            this.modules.Add(module);
+
             return this;
         }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Networker.Interfaces;
 using Networker.Server;
 
@@ -6,8 +7,10 @@ namespace Networker.Example
 {
     public class ExampleServer : NetworkerServerBase
     {
-        public ExampleServer(ServerConfiguration configuration, INetworkerLogger logger)
-            : base(configuration, logger)
+        public ExampleServer(ServerConfiguration configuration,
+            INetworkerLogger logger,
+            IList<INetworkerPacketHandlerModule> modules)
+            : base(configuration, logger, modules)
         {
             this.ClientConnected += this.ClientConnectedEvent;
         }

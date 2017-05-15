@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard1.6</TargetFramework>
-    <Version>1.0.0</Version>
+    <TargetFrameworks>netstandard1.6;net461</TargetFrameworks>
+    <Version>1.0.2</Version>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <PackageProjectUrl>https://github.com/MarkioE/SimpleNet</PackageProjectUrl>
-    <PackageLicenseUrl>https://github.com/MarkioE/SimpleNet/blob/master/LICENSE</PackageLicenseUrl>
-    <RepositoryUrl>https://github.com/MarkioE/SimpleNet</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/MarkioE/Networker</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/MarkioE/Networker/blob/master/LICENSE</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/MarkioE/Networker</RepositoryUrl>
     <RepositoryType>GitHub</RepositoryType>
     <PackageTags></PackageTags>
     <Description>A simple to use TCP and UDP networking library for .NET Core and .NET Framework.</Description>
@@ -17,11 +17,18 @@
     <PackageReference Include="ZeroFormatter" Version="1.6.4" />
     <PackageReference Include="ZeroFormatter.Analyzer" Version="1.1.1" />
   </ItemGroup>
+  
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net461'">
+    <Reference Include="System" />
+    <Reference Include="System.Threading" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+  </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="System.Threading.Thread">
-      <HintPath>..\..\..\..\.nuget\packages\system.threading.thread\4.3.0\ref\netstandard1.3\System.Threading.Thread.dll</HintPath>
-    </Reference>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.6'">
+    <PackageReference Include="System.Threading.Thread" Version="4.3.0" />
   </ItemGroup>
 
 </Project>
