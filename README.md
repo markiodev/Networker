@@ -72,6 +72,22 @@ public class ChatMessagePacket : NetworkerPacketBase
     }
 ```
 
+### Creating a Client Packet Handler
+```csharp
+public class ChatMessageReceivedPacketHandler : PacketHandlerBase<ChatMessagePacket>
+    {
+        public override void Handle(ChatMessagePacket packet)
+        {
+            var window = MainWindow.Instance;
+
+            window.Dispatcher.Invoke(() =>
+                                     {
+                                         window.MessageListBox.Items.Add($"{packet.Sender}: {packet.Message}");
+                                     });
+        }
+    }
+```
+
 ### Creating a Server Packet Handler
 ```csharp
 public class ChatMessagePacketHandler : ServerPacketHandlerBase<ChatMessagePacket>
@@ -93,22 +109,11 @@ public class ChatMessagePacketHandler : ServerPacketHandlerBase<ChatMessagePacke
     }
 ```
 
-
-### Creating a Client Packet Handler
+### Sending a packet from Client to Server
 ```csharp
-public class ChatMessageReceivedPacketHandler : PacketHandlerBase<ChatMessagePacket>
-    {
-        public override void Handle(ChatMessagePacket packet)
-        {
-            var window = MainWindow.Instance;
-
-            window.Dispatcher.Invoke(() =>
-                                     {
-                                         window.MessageListBox.Items.Add($"{packet.Sender}: {packet.Message}");
-                                     });
-        }
-    }
+this.client.Send(new ChatMessagePacket
+                             {
+                                 Sender = Environment.MachineName,
+                                 Message = this.MessageBox.Text
+                             });
 ```
-
-
-
