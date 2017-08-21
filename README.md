@@ -1,9 +1,7 @@
-Note: Networker is currently a WIP. Not suitable for production.
-
 # Networker
 A simple to use TCP and UDP networking library for .NET Core and .NET Framework.
 
-## Features
+## Features (v1)
 * TCP
 * UDP
 * Low memory footprint
@@ -11,7 +9,7 @@ A simple to use TCP and UDP networking library for .NET Core and .NET Framework.
 * Incredibly fast serialization using ZeroFormatter
 * Plug in your choice of logging
 
-## WIP Features
+## Planned Features (v2)
 * Plug in your choice of IOC
 * Encryption
 
@@ -96,7 +94,7 @@ public class ChatMessagePacketHandler : ServerPacketHandlerBase<ChatMessagePacke
 
 ### Creating a Client Packet Handler
 ```csharp
-    public class ChatMessageReceivedPacketHandler : PacketHandlerBase<ChatMessagePacket>
+public class ChatMessageReceivedPacketHandler : PacketHandlerBase<ChatMessagePacket>
     {
         public override void Handle(ChatMessagePacket packet)
         {
