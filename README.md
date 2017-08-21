@@ -33,11 +33,12 @@ public class Program
     {
         static void Main(string[] args)
         {
-            var server = new NetworkerServerBuilder().UseConsoleLogger()
-                                                     .UseTcp(1050)
-                                                     .RegisterPacketHandler<ChatMessagePacket, ChatMessagePacketHandler>()
-                                                     .Build<DefaultServer>();
-            server.Start();
+            var server = new NetworkerServerBuilder()
+            .UseConsoleLogger()
+            .UseTcp(1050)
+            .RegisterPacketHandler<ChatMessagePacket, ChatMessagePacketHandler>()
+            .Build<DefaultServer>()
+            .Start();
         }
     }
 ```
@@ -48,12 +49,13 @@ public class Program
     {
         static void Main(string[] args)
         {
-            var client = new NetworkerClientBuilder().UseConsoleLogger()
-                                                     .UseIp("127.0.0.1")
-                                                     .UseTcp(1050)
-                                                     .RegisterPacketHandler<ChatMessagePacket, ChatMessageReceivedPacketHandler>()
-                                                     .Build<DefaultClient>()
-                                                     .Connect();
+            var client = new NetworkerClientBuilder()
+            .UseConsoleLogger()
+            .UseIp("127.0.0.1")
+            .UseTcp(1050)
+            .RegisterPacketHandler<ChatMessagePacket, ChatMessageReceivedPacketHandler>()
+            .Build<DefaultClient>()
+            .Connect();
         }
     }
 ```
