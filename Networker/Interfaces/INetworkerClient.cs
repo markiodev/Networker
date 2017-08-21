@@ -7,16 +7,18 @@ namespace Networker.Interfaces
     {
         IContainerIoc Container { get; }
         INetworkerClient Connect();
-        void Send(NetworkerPacketBase packet, NetworkerProtocol protocol = NetworkerProtocol.Tcp);
 
-        IClientPacketReceipt SendAndHandleResponse<TResponseType>(NetworkerPacketBase packet,
+        void Send<T>(T packet, NetworkerProtocol protocol = NetworkerProtocol.Tcp)
+            where T: NetworkerPacketBase;
+
+        IClientPacketReceipt SendAndHandleResponse<T, TResponseType>(T packet,
             Action<TResponseType> handler)
-            where TResponseType: class;
+            where TResponseType: class where T : NetworkerPacketBase;
 
-        IClientPacketReceipt SendAndHandleResponse(NetworkerPacketBase packet);
+        /*IClientPacketReceipt SendAndHandleResponse(NetworkerPacketBase packet);
 
         IClientPacketReceipt SendAndHandleResponseAsync<TResponseType>(NetworkerPacketBase packet,
             Action<TResponseType> handler)
-            where TResponseType: class;
+            where TResponseType: class;*/
     }
 }

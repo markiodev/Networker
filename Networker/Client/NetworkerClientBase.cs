@@ -10,9 +10,9 @@ namespace Networker.Client
 {
     public abstract class NetworkerClientBase : INetworkerClient
     {
-        private readonly ClientConfiguration _clientConfiguration;
-        private readonly INetworkerLogger _logger;
-        private readonly Dictionary<string, Type> _packetHandlers;
+        private readonly ClientConfiguration clientConfiguration;
+        private readonly INetworkerLogger logger;
+        private readonly Dictionary<string, Type> packetHandlers;
         private readonly ClientResponseStore clientResponseStore;
         private readonly bool isRunning;
         private readonly PacketDeserializer packetDeserializer;
@@ -23,13 +23,13 @@ namespace Networker.Client
             INetworkerLogger logger,
             IList<INetworkerPacketHandlerModule> packetHandlerModules)
         {
-            this._clientConfiguration = clientConfiguration;
-            this._logger = logger;
+            this.clientConfiguration = clientConfiguration;
+            this.logger = logger;
             this.Container = new DryIocContainer();
             this.isRunning = true;
             this.packetDeserializer = new PacketDeserializer();
             this.Container.RegisterSingleton(logger);
-            this._packetHandlers = new Dictionary<string, Type>();
+            this.packetHandlers = new Dictionary<string, Type>();
             this.clientResponseStore = new ClientResponseStore();
 
             foreach(var packetHandlerModule in packetHandlerModules)
@@ -42,11 +42,11 @@ namespace Networker.Client
 
         public INetworkerClient Connect()
         {
-            if(this._clientConfiguration.UseTcp)
+            if(this.clientConfiguration.UseTcp)
             {
-                this._logger.Trace("Connecting to TCP Server");
+                this.logger.Trace("Connecting to TCP Server");
                 this._tcpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                this._tcpSocket.Connect(this._clientConfiguration.Ip, this._clientConfiguration.TcpPort);
+                this._tcpSocket.Connect(this.clientConfiguration.Ip, this.clientConfiguration.TcpPort);
 
                 new Thread(() =>
                            {
@@ -61,8 +61,15 @@ namespace Networker.Client
                                        {
                                            Task.Factory.StartNew(() =>
                                                                  {
-                                                                     this.HandlePacket(packet.Item1,
-                                                                         packet.Item2);
+                                                                     try
+                                                                     {
+                                                                         this.HandlePacket(packet.Item1,
+                                                                             packet.Item2);
+                                                                     }
+                                                                     catch(Exception e)
+                                                                     {
+                                                                         this.logger.Error(e);
+                                                                     }
                                                                  });
                                        }
                                    }
@@ -71,10 +78,10 @@ namespace Networker.Client
                            }).Start();
             }
 
-            if(this._clientConfiguration.UseUdp)
+            if(this.clientConfiguration.UseUdp)
             {
-                this._logger.Trace("Listening to UDP broadcasts");
-                this._udpClient = new UdpClient(this._clientConfiguration.UdpPortLocal);
+                this.logger.Trace("Listening to UDP broadcasts");
+                this._udpClient = new UdpClient(this.clientConfiguration.UdpPortLocal);
 
                 new Thread(() =>
                            {
@@ -88,8 +95,15 @@ namespace Networker.Client
                                    {
                                        Task.Factory.StartNew(() =>
                                                              {
-                                                                 this.HandlePacket(packet.Item1,
-                                                                     packet.Item2);
+                                                                 try
+                                                                 {
+                                                                     this.HandlePacket(packet.Item1,
+                                                                         packet.Item2);
+                                                                 }
+                                                                 catch(Exception e)
+                                                                 {
+                                                                     this.logger.Error(e);
+                                                                 }
                                                              });
                                    }
 
@@ -101,14 +115,14 @@ namespace Networker.Client
             return this;
         }
 
-        public void Send(NetworkerPacketBase packet, NetworkerProtocol protocol = NetworkerProtocol.Tcp)
+        public void Send<T>(T packet, NetworkerProtocol protocol = NetworkerProtocol.Tcp) where T : NetworkerPacketBase
         {
             var serializer = new PacketSerializer();
             var serialisedPacket = serializer.Serialize(packet);
 
             if(protocol == NetworkerProtocol.Tcp)
             {
-                if(!this._clientConfiguration.UseTcp)
+                if(!this.clientConfiguration.UseTcp)
                 {
                     throw new Exception("Cannot send TCP when TCP not enabled.");
                 }
@@ -117,21 +131,21 @@ namespace Networker.Client
             }
             else if(protocol == NetworkerProtocol.Udp)
             {
-                if(!this._clientConfiguration.UseUdp)
+                if(!this.clientConfiguration.UseUdp)
                 {
                     throw new Exception("Cannot send UDP when UDP not enabled.");
                 }
 
                 this._udpClient.SendAsync(serialisedPacket,
                     serialisedPacket.Length,
-                    this._clientConfiguration.Ip,
-                    this._clientConfiguration.UdpPortRemote);
+                    this.clientConfiguration.Ip,
+                    this.clientConfiguration.UdpPortRemote);
             }
         }
 
-        public IClientPacketReceipt SendAndHandleResponse<TResponseType>(NetworkerPacketBase packet,
+        public IClientPacketReceipt SendAndHandleResponse<T, TResponseType>(T packet,
             Action<TResponseType> handler)
-            where TResponseType: class
+            where TResponseType: class where T : NetworkerPacketBase
         {
             packet.TransactionId = Guid.NewGuid()
                                        .ToString();
@@ -163,7 +177,7 @@ namespace Networker.Client
 
         private void HandlePacket(NetworkerPacketBase packetBase, byte[] bytes)
         {
-            if(!this._packetHandlers.ContainsKey(packetBase.UniqueKey))
+            if(!this.packetHandlers.ContainsKey(packetBase.UniqueKey))
             {
                 return;
             }
@@ -179,7 +193,7 @@ namespace Networker.Client
                 return;
             }
 
-            var packetHandlerType = this._packetHandlers[packetBase.UniqueKey];
+            var packetHandlerType = this.packetHandlers[packetBase.UniqueKey];
 
             var packetHandler = this.Container.Resolve<IClientPacketHandler>(packetHandlerType);
 
@@ -190,7 +204,7 @@ namespace Networker.Client
         {
             foreach(var packetHandler in packetHandlerModule.RegisterPacketHandlers())
             {
-                this._packetHandlers.Add(packetHandler.Key.Name, packetHandler.Value);
+                this.packetHandlers.Add(packetHandler.Key.Name, packetHandler.Value);
                 this.Container.RegisterType(packetHandler.Value);
             }
         }

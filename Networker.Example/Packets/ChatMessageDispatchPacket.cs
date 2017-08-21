@@ -4,7 +4,6 @@ using ZeroFormatter;
 
 namespace Networker.Example.Packets
 {
-    [ZeroFormattable]
     public class ChatMessageDispatchPacket : NetworkerPacketBase
     {
         [Index(1)]

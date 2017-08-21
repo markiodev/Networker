@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26403.7
+VisualStudioVersion = 15.0.26730.8
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Networker", "Networker\Networker.csproj", "{9BE176AA-8128-438D-B6AB-3075545DDB9F}"
 EndProject
@@ -10,6 +10,12 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Networker.LatencySimulator", "Networker.LatencySimulator\Networker.LatencySimulator.csproj", "{4E44B62F-CACC-458B-BC96-59FF2832977A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Networker.NLog", "Networker.NLog\Networker.NLog.csproj", "{7D331811-209A-41AE-B054-7983CFEAE266}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Networker.Example.Chat.Packets", "Networker.Example.Chat.Packets\Networker.Example.Chat.Packets.csproj", "{0D649194-1704-4293-8B00-2E547A51879B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Networker.Example.Chat.Server", "Networker.Example.Chat.Server\Networker.Example.Chat.Server.csproj", "{F71C6F9A-CE34-4AA5-85DE-70D152FC2E46}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Networker.Example.Chat.ClientWPF", "Networker.Example.Chat.ClientWPF\Networker.Example.Chat.ClientWPF.csproj", "{BA53F813-7E39-4103-95F7-41FD493FD342}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,8 +39,23 @@ Global
 		{7D331811-209A-41AE-B054-7983CFEAE266}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7D331811-209A-41AE-B054-7983CFEAE266}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7D331811-209A-41AE-B054-7983CFEAE266}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0D649194-1704-4293-8B00-2E547A51879B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D649194-1704-4293-8B00-2E547A51879B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D649194-1704-4293-8B00-2E547A51879B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D649194-1704-4293-8B00-2E547A51879B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F71C6F9A-CE34-4AA5-85DE-70D152FC2E46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F71C6F9A-CE34-4AA5-85DE-70D152FC2E46}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F71C6F9A-CE34-4AA5-85DE-70D152FC2E46}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F71C6F9A-CE34-4AA5-85DE-70D152FC2E46}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA53F813-7E39-4103-95F7-41FD493FD342}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA53F813-7E39-4103-95F7-41FD493FD342}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA53F813-7E39-4103-95F7-41FD493FD342}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA53F813-7E39-4103-95F7-41FD493FD342}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A022B3C8-E866-480E-82A5-17935BA812CC}
 	EndGlobalSection
 EndGlobal

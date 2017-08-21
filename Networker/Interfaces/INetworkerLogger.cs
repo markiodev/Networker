@@ -6,5 +6,6 @@ namespace Networker.Interfaces
     {
         void RegisterLogger(INetworkerLoggerAdapter loggerAdapter);
         void Trace(string message);
+        void Error(Exception exception);
     }
 }

@@ -25,5 +25,13 @@ namespace Networker.Common
                 logAdapter.Trace(message);
             }
         }
+
+        public void Error(Exception exception)
+        {
+            foreach(var logAdapter in this.logAdapters)
+            {
+                logAdapter.Error(exception);
+            }
+        }
     }
 }

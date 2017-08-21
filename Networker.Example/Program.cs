@@ -50,7 +50,7 @@ namespace Networker.Example
                             Sender = "The Sender (UDP)"
                         },
                 NetworkerProtocol.Udp);
-
+            /*
             new Thread(() =>
                        {
                            while(true)
@@ -79,7 +79,7 @@ namespace Networker.Example
                                       });
             }
 
-            for(var i = 0; i < 100000; i++)
+            for(var i = 0; i < 1000; i++)
             {
                 client.SendAndHandleResponse(new ServerInformationRequestPacket(),
                     new Action<ServerInformationResponsePacket>(e =>
@@ -90,7 +90,7 @@ namespace Networker.Example
                                                                             $"I am sync, my transaction ID is {e.TransactionId}. {e.MachineName}");
                                                                 }));
             }
-
+            /*
             client.SendAndHandleResponse(new ServerInformationRequestPacket());
 
             client.SendAndHandleResponseAsync(new ServerInformationRequestPacket(),
@@ -99,7 +99,7 @@ namespace Networker.Example
                                                                 client.Container.Resolve<INetworkerLogger>()
                                                                       .Trace(
                                                                           $"I am async, my transaction ID is {e.TransactionId}. {e.MachineName}");
-                                                            }));
+                                                            }));*/
         }
     }
 }

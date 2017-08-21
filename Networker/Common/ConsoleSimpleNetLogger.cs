@@ -16,5 +16,10 @@ namespace Networker.Common
         {
             Console.WriteLine($"{string.Format(this._prefix, DateTime.Now)} {message}");
         }
+
+        public void Error(Exception exception)
+        {
+            Console.WriteLine($"{string.Format(this._prefix, DateTime.Now)} Error: {exception.Message}");
+        }
     }
 }
