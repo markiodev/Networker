@@ -1,11 +1,11 @@
 ﻿using System;
 using Networker.Client;
+using Networker.Example.Packets;
 using Networker.Interfaces;
 
-namespace Networker.Example
+namespace Networker.Example.ClientPacketHandlers
 {
-    public class ChatMessageReceivedPacketHandler : PacketHandlerBase<ChatMessageReceivedPacket
-    >
+    public class ChatMessageReceivedPacketHandler : PacketHandlerBase<ChatMessageReceivedPacket>
     {
         private readonly INetworkerLogger _logger;
 

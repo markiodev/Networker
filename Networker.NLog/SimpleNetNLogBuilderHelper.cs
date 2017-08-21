@@ -1,4 +1,4 @@
-﻿using Networker.Common;
+﻿using System;
 using Networker.Interfaces;
 
 namespace Networker.NLog

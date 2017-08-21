@@ -2,7 +2,7 @@
 using Networker.Common;
 using ZeroFormatter;
 
-namespace Networker.Example
+namespace Networker.Example.Packets
 {
     public class ServerInformationResponsePacket : NetworkerPacketBase
     {

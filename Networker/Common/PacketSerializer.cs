@@ -9,7 +9,8 @@ namespace Networker.Common
         public byte[] Serialize<T>(T packet)
             where T: NetworkerPacketBase
         {
-            packet.UniqueKey = typeof(T).Name;
+            packet.UniqueKey = packet.GetType()
+                                     .Name;
 
             using(var memoryStream = new MemoryStream())
             {

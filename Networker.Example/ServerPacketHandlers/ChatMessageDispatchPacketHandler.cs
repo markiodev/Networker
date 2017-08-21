@@ -1,11 +1,11 @@
 ﻿using System;
+using Networker.Example.Packets;
 using Networker.Interfaces;
 using Networker.Server;
 
-namespace Networker.Example
+namespace Networker.Example.ServerPacketHandlers
 {
-    public class ChatMessageDispatchPacketHandler : ServerPacketHandlerBase<ChatMessageDispatchPacket
-    >
+    public class ChatMessageDispatchPacketHandler : ServerPacketHandlerBase<ChatMessageDispatchPacket>
     {
         private readonly INetworkerLogger _logger;
 
@@ -20,8 +20,7 @@ namespace Networker.Example
 
             sender?.Send(new ChatMessageReceivedPacket
                          {
-                             Message = "Got it, thanks",
-                             UniqueKey = "ChatMessageReceivedPacket"
+                             Message = "Got it, thanks"
                          });
         }
     }

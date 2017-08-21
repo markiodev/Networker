@@ -13,7 +13,7 @@ namespace Networker.Client
         private readonly ClientConfiguration _clientConfiguration;
         private readonly INetworkerLogger _logger;
         private readonly Dictionary<string, Type> _packetHandlers;
-        private readonly IContainerIoc container;
+        private readonly ClientResponseStore clientResponseStore;
         private readonly bool isRunning;
         private readonly PacketDeserializer packetDeserializer;
         private Socket _tcpSocket;
@@ -25,17 +25,20 @@ namespace Networker.Client
         {
             this._clientConfiguration = clientConfiguration;
             this._logger = logger;
-            this.container = new DryIocContainer();
+            this.Container = new DryIocContainer();
             this.isRunning = true;
             this.packetDeserializer = new PacketDeserializer();
-            this.container.RegisterSingleton(logger);
+            this.Container.RegisterSingleton(logger);
             this._packetHandlers = new Dictionary<string, Type>();
-            
+            this.clientResponseStore = new ClientResponseStore();
+
             foreach(var packetHandlerModule in packetHandlerModules)
             {
                 this.RegisterTypesFromModule(packetHandlerModule);
             }
         }
+
+        public IContainerIoc Container { get; }
 
         public INetworkerClient Connect()
         {
@@ -98,20 +101,14 @@ namespace Networker.Client
             return this;
         }
 
-        public IClientPacketReceipt CreatePacket(NetworkerPacketBase packet)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Send<T>(T packet, NetworkerProtocol protocol = NetworkerProtocol.Tcp)
-            where T: NetworkerPacketBase
+        public void Send(NetworkerPacketBase packet, NetworkerProtocol protocol = NetworkerProtocol.Tcp)
         {
             var serializer = new PacketSerializer();
             var serialisedPacket = serializer.Serialize(packet);
 
             if(protocol == NetworkerProtocol.Tcp)
             {
-                if (!this._clientConfiguration.UseTcp)
+                if(!this._clientConfiguration.UseTcp)
                 {
                     throw new Exception("Cannot send TCP when TCP not enabled.");
                 }
@@ -132,18 +129,61 @@ namespace Networker.Client
             }
         }
 
-        private void HandlePacket(NetworkerPacketBase deserialized, byte[] bytes)
+        public IClientPacketReceipt SendAndHandleResponse<TResponseType>(NetworkerPacketBase packet,
+            Action<TResponseType> handler)
+            where TResponseType: class
         {
-            if(!this._packetHandlers.ContainsKey(deserialized.UniqueKey))
+            packet.TransactionId = Guid.NewGuid()
+                                       .ToString();
+            var receipt = new ClientPacketReceipt<TResponseType>(this, packet);
+            receipt.HandleResponse(handler);
+            this.clientResponseStore.Store(packet.TransactionId, receipt);
+
+            receipt.Send();
+
+            while(this.clientResponseStore.Find(packet.TransactionId) != null)
+            {
+                Thread.Sleep(5);
+            }
+
+            return receipt;
+        }
+
+        public IClientPacketReceipt SendAndHandleResponse(NetworkerPacketBase packet)
+        {
+            return null;
+        }
+
+        public IClientPacketReceipt SendAndHandleResponseAsync<TResponseType>(NetworkerPacketBase packet,
+            Action<TResponseType> handler)
+            where TResponseType: class
+        {
+            return null;
+        }
+
+        private void HandlePacket(NetworkerPacketBase packetBase, byte[] bytes)
+        {
+            if(!this._packetHandlers.ContainsKey(packetBase.UniqueKey))
             {
                 return;
             }
 
-            var packetHandlerType = this._packetHandlers[deserialized.UniqueKey];
+            if(!string.IsNullOrEmpty(packetBase.TransactionId))
+            {
+                var clientResponse = this.clientResponseStore.Find(packetBase.TransactionId);
 
-            var packetHandler = this.container.Resolve<IClientPacketHandler>(packetHandlerType);
+                clientResponse?.Invoke(bytes);
 
-            packetHandler.Handle(deserialized, bytes);
+                this.clientResponseStore.Remove(packetBase.TransactionId);
+
+                return;
+            }
+
+            var packetHandlerType = this._packetHandlers[packetBase.UniqueKey];
+
+            var packetHandler = this.Container.Resolve<IClientPacketHandler>(packetHandlerType);
+
+            packetHandler.Handle(packetBase, bytes);
         }
 
         private void RegisterTypesFromModule(INetworkerPacketHandlerModule packetHandlerModule)
@@ -151,7 +191,7 @@ namespace Networker.Client
             foreach(var packetHandler in packetHandlerModule.RegisterPacketHandlers())
             {
                 this._packetHandlers.Add(packetHandler.Key.Name, packetHandler.Value);
-                this.container.RegisterType(packetHandler.Value);
+                this.Container.RegisterType(packetHandler.Value);
             }
         }
     }

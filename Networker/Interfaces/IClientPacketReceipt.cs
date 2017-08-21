@@ -4,8 +4,7 @@ namespace Networker.Interfaces
 {
     public interface IClientPacketReceipt
     {
-        IClientPacketReceipt HandleResponse<T>(Action<T> responseHandler, int timeoutMsec = 30000);
-        IClientPacketReceipt HandleResponseAsync<T>(Action<T> responseHandler);
+        void Invoke(byte[] packet);
         IClientPacketReceipt Send();
     }
 }

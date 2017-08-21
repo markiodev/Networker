@@ -15,7 +15,7 @@ namespace Networker.Server
             this.socket = socket;
             this.result = result;
         }
-        
+
         public void Send<T>(T packet)
             where T: NetworkerPacketBase
         {

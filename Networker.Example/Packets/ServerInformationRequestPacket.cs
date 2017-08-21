@@ -1,7 +1,7 @@
 ﻿using System;
 using Networker.Common;
 
-namespace Networker.Example
+namespace Networker.Example.Packets
 {
     public class ServerInformationRequestPacket : NetworkerPacketBase { }
 }

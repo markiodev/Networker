@@ -1,9 +1,13 @@
 ﻿using System;
-using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 using Networker.Client;
 using Networker.Common;
+using Networker.Example.ClientPacketHandlers;
+using Networker.Example.Packets;
+using Networker.Example.ServerPacketHandlers;
 using Networker.Helpers;
+using Networker.Interfaces;
 using Networker.Server;
 
 namespace Networker.Example
@@ -62,13 +66,40 @@ namespace Networker.Example
                            }
                        }).Start();
 
-            /*client.CreatePacket(new ServerInformationRequestPacket())
-                .HandleResponse<ServerInformationResponsePacket>(
-                    packet => Console.WriteLine($"I am sync. {packet.MachineName}")).Send();
+            for(var i = 0; i < 100; i++)
+            {
+                Task.Factory.StartNew(() =>
+                                      {
+                                          client.Send(new ChatMessageDispatchPacket
+                                                      {
+                                                          Message =
+                                                              "Performance Testing",
+                                                          Sender = "System"
+                                                      });
+                                      });
+            }
 
-            client.CreatePacket(new ServerInformationRequestPacket())
-                .HandleResponseAsync<ServerInformationResponsePacket>(
-                    packet => Console.WriteLine($"I am async. {packet.MachineName}")).Send();*/
+            for(var i = 0; i < 100000; i++)
+            {
+                client.SendAndHandleResponse(new ServerInformationRequestPacket(),
+                    new Action<ServerInformationResponsePacket>(e =>
+                                                                {
+                                                                    client
+                                                                        .Container.Resolve<INetworkerLogger>()
+                                                                        .Trace(
+                                                                            $"I am sync, my transaction ID is {e.TransactionId}. {e.MachineName}");
+                                                                }));
+            }
+
+            client.SendAndHandleResponse(new ServerInformationRequestPacket());
+
+            client.SendAndHandleResponseAsync(new ServerInformationRequestPacket(),
+                new Action<ServerInformationResponsePacket>(e =>
+                                                            {
+                                                                client.Container.Resolve<INetworkerLogger>()
+                                                                      .Trace(
+                                                                          $"I am async, my transaction ID is {e.TransactionId}. {e.MachineName}");
+                                                            }));
         }
     }
 }

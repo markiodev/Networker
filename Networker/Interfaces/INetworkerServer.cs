@@ -7,14 +7,15 @@ namespace Networker.Interfaces
 {
     public interface INetworkerServer
     {
-        void Broadcast<T>(T packet)
-            where T: NetworkerPacketBase;
-        
-        INetworkerServer Start();
-        void Stop();
+        List<TcpConnection> Connections { get; }
 
         EventHandler<TcpConnectionConnectedEventArgs> ClientConnected { get; set; }
         EventHandler<TcpConnectionDisconnectedEventArgs> ClientDisconnected { get; set; }
-        List<TcpConnection> Connections { get; }
+
+        void Broadcast<T>(T packet)
+            where T: NetworkerPacketBase;
+
+        INetworkerServer Start();
+        void Stop();
     }
 }
