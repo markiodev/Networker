@@ -13,7 +13,7 @@ namespace Networker.Server
     public abstract class NetworkerServerBase : INetworkerServer
     {
         private readonly ServerConfiguration configuration;
-        private readonly DryIocContainer container;
+        protected readonly IContainerIoc container;
         public readonly INetworkerLogger Logger;
         private readonly PacketDeserializer packetDeserializer;
         private readonly Dictionary<string, Type> packetHandlers;
@@ -25,11 +25,12 @@ namespace Networker.Server
 
         protected NetworkerServerBase(ServerConfiguration configuration,
             INetworkerLogger logger,
-            IList<INetworkerPacketHandlerModule> modules)
+            IList<INetworkerPacketHandlerModule> modules,
+            IContainerIoc container)
         {
             this.configuration = configuration;
             this.Logger = logger;
-            this.container = new DryIocContainer();
+            this.container = container;
             this.Connections = new List<TcpConnection>();
             this.packetSerializer = new PacketSerializer();
             this.packetDeserializer = new PacketDeserializer();
@@ -189,6 +190,11 @@ namespace Networker.Server
         public void Stop()
         {
             this._isRunning = false;
+        }
+
+        public IContainerIoc GetIocContainer()
+        {
+            return container;
         }
 
         private void HandlePacket(INetworkerConnection connection,

@@ -50,7 +50,7 @@ namespace Networker.Example
                             Sender = "The Sender (UDP)"
                         },
                 NetworkerProtocol.Udp);
-            /*
+            
             new Thread(() =>
                        {
                            while(true)

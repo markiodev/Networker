@@ -17,5 +17,7 @@ namespace Networker.Interfaces
 
         INetworkerServer Start();
         void Stop();
+
+        IContainerIoc GetIocContainer();
     }
 }

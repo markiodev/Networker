@@ -11,9 +11,11 @@ namespace Networker.Server
         private readonly INetworkerLogger logger;
         private readonly IList<INetworkerPacketHandlerModule> modules;
         private readonly DefaultPacketHandlerModule packetHandlerModule;
+        private IContainerIoc container;
 
         public NetworkerServerBuilder()
         {
+            this.container = new DryIocContainer();
             this.configuration = new ServerConfiguration();
             this.logger = new NetworkerLogger();
             this.packetHandlerModule = new DefaultPacketHandlerModule();
@@ -24,12 +26,24 @@ namespace Networker.Server
         public INetworkerServer Build<T>()
             where T: INetworkerServer
         {
-            return (T)Activator.CreateInstance(typeof(T), this.configuration, this.logger, this.modules);
+            return (T)Activator.CreateInstance(typeof(T), this.configuration, this.logger, this.modules, this.container);
+        }
+
+        public INetworkerServerBuilder UseIocContainer(IContainerIoc newContainer)
+        {
+            this.container = newContainer;
+            return this;
         }
 
         public INetworkerServerBuilder RegisterLogger(INetworkerLoggerAdapter logAdapter)
         {
             this.logger.RegisterLogger(logAdapter);
+            return this;
+        }
+
+        public INetworkerServerBuilder RegisterLogger<T>() where T : INetworkerLoggerAdapter
+        {
+            this.logger.RegisterLogger(this.container.Resolve<T>());
             return this;
         }
 

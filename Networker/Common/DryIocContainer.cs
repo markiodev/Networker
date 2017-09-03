@@ -13,14 +13,19 @@ namespace Networker.Common
             this.container = new Container();
         }
 
+        public void RegisterType<TImplementation>()
+        {
+            this.container.Register<TImplementation>();
+        }
+
         public void RegisterSingleton<T>(T instance)
         {
             this.container.RegisterInstance(instance);
         }
 
-        public void RegisterType<T>()
+        public void RegisterType<TService, TImplementation>() where TImplementation : TService
         {
-            this.container.Register<T>();
+            this.container.Register<TService, TImplementation>();
         }
 
         public void RegisterType(Type type)
@@ -36,6 +41,11 @@ namespace Networker.Common
         public T Resolve<T>(Type type)
         {
             return this.container.Resolve<T>(type);
+        }
+
+        public void VerifyResolutions()
+        {
+            this.container.VerifyResolutions();
         }
     }
 }

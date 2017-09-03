@@ -8,7 +8,8 @@ namespace Networker.Server
     {
         public DefaultServer(ServerConfiguration configuration,
             INetworkerLogger logger,
-            IList<INetworkerPacketHandlerModule> modules)
-            : base(configuration, logger, modules) { }
+            IList<INetworkerPacketHandlerModule> modules,
+            IContainerIoc container)
+            : base(configuration, logger, modules, container) { }
     }
 }
