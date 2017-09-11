@@ -12,6 +12,7 @@ A simple to use TCP and UDP networking library for .NET Core and .NET Framework.
 ## Planned Features (v2)
 * Plug in your choice of IOC
 * Encryption
+* Unity (.NET 4.6+ Only)
 
 ## Supported Frameworks
 * .NET Standard 1.6
