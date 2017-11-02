@@ -1,4 +1,4 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/bk1ageq2xm8r6r51?svg=true)](https://ci.appveyor.com/project/testpossessed/networker)
+[![Build status](https://ci.appveyor.com/api/projects/status/k2yi64f298bgjxra?svg=true)](https://ci.appveyor.com/project/MarkioE/networker)
 [![NuGet](https://img.shields.io/nuget/v/networker.svg)](https://www.nuget.org/packages/Networker/)
 
 # Networker
@@ -19,10 +19,10 @@ A simple to use TCP and UDP networking library for .NET Core and .NET Framework.
 * NLog Adapter
 
 ## Supported Frameworks
-* .NET Standard 1.6
 * .NET Standard 2.0
+* .NET Standard 1.6
 * .NET Core
-* .NET Framework 4.5.2+
+* .NET Framework 4.6+
 
 ## Installing
 Install-Package Networker
