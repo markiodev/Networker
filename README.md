@@ -1,23 +1,24 @@
 # Networker
 A simple to use TCP and UDP networking library for .NET Core and .NET Framework.
 
-## Features (v1)
+## Features
 * TCP
 * UDP
 * Low memory footprint
 * Handle thousands of simultaneous connections
 * Incredibly fast serialization using ZeroFormatter
 * Plug in your choice of logging
-
-## Planned Features (v2)
 * Plug in your choice of IOC
-* Encryption
 * Unity (.NET 4.6+ Only)
+
+## Planned Features (v2.1)
+* Encryption
 
 ## Supported Frameworks
 * .NET Standard 1.6
+* .NET Standard 2.0
 * .NET Core
-* .NET Framework 4.5.2
+* .NET Framework 4.5.2+
 
 ## Installing
 Install-Package Networker
