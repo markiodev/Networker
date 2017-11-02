@@ -16,6 +16,7 @@ A simple to use TCP and UDP networking library for .NET Core and .NET Framework.
 
 ## Planned Features (v2.1)
 * Encryption
+* NLog Adapter
 
 ## Supported Frameworks
 * .NET Standard 1.6
