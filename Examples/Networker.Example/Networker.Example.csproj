@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Networker\Networker.csproj" />
+    <ProjectReference Include="..\..\Networker\Networker.csproj" />
   </ItemGroup>
 
 </Project>

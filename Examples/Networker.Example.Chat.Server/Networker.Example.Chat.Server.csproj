@@ -6,8 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Networker\Networker.csproj" />
     <ProjectReference Include="..\Networker.Example.Chat.Packets\Networker.Example.Chat.Packets.csproj" />
-    <ProjectReference Include="..\Networker\Networker.csproj" />
   </ItemGroup>
 
 </Project>

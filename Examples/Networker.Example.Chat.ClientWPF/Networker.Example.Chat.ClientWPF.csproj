@@ -99,7 +99,7 @@
       <Project>{0D649194-1704-4293-8B00-2E547A51879B}</Project>
       <Name>Networker.Example.Chat.Packets</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Networker\Networker.csproj">
+    <ProjectReference Include="..\..\Networker\Networker.csproj">
       <Project>{9BE176AA-8128-438D-B6AB-3075545DDB9F}</Project>
       <Name>Networker</Name>
     </ProjectReference>
