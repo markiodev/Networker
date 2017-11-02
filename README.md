@@ -1,3 +1,6 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/bk1ageq2xm8r6r51?svg=true)](https://ci.appveyor.com/project/testpossessed/networker)
+[![NuGet](https://img.shields.io/nuget/v/networker.svg)](https://www.nuget.org/packages/Networker/)
+
 # Networker
 A simple to use TCP and UDP networking library for .NET Core and .NET Framework.
 
