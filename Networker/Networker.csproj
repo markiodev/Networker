@@ -9,9 +9,9 @@
     <RepositoryType>GitHub</RepositoryType>
     <PackageTags></PackageTags>
     <Description>A simple to use TCP and UDP networking library for .NET Core and .NET Framework.</Description>
-    <Version>2.0.2</Version>
-    <AssemblyVersion>2.0.2.0</AssemblyVersion>
-    <FileVersion>2.0.2.0</FileVersion>
+    <Version>1.0.0</Version>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
