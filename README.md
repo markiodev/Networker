@@ -1,22 +1,28 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/bk1ageq2xm8r6r51?svg=true)](https://ci.appveyor.com/project/testpossessed/networker)
+[![NuGet](https://img.shields.io/nuget/v/networker.svg)](https://www.nuget.org/packages/Networker/)
+
 # Networker
 A simple to use TCP and UDP networking library for .NET Core and .NET Framework.
 
-## Features (v1)
+## Features
 * TCP
 * UDP
 * Low memory footprint
 * Handle thousands of simultaneous connections
 * Incredibly fast serialization using ZeroFormatter
 * Plug in your choice of logging
-
-## Planned Features (v2)
 * Plug in your choice of IOC
+* Unity (.NET 4.6+ Only)
+
+## Planned Features (v2.1)
 * Encryption
+* NLog Adapter
 
 ## Supported Frameworks
 * .NET Standard 1.6
+* .NET Standard 2.0
 * .NET Core
-* .NET Framework 4.5.2
+* .NET Framework 4.5.2+
 
 ## Installing
 Install-Package Networker
