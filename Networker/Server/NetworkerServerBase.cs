@@ -43,7 +43,9 @@ namespace Networker.Server
 
             this.container.RegisterSingleton<ITcpConnectionsProvider>(
                 new TcpConnectionsProvider(this.Connections));
-            this.container.RegisterSingleton<INetworkerLogger>(logger);
+            this.container.RegisterSingleton(logger);
+
+            this.RegisterPacketHandler<PingRequestPacket, PingRequestPacketHandler>();
         }
 
         public List<TcpConnection> Connections { get; }
@@ -62,6 +64,11 @@ namespace Networker.Server
             this._udpSocket.SendTo(this.packetSerializer.Serialize(packet),
                 new IPEndPoint(IPAddress.Parse(this.configuration.IpAddresses[0]),
                     this.configuration.UdpPortRemote));
+        }
+
+        public IContainerIoc GetIocContainer()
+        {
+            return this.container;
         }
 
         public INetworkerServer RegisterPacketHandler<TPacketType, TPacketHandlerType>()
@@ -110,8 +117,6 @@ namespace Networker.Server
                                        this.ClientConnected?.Invoke(this,
                                            new TcpConnectionConnectedEventArgs(connection));
                                    }
-
-                                   Thread.Sleep(this.configuration.Advanced.ConnectionPollIntervalMs);
                                }
                            }).Start();
 
@@ -143,8 +148,6 @@ namespace Networker.Server
                                                this.HandlePacket(connection, packet.Item1, packet.Item2);
                                            }
                                        }
-
-                                       Thread.Sleep(this.configuration.Advanced.IncomingSocketPollIntervalMs);
                                    }
                                }
                            }).Start();
@@ -169,17 +172,10 @@ namespace Networker.Server
 
                                    foreach(var packet in packets)
                                    {
-                                       Task.Factory.StartNew(() =>
-                                                             {
-                                                                 this.HandlePacket(
-                                                                     new UdpConnection(this._udpSocket,
-                                                                         result),
-                                                                     packet.Item1,
-                                                                     packet.Item2);
-                                                             });
+                                       this.HandlePacket(new UdpConnection(this._udpSocket, result),
+                                           packet.Item1,
+                                           packet.Item2);
                                    }
-
-                                   Thread.Sleep(this.configuration.Advanced.IncomingSocketPollIntervalMs);
                                }
                            }).Start();
             }
@@ -192,25 +188,23 @@ namespace Networker.Server
             this._isRunning = false;
         }
 
-        public IContainerIoc GetIocContainer()
-        {
-            return container;
-        }
-
         private void HandlePacket(INetworkerConnection connection,
             NetworkerPacketBase deserialized,
             byte[] bytes)
         {
-            if(!this.packetHandlers.ContainsKey(deserialized.UniqueKey))
-            {
-                return;
-            }
+            Task.Factory.StartNew(() =>
+                                  {
+                                      if(!this.packetHandlers.ContainsKey(deserialized.UniqueKey))
+                                      {
+                                          return;
+                                      }
 
-            var packetHandlerType = this.packetHandlers[deserialized.UniqueKey];
+                                      var packetHandlerType = this.packetHandlers[deserialized.UniqueKey];
 
-            var packetHandler = this.container.Resolve<IServerPacketHandler>(packetHandlerType);
-
-            Task.Factory.StartNew(() => { packetHandler.Handle(connection, deserialized, bytes); });
+                                      var packetHandler =
+                                          this.container.Resolve<IServerPacketHandler>(packetHandlerType);
+                                      packetHandler.Handle(connection, deserialized, bytes);
+                                  });
         }
 
         private void RegisterTypesFromModule(INetworkerPacketHandlerModule packetHandlerModule)

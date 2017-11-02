@@ -6,7 +6,10 @@ namespace Networker.Common
     [ZeroFormattable]
     public abstract class NetworkerPacketBase
     {
-        public NetworkerPacketBase() { }
+        public NetworkerPacketBase()
+        {
+            
+        }
 
         [Index(97)]
         public virtual string TransactionId { get; set; }

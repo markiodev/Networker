@@ -13,6 +13,14 @@ namespace Networker.Common
             this.logAdapters = new List<INetworkerLoggerAdapter>();
         }
 
+        public void Error(Exception exception)
+        {
+            foreach(var logAdapter in this.logAdapters)
+            {
+                logAdapter.Error(exception);
+            }
+        }
+
         public void RegisterLogger(INetworkerLoggerAdapter loggerAdapter)
         {
             this.logAdapters.Add(loggerAdapter);
@@ -23,14 +31,6 @@ namespace Networker.Common
             foreach(var logAdapter in this.logAdapters)
             {
                 logAdapter.Trace(message);
-            }
-        }
-
-        public void Error(Exception exception)
-        {
-            foreach(var logAdapter in this.logAdapters)
-            {
-                logAdapter.Error(exception);
             }
         }
     }

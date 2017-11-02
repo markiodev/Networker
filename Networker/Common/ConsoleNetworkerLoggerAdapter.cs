@@ -12,14 +12,14 @@ namespace Networker.Common
             this._prefix = prefix;
         }
 
-        public void Trace(string message)
-        {
-            Console.WriteLine($"{string.Format(this._prefix, DateTime.Now)} {message}");
-        }
-
         public void Error(Exception exception)
         {
             Console.WriteLine($"{string.Format(this._prefix, DateTime.Now)} Error: {exception.Message}");
+        }
+
+        public void Trace(string message)
+        {
+            Console.WriteLine($"{string.Format(this._prefix, DateTime.Now)} {message}");
         }
     }
 }

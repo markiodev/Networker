@@ -38,7 +38,7 @@ namespace Networker.Example
                                                      .Build<ExampleClient>()
                                                      .Connect();
 
-            client.Send(new ChatMessageDispatchPacket
+            /*client.Send(new ChatMessageDispatchPacket
                         {
                             Message = "I am the message",
                             Sender = "The Sender"
@@ -49,57 +49,62 @@ namespace Networker.Example
                             Message = "I am a UDP message",
                             Sender = "The Sender (UDP)"
                         },
-                NetworkerProtocol.Udp);
+                NetworkerProtocol.Udp);*/
+
+
+
             
-            new Thread(() =>
-                       {
-                           while(true)
-                           {
-                               server.Broadcast(new ServerInformationResponsePacket
-                                                {
-                                                    MachineName =
-                                                        Environment
-                                                            .MachineName
-                                                });
+             new Thread(() =>
+                        {
+                            while(true)
+                            {
+                                /*server.Broadcast(new ServerInformationResponsePacket
+                                                 {
+                                                     MachineName =
+                                                         Environment
+                                                             .MachineName
+                                                 });*/
 
-                               Thread.Sleep(5000);
-                           }
-                       }).Start();
+                                Console.WriteLine($"Ping: {client.Ping()}");
 
-            for(var i = 0; i < 100; i++)
-            {
-                Task.Factory.StartNew(() =>
-                                      {
-                                          client.Send(new ChatMessageDispatchPacket
-                                                      {
-                                                          Message =
-                                                              "Performance Testing",
-                                                          Sender = "System"
-                                                      });
-                                      });
-            }
-
-            for(var i = 0; i < 1000; i++)
-            {
-                client.SendAndHandleResponse(new ServerInformationRequestPacket(),
-                    new Action<ServerInformationResponsePacket>(e =>
-                                                                {
-                                                                    client
-                                                                        .Container.Resolve<INetworkerLogger>()
-                                                                        .Trace(
-                                                                            $"I am sync, my transaction ID is {e.TransactionId}. {e.MachineName}");
-                                                                }));
-            }
+                                Thread.Sleep(5000);
+                            }
+                        }).Start();
             /*
-            client.SendAndHandleResponse(new ServerInformationRequestPacket());
+             for(var i = 0; i < 100; i++)
+             {
+                 Task.Factory.StartNew(() =>
+                                       {
+                                           client.Send(new ChatMessageDispatchPacket
+                                                       {
+                                                           Message =
+                                                               "Performance Testing",
+                                                           Sender = "System"
+                                                       });
+                                       });
+             }
 
-            client.SendAndHandleResponseAsync(new ServerInformationRequestPacket(),
-                new Action<ServerInformationResponsePacket>(e =>
-                                                            {
-                                                                client.Container.Resolve<INetworkerLogger>()
-                                                                      .Trace(
-                                                                          $"I am async, my transaction ID is {e.TransactionId}. {e.MachineName}");
-                                                            }));*/
+             for(var i = 0; i < 1000; i++)
+             {
+                 client.SendAndHandleResponse(new ServerInformationRequestPacket(),
+                     new Action<ServerInformationResponsePacket>(e =>
+                                                                 {
+                                                                     client
+                                                                         .Container.Resolve<INetworkerLogger>()
+                                                                         .Trace(
+                                                                             $"I am sync, my transaction ID is {e.TransactionId}. {e.MachineName}");
+                                                                 }));
+             }
+
+             client.SendAndHandleResponse(new ServerInformationRequestPacket());
+
+             client.SendAndHandleResponseAsync(new ServerInformationRequestPacket(),
+                 new Action<ServerInformationResponsePacket>(e =>
+                                                             {
+                                                                 client.Container.Resolve<INetworkerLogger>()
+                                                                       .Trace(
+                                                                           $"I am async, my transaction ID is {e.TransactionId}. {e.MachineName}");
+                                                             }));*/
         }
     }
 }

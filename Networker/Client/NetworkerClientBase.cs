@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,11 +12,11 @@ namespace Networker.Client
     public abstract class NetworkerClientBase : INetworkerClient
     {
         private readonly ClientConfiguration clientConfiguration;
-        private readonly INetworkerLogger logger;
-        private readonly Dictionary<string, Type> packetHandlers;
         private readonly ClientResponseStore clientResponseStore;
         private readonly bool isRunning;
+        private readonly INetworkerLogger logger;
         private readonly PacketDeserializer packetDeserializer;
+        private readonly Dictionary<string, Type> packetHandlers;
         private Socket _tcpSocket;
         private UdpClient _udpClient;
 
@@ -73,7 +74,6 @@ namespace Networker.Client
                                                                  });
                                        }
                                    }
-                                   Thread.Sleep(10);
                                }
                            }).Start();
             }
@@ -106,8 +106,6 @@ namespace Networker.Client
                                                                  }
                                                              });
                                    }
-
-                                   Thread.Sleep(10);
                                }
                            }).Start();
             }
@@ -115,7 +113,8 @@ namespace Networker.Client
             return this;
         }
 
-        public void Send<T>(T packet, NetworkerProtocol protocol = NetworkerProtocol.Tcp) where T : NetworkerPacketBase
+        public void Send<T>(T packet, NetworkerProtocol protocol = NetworkerProtocol.Tcp)
+            where T: NetworkerPacketBase
         {
             var serializer = new PacketSerializer();
             var serialisedPacket = serializer.Serialize(packet);
@@ -145,7 +144,7 @@ namespace Networker.Client
 
         public IClientPacketReceipt SendAndHandleResponse<T, TResponseType>(T packet,
             Action<TResponseType> handler)
-            where TResponseType: class where T : NetworkerPacketBase
+            where TResponseType: class where T: NetworkerPacketBase
         {
             packet.TransactionId = Guid.NewGuid()
                                        .ToString();
@@ -155,34 +154,30 @@ namespace Networker.Client
 
             receipt.Send();
 
+            //todo: Implement timeout
+
             while(this.clientResponseStore.Find(packet.TransactionId) != null)
             {
-                Thread.Sleep(5);
+                Thread.Sleep(1);
             }
 
             return receipt;
         }
 
-        public IClientPacketReceipt SendAndHandleResponse(NetworkerPacketBase packet)
+        public long Ping()
         {
-            return null;
-        }
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
 
-        public IClientPacketReceipt SendAndHandleResponseAsync<TResponseType>(NetworkerPacketBase packet,
-            Action<TResponseType> handler)
-            where TResponseType: class
-        {
-            return null;
-        }
+            this.SendAndHandleResponse<PingRequestPacket, PingResponsePacket>(new PingRequestPacket(),
+                (response) => { sw.Stop(); });
 
+            return sw.ElapsedMilliseconds;
+        }
+        
         private void HandlePacket(NetworkerPacketBase packetBase, byte[] bytes)
         {
-            if(!this.packetHandlers.ContainsKey(packetBase.UniqueKey))
-            {
-                return;
-            }
-
-            if(!string.IsNullOrEmpty(packetBase.TransactionId))
+            if (!string.IsNullOrEmpty(packetBase.TransactionId))
             {
                 var clientResponse = this.clientResponseStore.Find(packetBase.TransactionId);
 
@@ -190,6 +185,11 @@ namespace Networker.Client
 
                 this.clientResponseStore.Remove(packetBase.TransactionId);
 
+                return;
+            }
+
+            if (!this.packetHandlers.ContainsKey(packetBase.UniqueKey))
+            {
                 return;
             }
 

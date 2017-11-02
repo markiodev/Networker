@@ -29,13 +29,17 @@ namespace Networker.Client
         public void Remove(string packetBaseTransactionId)
         {
             lock(this.receipts)
+            {
                 this.receipts.Remove(packetBaseTransactionId);
+            }
         }
 
         public void Store(string packetBaseTransactionId, IClientPacketReceipt receipt)
         {
             lock(this.receipts)
+            {
                 this.receipts.Add(packetBaseTransactionId, receipt);
+            }
         }
     }
 }

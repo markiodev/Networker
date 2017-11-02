@@ -15,9 +15,9 @@ namespace Networker.Interfaces
         void Broadcast<T>(T packet)
             where T: NetworkerPacketBase;
 
+        IContainerIoc GetIocContainer();
+
         INetworkerServer Start();
         void Stop();
-
-        IContainerIoc GetIocContainer();
     }
 }

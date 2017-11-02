@@ -6,46 +6,47 @@ namespace Networker.Common
 {
     public class DryIocContainer : IContainerIoc
     {
-        private readonly Container container;
+        public readonly Container Container;
 
         public DryIocContainer()
         {
-            this.container = new Container();
-        }
-
-        public void RegisterType<TImplementation>()
-        {
-            this.container.Register<TImplementation>();
+            this.Container = new Container();
         }
 
         public void RegisterSingleton<T>(T instance)
         {
-            this.container.RegisterInstance(instance);
+            this.Container.RegisterInstance(instance);
         }
 
-        public void RegisterType<TService, TImplementation>() where TImplementation : TService
+        public void RegisterType<TImplementation>()
         {
-            this.container.Register<TService, TImplementation>();
+            this.Container.Register<TImplementation>();
+        }
+
+        public void RegisterType<TService, TImplementation>()
+            where TImplementation: TService
+        {
+            this.Container.Register<TService, TImplementation>();
         }
 
         public void RegisterType(Type type)
         {
-            this.container.Register(type);
+            this.Container.Register(type);
         }
 
         public T Resolve<T>()
         {
-            return this.container.Resolve<T>();
+            return this.Container.Resolve<T>();
         }
 
         public T Resolve<T>(Type type)
         {
-            return this.container.Resolve<T>(type);
+            return this.Container.Resolve<T>(type);
         }
 
         public void VerifyResolutions()
         {
-            this.container.VerifyResolutions();
+            this.Container.VerifyResolutions();
         }
     }
 }

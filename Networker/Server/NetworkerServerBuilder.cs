@@ -26,13 +26,11 @@ namespace Networker.Server
         public INetworkerServer Build<T>()
             where T: INetworkerServer
         {
-            return (T)Activator.CreateInstance(typeof(T), this.configuration, this.logger, this.modules, this.container);
-        }
-
-        public INetworkerServerBuilder UseIocContainer(IContainerIoc newContainer)
-        {
-            this.container = newContainer;
-            return this;
+            return (T)Activator.CreateInstance(typeof(T),
+                this.configuration,
+                this.logger,
+                this.modules,
+                this.container);
         }
 
         public INetworkerServerBuilder RegisterLogger(INetworkerLoggerAdapter logAdapter)
@@ -41,7 +39,8 @@ namespace Networker.Server
             return this;
         }
 
-        public INetworkerServerBuilder RegisterLogger<T>() where T : INetworkerLoggerAdapter
+        public INetworkerServerBuilder RegisterLogger<T>()
+            where T: INetworkerLoggerAdapter
         {
             this.logger.RegisterLogger(this.container.Resolve<T>());
             return this;
@@ -62,6 +61,12 @@ namespace Networker.Server
                 (INetworkerPacketHandlerModule)Activator.CreateInstance(typeof(TPacketHandlerModule));
             this.modules.Add(module);
 
+            return this;
+        }
+
+        public INetworkerServerBuilder UseIocContainer(IContainerIoc newContainer)
+        {
+            this.container = newContainer;
             return this;
         }
 

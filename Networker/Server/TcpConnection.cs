@@ -19,6 +19,11 @@ namespace Networker.Server
         public PacketSerializer Serializer { get; }
         public Socket Socket { get; }
 
+        public void Close()
+        {
+            this.Socket.Shutdown(SocketShutdown.Both);
+        }
+
         public void Send<T>(T packet)
             where T: NetworkerPacketBase
         {

@@ -1,8 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard1.6;net461</TargetFrameworks>
-    <Version>1.0.3</Version>
+    <TargetFrameworks>netstandard2.0;netstandard1.6;net46</TargetFrameworks>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageProjectUrl>https://github.com/MarkioE/Networker</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/MarkioE/Networker/blob/master/LICENSE</PackageLicenseUrl>
@@ -14,21 +13,28 @@
 
   <ItemGroup>
     <PackageReference Include="DryIoc.dll" Version="2.11.0-preview-02" />
-    <PackageReference Include="ZeroFormatter" Version="1.6.4" />
-    <PackageReference Include="ZeroFormatter.Analyzer" Version="1.1.1" />
   </ItemGroup>
   
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net461'">
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net46'">
     <Reference Include="System" />
     <Reference Include="System.Threading" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
+    <PackageReference Include="ZeroFormatter" Version="1.6.4" />
+    <PackageReference Include="ZeroFormatter.Analyzer" Version="1.1.1" />
   </ItemGroup>
-
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.6'">
     <PackageReference Include="System.Threading.Thread" Version="4.3.0" />
+    <PackageReference Include="ZeroFormatter" Version="1.6.4" />
+    <PackageReference Include="ZeroFormatter.Analyzer" Version="1.1.1" />
+  </ItemGroup>
+  
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0'">
+    <PackageReference Include="System.Threading.Thread" Version="4.3.0" />
+    <PackageReference Include="ZeroFormatter" Version="1.6.4" />
+    <PackageReference Include="ZeroFormatter.Analyzer" Version="1.1.1" />
   </ItemGroup>
 
 </Project>
