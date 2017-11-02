@@ -19,10 +19,10 @@ A simple to use TCP and UDP networking library for .NET Core and .NET Framework.
 * NLog Adapter
 
 ## Supported Frameworks
-* .NET Standard 1.6
 * .NET Standard 2.0
+* .NET Standard 1.6
 * .NET Core
-* .NET Framework 4.5.2+
+* .NET Framework 4.6+
 
 ## Installing
 Install-Package Networker
