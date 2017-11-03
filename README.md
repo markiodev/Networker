@@ -17,6 +17,7 @@ A simple to use TCP and UDP networking library for .NET Core and .NET Framework.
 ## Planned Features 
 ### v2.1
 * Packet Handling Middleware
+* Latency Simulator
 
 ### v2.2
 * Encryption
