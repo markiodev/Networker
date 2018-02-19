@@ -48,5 +48,10 @@ namespace Networker.Common
         {
             this.Container.VerifyResolutions();
         }
+
+        public T TryResolve<T>()
+        {
+            return this.Container.Resolve<T>();
+        }
     }
 }

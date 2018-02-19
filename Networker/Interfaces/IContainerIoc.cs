@@ -14,5 +14,6 @@ namespace Networker.Interfaces
         T Resolve<T>();
         T Resolve<T>(Type type);
         void VerifyResolutions();
+        T TryResolve<T>();
     }
 }

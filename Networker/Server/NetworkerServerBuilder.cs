@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Networker.Common;
+using Networker.Common.Encryption;
 using Networker.Interfaces;
 
 namespace Networker.Server
@@ -88,6 +89,12 @@ namespace Networker.Server
             this.configuration.UseUdp = true;
             this.configuration.UdpPortRemote = remotePort ?? localPort;
             this.configuration.UdpPortLocal = localPort;
+            return this;
+        }
+
+        public INetworkerServerBuilder UseAesEncryption()
+        {
+            this.container.RegisterType<IPacketEncryption, AesEncryption>();
             return this;
         }
     }

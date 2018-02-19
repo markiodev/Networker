@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2006
+VisualStudioVersion = 15.0.27130.2027
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Networker", "Networker\Networker.csproj", "{9BE176AA-8128-438D-B6AB-3075545DDB9F}"
 EndProject
@@ -12,6 +12,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Networker.Example.Chat.Packets", "Examples\Networker.Example.Chat.Packets\Networker.Example.Chat.Packets.csproj", "{BC2E4765-F35C-47B2-96D2-01AA20A84477}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Networker.Example.Chat.Server", "Examples\Networker.Example.Chat.Server\Networker.Example.Chat.Server.csproj", "{4916C108-21DA-4C85-B288-0D9B6BB8AE12}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Networker.Example.Encryption", "Examples\Networker.Example.Encryption\Networker.Example.Encryption.csproj", "{36F74AB5-227C-4D37-A72A-92546C462D9D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{4916C108-21DA-4C85-B288-0D9B6BB8AE12}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4916C108-21DA-4C85-B288-0D9B6BB8AE12}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4916C108-21DA-4C85-B288-0D9B6BB8AE12}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36F74AB5-227C-4D37-A72A-92546C462D9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36F74AB5-227C-4D37-A72A-92546C462D9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36F74AB5-227C-4D37-A72A-92546C462D9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36F74AB5-227C-4D37-A72A-92546C462D9D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

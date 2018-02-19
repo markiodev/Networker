@@ -19,5 +19,6 @@ namespace Networker.Interfaces
         INetworkerServerBuilder UseIpAddresses(string[] ipAddresses);
         INetworkerServerBuilder UseTcp(int port);
         INetworkerServerBuilder UseUdp(int localPort, int? remotePort);
+        INetworkerServerBuilder UseAesEncryption();
     }
 }

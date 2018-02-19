@@ -4,6 +4,6 @@ namespace Networker.Interfaces
 {
     public interface IPacketEncryptor
     {
-        byte[] Encrypt(NetworkerPacketBase packetBase);
+        byte[] Encrypt(byte[] packetBase);
     }
 }

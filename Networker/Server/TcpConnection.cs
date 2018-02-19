@@ -1,22 +1,30 @@
 ﻿using System;
+using System.Linq;
 using System.Net.Sockets;
+using System.Reflection;
 using Networker.Common;
+using Networker.Common.Encryption;
 using Networker.Interfaces;
 
 namespace Networker.Server
 {
     public class TcpConnection : INetworkerConnection
     {
-        public TcpConnection(Socket socket)
+        private readonly IPacketEncryption packetEncryption;
+        private readonly IPacketSerializer packetSerializer;
+
+        public TcpConnection(Socket socket,
+            IPacketSerializer packetSerializer,
+            IPacketEncryption packetEncryption)
         {
+            this.packetSerializer = packetSerializer;
+            this.packetEncryption = packetEncryption;
             this.Socket = socket;
-            this.Serializer = new PacketSerializer();
             this.Identifier = Guid.NewGuid()
                                   .ToString();
         }
 
         public string Identifier { get; }
-        public PacketSerializer Serializer { get; }
         public Socket Socket { get; }
 
         public void Close()
@@ -27,7 +35,22 @@ namespace Networker.Server
         public void Send<T>(T packet)
             where T: NetworkerPacketBase
         {
-            this.Socket.Send(this.Serializer.Serialize(packet));
+            var serializedPacket = this.packetSerializer.Serialize(packet);
+
+            if(this.packetEncryption == null)
+            {
+                this.Socket.Send(serializedPacket);
+            }
+            else
+            {
+                var encryptedData = this.packetEncryption.GetEncryptor()
+                                        .Encrypt(serializedPacket);
+
+                this.Socket.Send(this.packetSerializer.Serialize(new EncryptedPacket
+                                                                 {
+                                                                     Data = encryptedData
+                                                                 }));
+            }
         }
     }
 }

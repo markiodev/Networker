@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Networker.Common;
+using Networker.Common.Encryption;
 using Networker.Interfaces;
 
 namespace Networker.Client
@@ -8,6 +9,7 @@ namespace Networker.Client
     public class NetworkerClientBuilder : INetworkerClientBuilder
     {
         private readonly ClientConfiguration configuration;
+        private readonly IContainerIoc container;
         private readonly INetworkerLogger logger;
         private readonly IList<INetworkerPacketHandlerModule> modules;
         private readonly DefaultPacketHandlerModule packerHandlerModule;
@@ -16,6 +18,7 @@ namespace Networker.Client
         {
             this.configuration = new ClientConfiguration();
             this.logger = new NetworkerLogger();
+            this.container = new DryIocContainer();
             this.packerHandlerModule = new DefaultPacketHandlerModule();
             this.modules = new List<INetworkerPacketHandlerModule>();
             this.modules.Add(this.packerHandlerModule);
@@ -24,7 +27,11 @@ namespace Networker.Client
         public INetworkerClient Build<T>()
             where T: INetworkerClient
         {
-            return (T)Activator.CreateInstance(typeof(T), this.configuration, this.logger, this.modules);
+            return (T)Activator.CreateInstance(typeof(T),
+                this.configuration,
+                this.logger,
+                this.modules,
+                this.container);
         }
 
         public INetworkerClientBuilder RegisterLogger(INetworkerLoggerAdapter loggerAdapter)
@@ -50,6 +57,12 @@ namespace Networker.Client
                 (INetworkerPacketHandlerModule)Activator.CreateInstance(typeof(TPacketHandlerModule));
 
             this.modules.Add(module);
+            return this;
+        }
+
+        public INetworkerClientBuilder UseAesEncryption()
+        {
+            this.container.RegisterType<IPacketEncryption, AesEncryption>();
             return this;
         }
 

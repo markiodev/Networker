@@ -8,7 +8,8 @@ namespace Networker.Client
     {
         public DefaultClient(ClientConfiguration clientConfiguration,
             INetworkerLogger logger,
-            IList<INetworkerPacketHandlerModule> packetHandlerModules)
-            : base(clientConfiguration, logger, packetHandlerModules) { }
+            IList<INetworkerPacketHandlerModule> packetHandlerModules,
+            IContainerIoc container)
+            : base(clientConfiguration, logger, packetHandlerModules, container) { }
     }
 }

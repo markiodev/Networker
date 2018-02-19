@@ -15,20 +15,19 @@ namespace Networker.Client
         private readonly ClientResponseStore clientResponseStore;
         private readonly bool isRunning;
         private readonly INetworkerLogger logger;
-        private readonly PacketDeserializer packetDeserializer;
         private readonly Dictionary<string, Type> packetHandlers;
         private Socket _tcpSocket;
         private UdpClient _udpClient;
 
         protected NetworkerClientBase(ClientConfiguration clientConfiguration,
             INetworkerLogger logger,
-            IList<INetworkerPacketHandlerModule> packetHandlerModules)
+            IList<INetworkerPacketHandlerModule> packetHandlerModules,
+            IContainerIoc iocContainer)
         {
+            this.Container = iocContainer;
             this.clientConfiguration = clientConfiguration;
             this.logger = logger;
-            this.Container = new DryIocContainer();
             this.isRunning = true;
-            this.packetDeserializer = new PacketDeserializer();
             this.Container.RegisterSingleton(logger);
             this.packetHandlers = new Dictionary<string, Type>();
             this.clientResponseStore = new ClientResponseStore();
@@ -56,7 +55,7 @@ namespace Networker.Client
                                    if(this._tcpSocket.Poll(10, SelectMode.SelectWrite))
                                    {
                                        var packets =
-                                           this.packetDeserializer.GetPacketsFromSocket(this._tcpSocket);
+                                           this.Container.Resolve<IPacketDeserializer>().GetPacketsFromSocket(this._tcpSocket);
 
                                        foreach(var packet in packets)
                                        {
@@ -89,7 +88,7 @@ namespace Networker.Client
                                {
                                    var data = this._udpClient.ReceiveAsync()
                                                   .Result;
-                                   var packets = this.packetDeserializer.GetPacketsFromUdp(data);
+                                   var packets = this.Container.Resolve<IPacketDeserializer>().GetPacketsFromUdp(data);
 
                                    foreach(var packet in packets)
                                    {
@@ -116,8 +115,7 @@ namespace Networker.Client
         public void Send<T>(T packet, NetworkerProtocol protocol = NetworkerProtocol.Tcp)
             where T: NetworkerPacketBase
         {
-            var serializer = new PacketSerializer();
-            var serialisedPacket = serializer.Serialize(packet);
+            var serialisedPacket = this.Container.Resolve<IPacketSerializer>().Serialize(packet);
 
             if(protocol == NetworkerProtocol.Tcp)
             {

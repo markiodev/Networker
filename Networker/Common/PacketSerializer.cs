@@ -4,8 +4,9 @@ using ZeroFormatter;
 
 namespace Networker.Common
 {
-    public class PacketSerializer
+    public class PacketSerializer : IPacketSerializer
     {
+        
         public byte[] Serialize<T>(T packet)
             where T: NetworkerPacketBase
         {
@@ -21,6 +22,7 @@ namespace Networker.Common
                     binaryWriter.Write(serialised);
                 }
                 var packetBytes = memoryStream.ToArray();
+
                 return packetBytes;
             }
         }

@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Networker.Common;
+using Networker.Common.Encryption;
 using Networker.Interfaces;
 
 namespace Networker.Server
@@ -15,9 +16,8 @@ namespace Networker.Server
         private readonly ServerConfiguration configuration;
         protected readonly IContainerIoc container;
         public readonly INetworkerLogger Logger;
-        private readonly PacketDeserializer packetDeserializer;
+        private readonly IPacketEncryption packetEncryption;
         private readonly Dictionary<string, Type> packetHandlers;
-        private readonly PacketSerializer packetSerializer;
         private bool _isRunning = true;
         private Socket _tcpSocket;
         private UdpClient _udpClient;
@@ -32,9 +32,10 @@ namespace Networker.Server
             this.Logger = logger;
             this.container = container;
             this.Connections = new List<TcpConnection>();
-            this.packetSerializer = new PacketSerializer();
-            this.packetDeserializer = new PacketDeserializer();
             this.packetHandlers = new Dictionary<string, Type>();
+            this.container.RegisterType<IPacketSerializer, PacketSerializer>();
+            this.container.RegisterType<IPacketDeserializer, PacketDeserializer>();
+            this.packetEncryption = this.container.TryResolve<IPacketEncryption>();
 
             foreach(var module in modules)
             {
@@ -61,7 +62,8 @@ namespace Networker.Server
                 throw new Exception("Cannot broadcast packet when UDP is not enabled.");
             }
 
-            this._udpSocket.SendTo(this.packetSerializer.Serialize(packet),
+            this._udpSocket.SendTo(this.container.Resolve<IPacketSerializer>()
+                                       .Serialize(packet),
                 new IPEndPoint(IPAddress.Parse(this.configuration.IpAddresses[0]),
                     this.configuration.UdpPortRemote));
         }
@@ -108,7 +110,8 @@ namespace Networker.Server
                                    if(this._tcpSocket.Poll(10, SelectMode.SelectRead))
                                    {
                                        var acceptedSocket = this._tcpSocket.Accept();
-                                       var connection = new TcpConnection(acceptedSocket);
+                                       var connection = new TcpConnection(acceptedSocket,
+                                           this.container.Resolve<IPacketSerializer>(), this.container.TryResolve<IPacketEncryption>());
 
                                        this.Logger.Trace(
                                            $"TCP Client Connected. IP: {(connection.Socket.RemoteEndPoint as IPEndPoint).Address}");
@@ -139,13 +142,29 @@ namespace Networker.Server
 
                                        if(connection.Socket.Poll(10, SelectMode.SelectRead))
                                        {
-                                           var packets =
-                                               this.packetDeserializer
-                                                   .GetPacketsFromSocket(connection.Socket);
+                                           var packets = this.container.Resolve<IPacketDeserializer>()
+                                                             .GetPacketsFromSocket(connection.Socket);
 
                                            foreach(var packet in packets)
                                            {
-                                               this.HandlePacket(connection, packet.Item1, packet.Item2);
+                                               if(packet.Item1 is EncryptedPacket)
+                                               {
+                                                   var encryptedPacket = packet.Item1 as EncryptedPacket;
+
+                                                   var decrypted = this.container.Resolve<IPacketEncryption>()
+                                                                       .GetDecryptor()
+                                                                       .Decrypt(encryptedPacket.Data);
+
+                                                   var decryptedPacket = this.container.Resolve<IPacketDeserializer>()
+                                                       .Deserialize(decrypted);
+
+                                                   this.HandlePacket(connection, decryptedPacket, decrypted);
+                                               }
+                                               else
+                                               {
+                                                   this.HandlePacket(connection, packet.Item1, packet.Item2);
+                                               }
+
                                            }
                                        }
                                    }
@@ -168,11 +187,12 @@ namespace Networker.Server
                                    var result = this._udpClient.ReceiveAsync()
                                                     .Result;
 
-                                   var packets = this.packetDeserializer.GetPacketsFromUdp(result);
+                                   var packets = this.container.Resolve<IPacketDeserializer>()
+                                                     .GetPacketsFromUdp(result);
 
                                    foreach(var packet in packets)
                                    {
-                                       this.HandlePacket(new UdpConnection(this._udpSocket, result),
+                                       this.HandlePacket(new UdpConnection(this._udpSocket, result, this.container.Resolve<IPacketSerializer>()),
                                            packet.Item1,
                                            packet.Item2);
                                    }

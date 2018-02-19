@@ -4,6 +4,6 @@ namespace Networker.Interfaces
 {
     public interface IPacketDecryptor
     {
-        byte[] Decrypt(NetworkerPacketBase packetBase);
+        byte[] Decrypt(byte[] packetBase);
     }
 }

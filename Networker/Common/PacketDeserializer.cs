@@ -6,7 +6,7 @@ using ZeroFormatter;
 
 namespace Networker.Common
 {
-    public class PacketDeserializer
+    public class PacketDeserializer : IPacketDeserializer
     {
         public List<Tuple<NetworkerPacketBase, byte[]>> GetPacketsFromSocket(Socket socket)
         {
@@ -73,6 +73,18 @@ namespace Networker.Common
             }
 
             return packets;
+        }
+
+        public NetworkerPacketBase Deserialize(byte[] packet)
+        {
+            var deserialized = ZeroFormatterSerializer.Deserialize<NetworkerPacketBase>(packet);
+
+            if (string.IsNullOrEmpty(deserialized.UniqueKey))
+            {
+                throw new Exception("Invalid Packet.");
+            }
+
+            return deserialized;
         }
     }
 }
