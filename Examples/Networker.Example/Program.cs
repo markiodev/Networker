@@ -27,6 +27,16 @@ namespace Networker.Example
                                                      .Build<ExampleServer>()
                                                      .Start();
 
+            server.ClientConnected += (sender, eventArgs) =>
+                                      {
+                                          Console.WriteLine("Connected");
+                                      };
+
+            server.ClientDisconnected += (sender, eventArgs) =>
+                                      {
+                                          Console.WriteLine("Disconnected");
+                                      };
+
             var client = new NetworkerClientBuilder().UseConsoleLogger()
                                                      .UseIp("127.0.0.1")
                                                      .UseTcp(1000)

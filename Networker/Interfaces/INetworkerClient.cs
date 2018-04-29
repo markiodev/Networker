@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Sockets;
 using Networker.Common;
 
 namespace Networker.Interfaces
@@ -7,6 +8,8 @@ namespace Networker.Interfaces
     {
         IContainerIoc Container { get; }
         INetworkerClient Connect();
+        EventHandler<Socket> Connected { get; set; }
+        EventHandler<Socket> Disconnected { get; set; }
 
         void Send<T>(T packet, NetworkerProtocol protocol = NetworkerProtocol.Tcp)
             where T: NetworkerPacketBase;

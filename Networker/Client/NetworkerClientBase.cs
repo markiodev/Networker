@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Networker.Common;
 using Networker.Interfaces;
+using Networker.Server;
 
 namespace Networker.Client
 {
@@ -19,6 +20,9 @@ namespace Networker.Client
         private readonly Dictionary<string, Type> packetHandlers;
         private Socket _tcpSocket;
         private UdpClient _udpClient;
+
+        public EventHandler<Socket> Connected { get; set; }
+        public EventHandler<Socket> Disconnected { get; set; }
 
         protected NetworkerClientBase(ClientConfiguration clientConfiguration,
             INetworkerLogger logger,
@@ -48,11 +52,18 @@ namespace Networker.Client
                 this.logger.Trace("Connecting to TCP Server");
                 this._tcpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 this._tcpSocket.Connect(this.clientConfiguration.Ip, this.clientConfiguration.TcpPort);
+                this.Connected?.Invoke(this, this._tcpSocket);
 
                 new Thread(() =>
                            {
                                while(this.isRunning)
                                {
+                                   if(!this._tcpSocket.Connected)
+                                   {
+                                       this.Disconnected?.Invoke(this, this._tcpSocket);
+                                       break;
+                                   }
+
                                    if(this._tcpSocket.Poll(10, SelectMode.SelectWrite))
                                    {
                                        var packets =
