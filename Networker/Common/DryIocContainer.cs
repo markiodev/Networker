@@ -18,6 +18,11 @@ namespace Networker.Common
             this.Container.RegisterInstance(instance);
         }
 
+        public void RegisterSingleton<T>()
+        {
+            this.Container.Register<T>(Reuse.Singleton);
+        }
+
         public void RegisterType<TImplementation>()
         {
             this.Container.Register<TImplementation>();
@@ -27,6 +32,33 @@ namespace Networker.Common
             where TImplementation: TService
         {
             this.Container.Register<TService, TImplementation>();
+        }
+
+        public void RegisterType<TService, TImplementation>(IocReuse reuse)
+            where TImplementation: TService
+        {
+            switch(reuse)
+            {
+                case IocReuse.Singleton:
+                    this.Container.Register<TService, TImplementation>(Reuse.Singleton);
+                    break;
+                default:
+                    this.Container.Register<TService, TImplementation>();
+                    break;
+            }
+        }
+
+        public void RegisterType<TImplementation>(IocReuse reuse)
+        {
+            switch(reuse)
+            {
+                case IocReuse.Singleton:
+                    this.Container.Register<TImplementation>(Reuse.Singleton);
+                    break;
+                default:
+                    this.Container.Register<TImplementation>();
+                    break;
+            }
         }
 
         public void RegisterType(Type type)

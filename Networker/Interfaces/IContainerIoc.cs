@@ -1,13 +1,17 @@
 ﻿using System;
+using Networker.Common;
 
 namespace Networker.Interfaces
 {
     public interface IContainerIoc
     {
         void RegisterSingleton<T>(T instance);
+        void RegisterSingleton<T>();
 
         void RegisterType<TService, TImplementation>()
             where TImplementation: TService;
+
+        void RegisterType<TImplementation>(IocReuse reuse);
 
         void RegisterType<TImplementation>();
         void RegisterType(Type type);
