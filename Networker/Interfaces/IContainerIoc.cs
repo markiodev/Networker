@@ -11,6 +11,9 @@ namespace Networker.Interfaces
         void RegisterType<TService, TImplementation>()
             where TImplementation: TService;
 
+        void RegisterType<TService, TImplementation>(IocReuse reuse)
+            where TImplementation: TService;
+
         void RegisterType<TImplementation>(IocReuse reuse);
 
         void RegisterType<TImplementation>();
