@@ -11,8 +11,8 @@ A simple to use TCP and UDP networking library for .NET Core and .NET Framework.
 * Handle thousands of simultaneous connections
 * Incredibly fast serialization using ZeroFormatter
 * Plug in your choice of logging
-* Plug in your choice of IOC
-* Unity (.NET 4.6+ Only)
+* Plug in your choice of IOC - [Service Collection (Default)](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.dependencyinjection.servicecollection?view=aspnetcore-2.1) - [DryIoc (NuGet)](https://www.nuget.org/packages/Networker.DryIoc/)
+* Unity (.NET 4.6+ & .NET Standard)
 
 ## Supported Frameworks
 * .NET Standard 2.0
