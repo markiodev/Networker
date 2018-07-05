@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.DependencyInjection;
 using Networker.Common;
 using Networker.Interfaces;
 
@@ -15,7 +16,7 @@ namespace Networker.Server
 
         public NetworkerServerBuilder()
         {
-            this.container = new DryIocContainer();
+            this.container = new ServiceCollectionContainer(new ServiceCollection());
             this.configuration = new ServerConfiguration();
             this.logger = new NetworkerLogger();
             this.packetHandlerModule = new DefaultPacketHandlerModule();

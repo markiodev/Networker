@@ -1,8 +1,9 @@
 ﻿using System;
 using DryIoc;
+using Networker.Common;
 using Networker.Interfaces;
 
-namespace Networker.Common
+namespace Networker.DryIoc
 {
     public class DryIocContainer : IContainerIoc
     {

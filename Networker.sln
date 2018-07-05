@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Networker.Example.Chat.Pack
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Networker.Example.Chat.Server", "Examples\Networker.Example.Chat.Server\Networker.Example.Chat.Server.csproj", "{4916C108-21DA-4C85-B288-0D9B6BB8AE12}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Networker.DryIoc", "Networker.DryIoc\Networker.DryIoc.csproj", "{93F93A9C-BE9E-4779-BD13-E6580BB506E2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{4916C108-21DA-4C85-B288-0D9B6BB8AE12}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4916C108-21DA-4C85-B288-0D9B6BB8AE12}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4916C108-21DA-4C85-B288-0D9B6BB8AE12}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93F93A9C-BE9E-4779-BD13-E6580BB506E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93F93A9C-BE9E-4779-BD13-E6580BB506E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93F93A9C-BE9E-4779-BD13-E6580BB506E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93F93A9C-BE9E-4779-BD13-E6580BB506E2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

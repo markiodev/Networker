@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Networker.Common;
 using Networker.Interfaces;
 using Networker.Server;
@@ -30,7 +31,7 @@ namespace Networker.Client
         {
             this.clientConfiguration = clientConfiguration;
             this.logger = logger;
-            this.Container = new DryIocContainer();
+            this.Container = new ServiceCollectionContainer(new ServiceCollection());
             this.isRunning = true;
             this.packetDeserializer = new PacketDeserializer();
             this.Container.RegisterSingleton(logger);
