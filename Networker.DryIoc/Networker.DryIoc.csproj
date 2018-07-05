@@ -2,6 +2,14 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Networker</Authors>
+    <PackageLicenseUrl>https://github.com/MarkioE/Networker/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/MarkioE/Networker</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/MarkioE/Networker</RepositoryUrl>
+    <Product>Networker</Product>
+    <Description>DryIoc container for Networker.</Description>
+    <RepositoryType>GitHub</RepositoryType>
   </PropertyGroup>
 
   <ItemGroup>
