@@ -5,18 +5,22 @@ namespace Networker.Interfaces
 {
     public interface IContainerIoc
     {
-        void RegisterSingleton<T>(T instance);
-        void RegisterSingleton<T>();
+        void RegisterSingleton<T>(T instance)
+            where T : class;
+        void RegisterSingleton<T>()
+            where T : class;
 
         void RegisterType<TService, TImplementation>()
-            where TImplementation: TService;
+            where TImplementation : class, TService where TService : class;
 
         void RegisterType<TService, TImplementation>(IocReuse reuse)
-            where TImplementation: TService;
+            where TImplementation : class, TService where TService : class;
 
-        void RegisterType<TImplementation>(IocReuse reuse);
+        void RegisterType<TImplementation>(IocReuse reuse)
+            where TImplementation : class;
 
-        void RegisterType<TImplementation>();
+        void RegisterType<TImplementation>()
+            where TImplementation : class;
         void RegisterType(Type type);
         T Resolve<T>();
         T Resolve<T>(Type type);
