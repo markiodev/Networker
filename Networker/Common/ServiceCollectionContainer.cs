@@ -16,10 +16,8 @@ namespace Networker.Common
 
         public IServiceProvider GetServiceProvider()
         {
-            if(this.ServiceProvider == null)
-                this.ServiceProvider = this.serviceCollection.BuildServiceProvider();
-
-            return this.ServiceProvider;
+            return this.ServiceProvider
+                   ?? (this.ServiceProvider = this.serviceCollection.BuildServiceProvider());
         }
 
         public void RegisterSingleton<T>(T instance)
@@ -77,8 +75,7 @@ namespace Networker.Common
 
         public T Resolve<T>(Type type)
         {
-            return this.GetServiceProvider()
-                       .GetService<T>();
+            return (T)this.GetServiceProvider().GetService(type);
         }
 
         public void VerifyResolutions() { }
