@@ -14,6 +14,14 @@ A simple to use TCP and UDP networking library for .NET Core and .NET Framework.
 * Plug in your choice of IOC - [Service Collection (Default)](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.dependencyinjection.servicecollection?view=aspnetcore-2.1) - [DryIoc (NuGet)](https://www.nuget.org/packages/Networker.DryIoc/)
 * Unity (.NET 4.6+ & .NET Standard)
 
+## Update 2.1 Notes
+* Changed how TCP and UDP sockets are handled for _much_ better performance
+* Added an object pool for socket handlers and buffers
+* Register packet handlers are singletons by default (can be changed in the builder options)
+* Removed DryIoc references from main project due to breaking changes in updates
+* Made ServiceCollection default IOC container
+* Various bug fixes
+
 ## Supported Frameworks
 * .NET Standard 2.0
 * .NET Standard 1.6
