@@ -5,15 +5,11 @@ VisualStudioVersion = 15.0.27004.2006
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Networker", "Networker\Networker.csproj", "{9BE176AA-8128-438D-B6AB-3075545DDB9F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Networker.Example.Chat.ClientWPF", "Examples\Networker.Example.Chat.ClientWPF\Networker.Example.Chat.ClientWPF.csproj", "{BA53F813-7E39-4103-95F7-41FD493FD342}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Networker.Example", "Examples\Networker.Example\Networker.Example.csproj", "{98BC53CA-E9A4-403F-BE4F-7E49E383FE78}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Networker.Example.Chat.Packets", "Examples\Networker.Example.Chat.Packets\Networker.Example.Chat.Packets.csproj", "{BC2E4765-F35C-47B2-96D2-01AA20A84477}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Networker.DryIoc", "Networker.DryIoc\Networker.DryIoc.csproj", "{93F93A9C-BE9E-4779-BD13-E6580BB506E2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Networker.Example.Chat.Server", "Examples\Networker.Example.Chat.Server\Networker.Example.Chat.Server.csproj", "{4916C108-21DA-4C85-B288-0D9B6BB8AE12}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Networker.DryIoc", "Networker.DryIoc\Networker.DryIoc.csproj", "{93F93A9C-BE9E-4779-BD13-E6580BB506E2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Networker.Example.Client", "Networker.Example.Client\Networker.Example.Client.csproj", "{7B12A307-B310-491C-98C0-73149D688D2E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,26 +21,18 @@ Global
 		{9BE176AA-8128-438D-B6AB-3075545DDB9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9BE176AA-8128-438D-B6AB-3075545DDB9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9BE176AA-8128-438D-B6AB-3075545DDB9F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BA53F813-7E39-4103-95F7-41FD493FD342}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BA53F813-7E39-4103-95F7-41FD493FD342}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BA53F813-7E39-4103-95F7-41FD493FD342}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BA53F813-7E39-4103-95F7-41FD493FD342}.Release|Any CPU.Build.0 = Release|Any CPU
 		{98BC53CA-E9A4-403F-BE4F-7E49E383FE78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{98BC53CA-E9A4-403F-BE4F-7E49E383FE78}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{98BC53CA-E9A4-403F-BE4F-7E49E383FE78}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{98BC53CA-E9A4-403F-BE4F-7E49E383FE78}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BC2E4765-F35C-47B2-96D2-01AA20A84477}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BC2E4765-F35C-47B2-96D2-01AA20A84477}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BC2E4765-F35C-47B2-96D2-01AA20A84477}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BC2E4765-F35C-47B2-96D2-01AA20A84477}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4916C108-21DA-4C85-B288-0D9B6BB8AE12}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4916C108-21DA-4C85-B288-0D9B6BB8AE12}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4916C108-21DA-4C85-B288-0D9B6BB8AE12}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4916C108-21DA-4C85-B288-0D9B6BB8AE12}.Release|Any CPU.Build.0 = Release|Any CPU
 		{93F93A9C-BE9E-4779-BD13-E6580BB506E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{93F93A9C-BE9E-4779-BD13-E6580BB506E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{93F93A9C-BE9E-4779-BD13-E6580BB506E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{93F93A9C-BE9E-4779-BD13-E6580BB506E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7B12A307-B310-491C-98C0-73149D688D2E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B12A307-B310-491C-98C0-73149D688D2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B12A307-B310-491C-98C0-73149D688D2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B12A307-B310-491C-98C0-73149D688D2E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

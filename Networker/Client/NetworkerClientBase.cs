@@ -15,7 +15,7 @@ namespace Networker.Client
     {
         private readonly ClientConfiguration clientConfiguration;
         private readonly ClientResponseStore clientResponseStore;
-        private readonly bool isRunning;
+        private bool isRunning;
         private readonly INetworkerLogger logger;
         private readonly PacketDeserializer packetDeserializer;
         private readonly Dictionary<string, Type> packetHandlers;
@@ -32,7 +32,6 @@ namespace Networker.Client
             this.clientConfiguration = clientConfiguration;
             this.logger = logger;
             this.Container = new ServiceCollectionContainer(new ServiceCollection());
-            this.isRunning = true;
             this.packetDeserializer = new PacketDeserializer();
             this.Container.RegisterSingleton(logger);
             this.packetHandlers = new Dictionary<string, Type>();
@@ -48,27 +47,78 @@ namespace Networker.Client
 
         public INetworkerClient Connect()
         {
-            if(this.clientConfiguration.UseTcp)
+            if (this.clientConfiguration.UseTcp)
             {
                 this.logger.Trace("Connecting to TCP Server");
-                this._tcpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                this._tcpSocket.Connect(this.clientConfiguration.Ip, this.clientConfiguration.TcpPort);
-                this.Connected?.Invoke(this, this._tcpSocket);
+
+                lock (this._tcpLocker)
+                {
+                    this.isRunning = true;
+                }
+
+                new Thread(() =>
+                {
+                    lock (this._tcpLocker)
+                    {
+                        this._tcpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                        this._tcpSocket.Connect(this.clientConfiguration.Ip, this.clientConfiguration.TcpPort);
+                        this.Connected?.Invoke(this, this._tcpSocket);
+                        while (this.isRunning)
+                               {
+                                       if(!this._tcpSocket.Connected)
+                                       {
+                                           break;
+                                       }
+
+                                       if(this._tcpSocket.Poll(10, SelectMode.SelectWrite))
+                                       {
+                                           var packets =
+                                               this.packetDeserializer.GetPacketsFromSocket(this._tcpSocket);
+
+                                           foreach(var packet in packets)
+                                           {
+                                               Task.Factory.StartNew(() =>
+                                                                     {
+                                                                         try
+                                                                         {
+                                                                             this.HandlePacket(packet.Item1,
+                                                                                 packet.Item2);
+                                                                         }
+                                                                         catch(Exception e)
+                                                                         {
+                                                                             this.logger.Error(e);
+                                                                         }
+                                                                     });
+                                           }
+                                       }
+                                   }
+
+                        if(this._tcpSocket.Connected)
+                        {
+                            this._tcpSocket.Disconnect(false);
+                            this._tcpSocket.Close();
+                        }
+
+                        this.Disconnected?.Invoke(this, this._tcpSocket);
+                    }
+                           }).Start();
+            }
+            
+            if(this.clientConfiguration.UseUdp)
+            {
+                
+                this.logger.Trace("Listening to UDP broadcasts");
 
                 new Thread(() =>
                            {
-                               while(this.isRunning)
+                               lock(this._udpLocker)
                                {
-                                   if(!this._tcpSocket.Connected)
+                                   this._udpClient = new UdpClient(this.clientConfiguration.UdpPortLocal);
+                                   while(this.isRunning)
                                    {
-                                       this.Disconnected?.Invoke(this, this._tcpSocket);
-                                       break;
-                                   }
-
-                                   if(this._tcpSocket.Poll(10, SelectMode.SelectWrite))
-                                   {
-                                       var packets =
-                                           this.packetDeserializer.GetPacketsFromSocket(this._tcpSocket);
+                                       var data = this._udpClient.ReceiveAsync()
+                                                      .Result;
+                                       var packets = this.packetDeserializer.GetPacketsFromUdp(data);
 
                                        foreach(var packet in packets)
                                        {
@@ -86,48 +136,26 @@ namespace Networker.Client
                                                                  });
                                        }
                                    }
+
+                                   this._udpClient.Close();
+                                   this._udpClient = null;
                                }
                            }).Start();
+                           
             }
-
-            if(this.clientConfiguration.UseUdp)
-            {
-                this.logger.Trace("Listening to UDP broadcasts");
-                this._udpClient = new UdpClient(this.clientConfiguration.UdpPortLocal);
-
-                new Thread(() =>
-                           {
-                               while(this.isRunning)
-                               {
-                                   var data = this._udpClient.ReceiveAsync()
-                                                  .Result;
-                                   var packets = this.packetDeserializer.GetPacketsFromUdp(data);
-
-                                   foreach(var packet in packets)
-                                   {
-                                       Task.Factory.StartNew(() =>
-                                                             {
-                                                                 try
-                                                                 {
-                                                                     this.HandlePacket(packet.Item1,
-                                                                         packet.Item2);
-                                                                 }
-                                                                 catch(Exception e)
-                                                                 {
-                                                                     this.logger.Error(e);
-                                                                 }
-                                                             });
-                                   }
-                               }
-                           }).Start();
-            }
-
+            
             return this;
         }
+
+        private readonly object _udpLocker = new object();
+        private readonly object _tcpLocker = new object();
 
         public void Send<T>(T packet, NetworkerProtocol protocol = NetworkerProtocol.Tcp)
             where T: NetworkerPacketBase
         {
+            if(!this.isRunning)
+                return;
+
             var serializer = new PacketSerializer();
             var serialisedPacket = serializer.Serialize(packet);
 
@@ -158,6 +186,9 @@ namespace Networker.Client
             Action<TResponseType> handler)
             where TResponseType: class where T: NetworkerPacketBase
         {
+            if (!this.isRunning)
+                return null;
+
             packet.TransactionId = Guid.NewGuid()
                                        .ToString();
             var receipt = new ClientPacketReceipt<TResponseType>(this, packet);
@@ -168,7 +199,7 @@ namespace Networker.Client
 
             //todo: Implement timeout
 
-            while(this.clientResponseStore.Find(packet.TransactionId) != null)
+            while(this.clientResponseStore.Find(packet.TransactionId) != null && this.isRunning)
             {
                 Thread.Sleep(1);
             }
@@ -186,7 +217,18 @@ namespace Networker.Client
 
             return sw.ElapsedMilliseconds;
         }
-        
+
+        public void Disconnect()
+        {
+            if(!this.isRunning)
+            {
+                return;
+            }
+            this.isRunning = false;
+            this._tcpSocket.Disconnect(false);
+            this.clientResponseStore.Clear();
+        }
+
         private void HandlePacket(NetworkerPacketBase packetBase, byte[] bytes)
         {
             if (!string.IsNullOrEmpty(packetBase.TransactionId))

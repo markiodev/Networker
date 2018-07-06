@@ -41,5 +41,13 @@ namespace Networker.Client
                 this.receipts.Add(packetBaseTransactionId, receipt);
             }
         }
+
+        public void Clear()
+        {
+            lock(this.receipts)
+            {
+                this.receipts.Clear();
+            }
+        }
     }
 }

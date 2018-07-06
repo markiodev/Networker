@@ -19,5 +19,9 @@ namespace Networker.Interfaces
         INetworkerServerBuilder UseIpAddresses(string[] ipAddresses);
         INetworkerServerBuilder UseTcp(int port);
         INetworkerServerBuilder UseUdp(int localPort, int? remotePort);
+        INetworkerServerBuilder SetMaxConnections(int maxConnections);
+        INetworkerServerBuilder SetPacketBufferSize(int size);
+        INetworkerServerBuilder RegisterPacketHandlersAsTransient();
+        INetworkerServerBuilder SetUdpSocketPoolSize(int size);
     }
 }

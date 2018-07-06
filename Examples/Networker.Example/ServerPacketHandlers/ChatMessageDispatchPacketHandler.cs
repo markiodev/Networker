@@ -16,12 +16,12 @@ namespace Networker.Example.ServerPacketHandlers
 
         public override void Handle(INetworkerConnection sender, ChatMessageDispatchPacket packet)
         {
-            this._logger.Trace($"Chat Message Handled: {packet.Sender} - {packet.Message}");
+            //this._logger.Trace($"Chat Message Handled: {packet.Sender} - {packet.Message}");
 
-            sender?.Send(new ChatMessageReceivedPacket
+            /*sender?.Send(new ChatMessageReceivedPacket
                          {
                              Message = "Got it, thanks"
-                         });
+                         });*/
         }
     }
 }

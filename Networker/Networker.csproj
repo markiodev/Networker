@@ -1,7 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;netstandard1.6;net46</TargetFrameworks>
+    <!--
+    <TargetFrameworks>netstandard2.0;netstandard1.6;net46</TargetFrameworks>-->
+    <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageProjectUrl>https://github.com/MarkioE/Networker</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/MarkioE/Networker/blob/master/LICENSE</PackageLicenseUrl>
@@ -17,9 +19,10 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="1.1.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="1.1.0" />
+    <PackageReference Include="System.Net.Sockets" Version="4.3.0" />
   </ItemGroup>
-  
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net46'">
+
+  <!-- <ItemGroup Condition=" '$(TargetFramework)' == 'net46'">
     <Reference Include="System" />
     <Reference Include="System.Threading" />
     <Reference Include="System.Xml" />
@@ -33,7 +36,7 @@
     <PackageReference Include="System.Threading.Thread" Version="4.3.0" />
     <PackageReference Include="ZeroFormatter" Version="1.6.4" />
     <PackageReference Include="ZeroFormatter.Analyzer" Version="1.1.1" />
-  </ItemGroup>
+  </ItemGroup>-->
   
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0'">
     <PackageReference Include="System.Threading.Thread" Version="4.3.0" />

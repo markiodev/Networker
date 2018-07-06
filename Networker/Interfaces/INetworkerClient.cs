@@ -28,5 +28,6 @@ namespace Networker.Interfaces
         IClientPacketReceipt SendAndHandleResponseAsync<TResponseType>(NetworkerPacketBase packet,
             Action<TResponseType> handler)
             where TResponseType: class;*/
+        void Disconnect();
     }
 }

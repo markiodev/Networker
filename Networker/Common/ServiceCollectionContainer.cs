@@ -23,7 +23,7 @@ namespace Networker.Common
         public void RegisterSingleton<T>(T instance)
             where T: class
         {
-            this.serviceCollection.AddSingleton<T>(instance);
+            this.serviceCollection.AddSingleton(instance);
         }
 
         public void RegisterSingleton<T>()

@@ -84,11 +84,35 @@ namespace Networker.Server
             return this;
         }
 
-        public INetworkerServerBuilder UseUdp(int localPort, int? remotePort)
+        public INetworkerServerBuilder UseUdp(int localPort, int? remotePort = null)
         {
             this.configuration.UseUdp = true;
             this.configuration.UdpPortRemote = remotePort ?? localPort;
             this.configuration.UdpPortLocal = localPort;
+            return this;
+        }
+
+        public INetworkerServerBuilder SetMaxConnections(int maxConnections)
+        {
+            this.configuration.Advanced.MaxTcpConnections = maxConnections;
+            return this;
+        }
+
+        public INetworkerServerBuilder SetPacketBufferSize(int size)
+        {
+            this.configuration.Advanced.PacketBufferSize = size;
+            return this;
+        }
+
+        public INetworkerServerBuilder RegisterPacketHandlersAsTransient()
+        {
+            this.configuration.Advanced.RegisterPacketHandlersAsSingletons = false;
+            return this;
+        }
+
+        public INetworkerServerBuilder SetUdpSocketPoolSize(int size)
+        {
+            this.configuration.Advanced.UdpSocketPoolSize = size;
             return this;
         }
     }

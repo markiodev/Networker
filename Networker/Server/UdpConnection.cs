@@ -10,6 +10,11 @@ namespace Networker.Server
         private readonly UdpReceiveResult result;
         private readonly Socket socket;
 
+        public UdpConnection(Socket socket)
+        {
+            this.socket = socket;
+        }
+
         public UdpConnection(Socket socket, UdpReceiveResult result)
         {
             this.socket = socket;
@@ -20,7 +25,8 @@ namespace Networker.Server
             where T: NetworkerPacketBase
         {
             var serializer = new PacketSerializer();
-            this.socket.SendTo(serializer.Serialize(packet), this.result.RemoteEndPoint);
+
+            this.socket.SendTo(serializer.Serialize(packet), this.socket.RemoteEndPoint);
         }
     }
 }
