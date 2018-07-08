@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Networker.Example", "Exampl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Networker.DryIoc", "Networker.DryIoc\Networker.DryIoc.csproj", "{93F93A9C-BE9E-4779-BD13-E6580BB506E2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Networker.Example.Client", "Networker.Example.Client\Networker.Example.Client.csproj", "{7B12A307-B310-491C-98C0-73149D688D2E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Networker.Example.Client", "Networker.Example.Client\Networker.Example.Client.csproj", "{7B12A307-B310-491C-98C0-73149D688D2E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Networker.V3", "Networker.V3\Networker.V3.csproj", "{9FFEB6E4-96D7-440A-BDD9-8D26147A647C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{7B12A307-B310-491C-98C0-73149D688D2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7B12A307-B310-491C-98C0-73149D688D2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7B12A307-B310-491C-98C0-73149D688D2E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9FFEB6E4-96D7-440A-BDD9-8D26147A647C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9FFEB6E4-96D7-440A-BDD9-8D26147A647C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9FFEB6E4-96D7-440A-BDD9-8D26147A647C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9FFEB6E4-96D7-440A-BDD9-8D26147A647C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -43,6 +43,8 @@ namespace Networker.Example.Client
             },
                 NetworkerProtocol.Udp);
 
+            int count = 0;
+
             new Thread(new ThreadStart(() =>
             {
                 for (var j = 0; j < 3; j++)
@@ -51,15 +53,16 @@ namespace Networker.Example.Client
                     {
                         while (true)
                         {
+                            Interlocked.Increment(ref count);
                             client.Send(
                                 new
                                 ChatMessageDispatchPacket
                                 {
                                     Message =
                                         "Time to spam some UDP"
-                                        + j,
+                                        + count,
                                     Sender =
-                                        "UDP Spam" + j
+                                        "UDP Spam" + count
                                 },
                                 NetworkerProtocol.Udp);
                             Thread.Sleep(1);

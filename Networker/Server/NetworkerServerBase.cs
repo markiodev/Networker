@@ -335,7 +335,7 @@ namespace Networker.Server
 
             if(e.BytesTransferred > 0 && e.SocketError == SocketError.Success)
             {
-                e.SetBuffer(e.Offset, e.BytesTransferred);
+                //e.SetBuffer(e.Offset, e.BytesTransferred);
                 var packets = this.packetDeserializer.GetPacketsFromSocket(e);
 
                 foreach(var packet in packets)
