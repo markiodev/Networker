@@ -2,31 +2,21 @@
 [![NuGet](https://img.shields.io/nuget/v/networker.svg)](https://www.nuget.org/packages/Networker/)
 
 # Networker
-A simple to use TCP and UDP networking library for .NET Core and .NET Framework.
-
-## Features
-* TCP
-* UDP
-* Low memory footprint
-* Handle thousands of simultaneous connections
-* Incredibly fast serialization using ZeroFormatter
-* Plug in your choice of logging
-* Plug in your choice of IOC - [Service Collection (Default)](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.dependencyinjection.servicecollection?view=aspnetcore-2.1) - [DryIoc (NuGet)](https://www.nuget.org/packages/Networker.DryIoc/)
-* Unity (.NET 4.6+ & .NET Standard)
-
-### Update 2.1 Notes
-* Changed how TCP and UDP sockets are handled for _much_ better performance
-* Added an object pool for socket handlers and buffers
-* Register packet handlers are singletons by default (can be changed in the builder options)
-* Removed DryIoc references from main project due to breaking changes in updates
-* Made ServiceCollection default IOC container
-* Various bug fixes
+A simple to use TCP and UDP networking library for .NET.
 
 ## Supported Frameworks
 * .NET Standard 2.0
-* .NET Standard 1.6
-* .NET Core
-* .NET Framework 4.6+
+
+### V3 Features
+* TCP
+* UDP
+* Configurable Object Pooling
+* Process thousands of requests per second
+* Incredibly fast packet serialization using ZeroFormatter
+* Dependency Injection using [Service Collection (Default)](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.dependencyinjection.servicecollection?view=aspnetcore-2.1)
+
+## V2
+Version 3 included a large rewrite and various breaking changes. To use V2 please see [V2 Branch](https://github.com/MarkioE/Networker/tree/features/v2.1)
 
 ## Installing
 Install-Package Networker
