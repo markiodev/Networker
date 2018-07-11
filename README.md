@@ -17,9 +17,6 @@ A simple to use TCP and UDP networking library for .NET, designed to be flexible
 * Dependency Injection using [Service Collection](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.dependencyinjection.servicecollection?view=aspnetcore-2.1)
 * Works with [Unity Game Engine](https://unity3d.com)
 
-## Planned Features
-* Packet Encryption
-
 ## Installation
 **NuGet Package Manager**
 ```
