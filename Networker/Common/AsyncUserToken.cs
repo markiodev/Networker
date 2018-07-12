@@ -1,4 +1,6 @@
-﻿namespace Networker.Common
+﻿using System;
+
+namespace Networker.Common
 {
     internal class AsyncUserToken
     {

@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
+using Networker.Common.Abstractions;
 
 namespace Networker.Common
 {
-    internal class BufferManager
+    public class BufferManager : IBufferManager
     {
         byte[] m_buffer;
         readonly int m_bufferSize;
