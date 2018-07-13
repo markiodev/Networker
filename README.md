@@ -31,5 +31,37 @@ dotnet add package Networker
 ## Getting Started
 Find more information about how to get started on our [Wiki](https://github.com/MarkioE/Networker/wiki) or view the [Examples](https://github.com/MarkioE/Networker/tree/master/Examples).
 
+## Example
+
+Creating a server is easy..
+
+````csharp
+var server = new ServerBuilder()
+                .UseTcp(10000)
+                .UseLogger<ConsoleLogger>()
+                .SetLogLevel(LogLevel.Info)
+                .Build();
+````
+
+You can handle a packet easily using dependency injection, logging and built-in deserialisation.
+
+````csharp
+public class PingPacketHandler : PacketHandlerBase<PingPacket>
+{
+    private readonly ILogger logger;
+
+    public PingPacketHandler(ILogger logger, IPacketSerialiser serialiser)
+        : base(serialiser)
+    {
+        this.logger = logger;
+    }
+
+    public override async Task Process(PingPacket packet, ISender sender)
+    {
+        this.logger.Debug("Received a ping packet from " + sender.EndPoint);
+    }
+}
+````
+
 ## Older Versions
 Version 3 included a large rewrite and various breaking changes. To use V2 please see [V2 Branch](https://github.com/MarkioE/Networker/tree/features/v2.1)
