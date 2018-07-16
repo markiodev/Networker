@@ -5,6 +5,6 @@ namespace Networker.Common.Abstractions
     public interface IPacketSerialiser
     {
         T Deserialise<T>(byte[] packetBytes);
-        byte[] Serialise(PacketBase packet);
+        byte[] Serialise<T>(T packet);
     }
 }

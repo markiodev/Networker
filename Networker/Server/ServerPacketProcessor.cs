@@ -11,7 +11,7 @@ namespace Networker.Server
         private readonly ObjectPool<byte[]> bytePool;
         private readonly ILogger logger;
         private readonly IPacketHandlers packetHandlers;
-        private readonly IPacketSerialiser packetSerialiser;
+        private readonly IPacketIdentifierProvider packetIdentifierProvider;
         private readonly IServerInformation serverInformation;
         private readonly ObjectPool<ISender> tcpSenderObjectPool;
         private readonly ObjectPool<ISender> udpSenderObjectPool;
@@ -19,13 +19,14 @@ namespace Networker.Server
         public ServerPacketProcessor(ServerBuilderOptions options,
             ILogger logger,
             IPacketHandlers packetHandlers,
-            IPacketSerialiser packetSerialiser,
-            IServerInformation serverInformation)
+            IServerInformation serverInformation,
+            IPacketIdentifierProvider packetIdentifierProvider,
+            IPacketSerialiser packetSerialiser)
         {
             this.logger = logger;
             this.packetHandlers = packetHandlers;
-            this.packetSerialiser = packetSerialiser;
             this.serverInformation = serverInformation;
+            this.packetIdentifierProvider = packetIdentifierProvider;
 
             this.bytePool = new ObjectPool<byte[]>(options.TcpMaxConnections * 2);
 
@@ -38,14 +39,14 @@ namespace Networker.Server
 
             for(var i = 0; i < this.tcpSenderObjectPool.Capacity; i++)
             {
-                this.tcpSenderObjectPool.Push(new TcpSender(this.packetSerialiser));
+                this.tcpSenderObjectPool.Push(new TcpSender(packetSerialiser));
             }
 
             this.udpSenderObjectPool = new ObjectPool<ISender>(options.TcpMaxConnections * 2);
 
             for(var i = 0; i < this.udpSenderObjectPool.Capacity; i++)
             {
-                this.udpSenderObjectPool.Push(new UdpSender(this.packetSerialiser));
+                this.udpSenderObjectPool.Push(new UdpSender(packetSerialiser));
             }
         }
 
@@ -73,38 +74,46 @@ namespace Networker.Server
                 currentPosition += 4;
 
                 var packetBytes = this.bytePool.Pop();
-
-                if(length - bytesRead < packetSize)
+                try
                 {
-                    if(isTcp)
-                        this.serverInformation.InvalidTcpPackets++;
-                    else
-                        this.serverInformation.InvalidUdpPackets++;
+                    if(length - bytesRead < packetSize)
+                    {
+                        if(isTcp)
+                            this.serverInformation.InvalidTcpPackets++;
+                        else
+                            this.serverInformation.InvalidUdpPackets++;
 
-                    this.logger.Error(new Exception("Packet was lost"));
-                    return;
+                        this.logger.Error(new Exception("Packet was lost"));
+                        return;
+                    }
+
+                    Buffer.BlockCopy(buffer, currentPosition, packetBytes, 0, packetSize);
+
+                    var packetIdentifier = this.packetIdentifierProvider.Provide(packetBytes);
+
+                    if(string.IsNullOrEmpty(packetIdentifier))
+                    {
+                        if(isTcp)
+                            this.serverInformation.InvalidTcpPackets++;
+                        else
+                            this.serverInformation.InvalidUdpPackets++;
+
+                        this.logger.Error(new Exception("Packet was lost - Invalid"));
+                        return;
+                    }
+
+                    var packetHandler = this.packetHandlers.GetPacketHandlers()[packetIdentifier];
+
+                    packetHandler.Handle(packetBytes, sender);
                 }
-
-                Buffer.BlockCopy(buffer, currentPosition, packetBytes, 0, packetSize);
-
-                var deserialized = this.packetSerialiser.Deserialise<PacketBase>(packetBytes);
-
-                if(string.IsNullOrEmpty(deserialized.UniqueKey))
+                catch(Exception e)
                 {
-                    if(isTcp)
-                        this.serverInformation.InvalidTcpPackets++;
-                    else
-                        this.serverInformation.InvalidUdpPackets++;
-
-                    this.logger.Error(new Exception("Packet was lost - Invalid"));
-                    return;
+                    this.logger.Error(e);
                 }
-
-                var packetHandler = this.packetHandlers.GetPacketHandlers()[deserialized.UniqueKey];
-
-                packetHandler.Handle(packetBytes, sender);
-
-                this.bytePool.Push(packetBytes);
+                finally
+                {
+                    this.bytePool.Push(packetBytes);
+                }
 
                 currentPosition += packetSize;
                 bytesRead += packetSize + 4;

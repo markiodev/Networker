@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Networker.Common;
 using Networker.Common.Abstractions;
 
-namespace Networker.DefaultPackets
+namespace Networker.Example.ProtoBuf
 {
     public class ClientPingPacketHandler : PacketHandlerBase<PingPacket>
     {

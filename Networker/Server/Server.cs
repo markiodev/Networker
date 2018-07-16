@@ -58,6 +58,8 @@ namespace Networker.Server
                                               serverInformation.ProcessedUdpPackets;
                                           this.eventArgs.InvalidUdpPackets =
                                               serverInformation.InvalidUdpPackets;
+                                          this.eventArgs.TcpConnections = tcpConnections.GetConnections()
+                                                                                        .Count;
 
                                           this.ServerInformationUpdated?.Invoke(this, this.eventArgs);
 
@@ -77,7 +79,7 @@ namespace Networker.Server
         public EventHandler<TcpConnectionDisconnectedEventArgs> ClientDisconnected { get; set; }
         public EventHandler<ServerInformationEventArgs> ServerInformationUpdated { get; set; }
 
-        public void Broadcast(PacketBase packet)
+        public void Broadcast<T>(T packet)
         {
             if(this.UdpListener == null)
             {

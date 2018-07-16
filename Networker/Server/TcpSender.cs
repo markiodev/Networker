@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Net.Sockets;
 using Networker.Common;
 using Networker.Common.Abstractions;
@@ -16,9 +17,11 @@ namespace Networker.Server
 
         public Socket Socket { get; set; }
 
-        public void Send(PacketBase packet)
+        public void Send<T>(T packet)
         {
             this.Socket.Send(this.packetSerialiser.Serialise(packet));
         }
+
+        public EndPoint EndPoint => this.Socket.RemoteEndPoint;
     }
 }

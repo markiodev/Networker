@@ -11,11 +11,11 @@ namespace Networker.Client
 {
     public class ClientBuilder : IClientBuilder
     {
+        private readonly PacketHandlerModule module;
         private readonly List<IPacketHandlerModule> modules;
         private readonly ClientBuilderOptions options;
         private readonly ServiceCollection serviceCollection;
         private Type logger;
-        private readonly PacketHandlerModule module;
 
         public ClientBuilder()
         {
@@ -39,7 +39,6 @@ namespace Networker.Client
 
             this.serviceCollection.AddSingleton(this.options);
             this.serviceCollection.AddSingleton<IClient, Client>();
-            this.serviceCollection.AddSingleton<IPacketSerialiser, ZeroFormatterPacketSerialiser>();
             this.serviceCollection.AddSingleton<IClientPacketProcessor, ClientPacketProcessor>();
             this.serviceCollection.AddSingleton<IPacketHandlers>(packetHandlers);
 
@@ -48,9 +47,9 @@ namespace Networker.Client
 
             var serviceProvider = this.serviceCollection.BuildServiceProvider();
 
-            foreach (var packetHandlerModule in this.modules)
+            foreach(var packetHandlerModule in this.modules)
             {
-                foreach (var packetHandler in packetHandlerModule.GetPacketHandlers())
+                foreach(var packetHandler in packetHandlerModule.GetPacketHandlers())
                 {
                     packetHandlers.Add(packetHandler.Key.Name,
                         (IPacketHandler)serviceProvider.GetService(packetHandler.Value));
@@ -60,8 +59,13 @@ namespace Networker.Client
             return serviceProvider.GetService<IClient>();
         }
 
+        public IServiceCollection GetServiceCollection()
+        {
+            return this.serviceCollection;
+        }
+
         public IClientBuilder RegisterPacketHandler<TPacket, TPacketHandler>()
-            where TPacket: PacketBase where TPacketHandler: IPacketHandler
+            where TPacket: class where TPacketHandler: IPacketHandler
         {
             this.module.AddPacketHandler<TPacket, TPacketHandler>();
             return this;
@@ -94,6 +98,13 @@ namespace Networker.Client
             return this;
         }
 
+        public IClientBuilder UseLogger(ILogger logger)
+        {
+            this.logger = this.logger.GetType();
+            this.serviceCollection.AddSingleton<ILogger>(logger);
+            return this;
+        }
+
         public IClientBuilder UseTcp(int port)
         {
             this.options.TcpPort = port;
@@ -104,6 +115,12 @@ namespace Networker.Client
         {
             this.options.UdpPort = port;
             this.options.UdpPortLocal = localPort;
+            return this;
+        }
+
+        public IClientBuilder UseUdp(int port)
+        {
+            this.options.UdpPort = port;
             return this;
         }
     }

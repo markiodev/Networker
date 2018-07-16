@@ -11,7 +11,7 @@ namespace Networker.Server.Abstractions
         IServiceCollection GetServiceCollection();
 
         IServerBuilder RegisterPacketHandler<TPacket, TPacketHandler>()
-            where TPacket: PacketBase where TPacketHandler: IPacketHandler;
+            where TPacket: class where TPacketHandler: IPacketHandler;
 
         IServerBuilder RegisterPacketHandlerModule(IPacketHandlerModule packetHandlerModule);
 
@@ -25,9 +25,8 @@ namespace Networker.Server.Abstractions
         IServerBuilder UseLogger<T>()
             where T: class, ILogger;
 
-        IServerBuilder UseSerialiser<T>()
-            where T: class, IPacketSerialiser;
-
+        IServerBuilder UseLogger(ILogger logger);
+        
         IServerBuilder UseTcp(int port);
 
         IServerBuilder UseTcpSocketListener<T>()
@@ -37,5 +36,8 @@ namespace Networker.Server.Abstractions
 
         IServerBuilder UseUdpSocketListener<T>()
             where T: class, IUdpSocketListenerFactory;
+
+        IServerBuilder SetMaximumConnections(int maxConnections);
+        IServerBuilder SetPacketBufferSize(int packetBufferSize);
     }
 }

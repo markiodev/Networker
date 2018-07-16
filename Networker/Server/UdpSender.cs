@@ -16,10 +16,12 @@ namespace Networker.Server
 
         public EndPoint RemoteEndpoint { get; set; }
 
-        public void Send(PacketBase packet)
+        public void Send<T>(T packet)
         {
             //todo: Finish this
             this.packetSerialiser.Serialise(packet);
         }
+
+        public EndPoint EndPoint => this.RemoteEndpoint;
     }
 }

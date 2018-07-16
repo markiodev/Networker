@@ -9,8 +9,8 @@ namespace Networker.Client.Abstractions
         EventHandler<Socket> Connected { get; set; }
         EventHandler<Socket> Disconnected { get; set; }
         void Connect();
-        void Send(PacketBase packet);
-        void SendUdp(PacketBase packet);
+        void Send<T>(T packet);
+        void SendUdp<T>(T packet);
         int Ping();
         void Stop();
     }

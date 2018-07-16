@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Extensions.DependencyInjection;
 using Networker.Common;
 using Networker.Common.Abstractions;
 
@@ -9,7 +10,7 @@ namespace Networker.Client.Abstractions
         IClient Build();
 
         IClientBuilder RegisterPacketHandler<TPacket, TPacketHandler>()
-            where TPacket: PacketBase where TPacketHandler: IPacketHandler;
+            where TPacket: class where TPacketHandler: IPacketHandler;
 
         IClientBuilder RegisterPacketHandlerModule<T>()
             where T: IPacketHandlerModule;
@@ -21,7 +22,10 @@ namespace Networker.Client.Abstractions
         IClientBuilder UseLogger<T>()
             where T: class, ILogger;
 
+        IClientBuilder UseLogger(ILogger logger);
         IClientBuilder UseTcp(int port);
         IClientBuilder UseUdp(int port, int localPort);
+        IClientBuilder UseUdp(int port);
+        IServiceCollection GetServiceCollection();
     }
 }

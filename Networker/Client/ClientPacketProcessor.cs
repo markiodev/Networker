@@ -14,17 +14,20 @@ namespace Networker.Client
         private readonly ILogger logger;
         private readonly ClientBuilderOptions options;
         private readonly IPacketHandlers packetHandlers;
+        private readonly IPacketIdentifierProvider packetIdentifierProvider;
         private readonly IPacketSerialiser packetSerialiser;
 
         public ClientPacketProcessor(ClientBuilderOptions options,
             IPacketSerialiser packetSerialiser,
             ILogger logger,
-            IPacketHandlers packetHandlers)
+            IPacketHandlers packetHandlers,
+            IPacketIdentifierProvider packetIdentifierProvider)
         {
             this.options = options;
             this.packetSerialiser = packetSerialiser;
             this.logger = logger;
             this.packetHandlers = packetHandlers;
+            this.packetIdentifierProvider = packetIdentifierProvider;
 
             this.bytePool = new ObjectPool<byte[]>(50);
 
@@ -83,15 +86,15 @@ namespace Networker.Client
 
                 Buffer.BlockCopy(buffer, currentPosition, packetBytes, 0, packetSize);
 
-                var deserialized = this.packetSerialiser.Deserialise<PacketBase>(packetBytes);
+                var packetIdentifier = this.packetIdentifierProvider.Provide(packetBytes);
 
-                if(string.IsNullOrEmpty(deserialized.UniqueKey))
+                if(string.IsNullOrEmpty(packetIdentifier))
                 {
                     this.logger.Error(new Exception("Packet was lost - Invalid"));
                     return;
                 }
 
-                var packetHandler = this.packetHandlers.GetPacketHandlers()[deserialized.UniqueKey];
+                var packetHandler = this.packetHandlers.GetPacketHandlers()[packetIdentifier];
 
                 packetHandler.Handle(packetBytes, sender);
                 this.bytePool.Push(packetBytes);

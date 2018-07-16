@@ -91,7 +91,7 @@ namespace Networker.Client
             return 1235;
         }
 
-        public void Send(PacketBase packet)
+        public void Send<T>(T packet)
         {
             if(this.tcpSocket == null)
             {
@@ -103,7 +103,7 @@ namespace Networker.Client
             var result = this.tcpSocket.Send(serialisedPacket);
         }
 
-        public void SendUdp(PacketBase packet)
+        public void SendUdp<T>(T packet)
         {
             if(this.udpClient == null)
             {

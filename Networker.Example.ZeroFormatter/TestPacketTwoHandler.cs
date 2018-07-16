@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Net.Sockets;
 using System.Threading.Tasks;
 using Networker.Common;
 using Networker.Common.Abstractions;
-using Networker.Server;
 
-namespace Networker.V3.Example
+namespace Networker.Example.ZeroFormatter
 {
     public class TestPacketTwoHandler : PacketHandlerBase<TestPacketOtherThing>
     {

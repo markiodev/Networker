@@ -3,10 +3,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Networker.Client;
 using Networker.Common;
-using Networker.DefaultPackets;
+using Networker.Example.ZeroFormatter.DefaultPackets;
+using Networker.Formatter.ZeroFormatter;
 using Networker.Server;
 
-namespace Networker.V3.Example
+namespace Networker.Example.ZeroFormatter
 {
     class Program
     {
@@ -15,9 +16,10 @@ namespace Networker.V3.Example
             var server = new ServerBuilder().UseTcp(1000)
                                             .UseUdp(5000)
                                             .UseLogger<ConsoleLogger>()
-                                            //.SetLogLevel(LogLevel.Info)
+                                            .SetLogLevel(LogLevel.Info)
                                             .RegisterPacketHandlerModule<DefaultPacketHandlerModule>()
                                             .RegisterPacketHandlerModule<ExamplePacketHandlerModule>()
+                                            .UseZeroFormatter()
                                             .Build();
 
             server.Start();
@@ -33,6 +35,8 @@ namespace Networker.V3.Example
                                                        $"{dateTime} {eventArgs.ProcessedUdpPackets} UDP Packets Processed");
                                                    Console.WriteLine(
                                                        $"{dateTime} {eventArgs.InvalidUdpPackets} Invalid or Lost UDP Packets");
+                                                   Console.WriteLine(
+                                                       $"{dateTime} {eventArgs.TcpConnections} TCP connections active");
                                                };
             server.ClientConnected += (sender, eventArgs) =>
                                       {
@@ -51,9 +55,10 @@ namespace Networker.V3.Example
                 {
                     var client = new ClientBuilder().UseIp("127.0.0.1")
                                                     .UseTcp(1000)
-                                                    .UseUdp(5000, 5000 + i + 1)
+                                                    .UseUdp(5000)
                                                     .RegisterPacketHandler<PingPacket,
                                                         ClientPingPacketHandler>()
+                                                    .UseZeroFormatter()
                                                     .Build();
 
                     client.Connect();

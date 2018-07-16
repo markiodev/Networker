@@ -1,9 +1,10 @@
 ﻿using System;
 using System.IO;
+using Networker.Common;
 using Networker.Common.Abstractions;
 using ZeroFormatter;
 
-namespace Networker.Common
+namespace Networker.Formatter.ZeroFormatter
 {
     public class ZeroFormatterPacketSerialiser : IPacketSerialiser
     {
@@ -12,10 +13,19 @@ namespace Networker.Common
             return ZeroFormatterSerializer.Deserialize<T>(packetBytes);
         }
 
-        public byte[] Serialise(PacketBase packet)
+        public byte[] Serialise<T>(T packet)
         {
-            packet.UniqueKey = packet.GetType()
-                                     .Name;
+            var zeroFormatterPacket = packet as ZeroFormatterPacketBase;
+
+            if(zeroFormatterPacket != null)
+            {
+                zeroFormatterPacket.UniqueKey = packet.GetType()
+                                                      .Name;
+            }
+            else
+            {
+                throw new Exception("Packet must derive from ZeroFormatterPacketBase");
+            }
 
             using(var memoryStream = new MemoryStream())
             {

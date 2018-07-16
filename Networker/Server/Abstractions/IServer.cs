@@ -11,6 +11,6 @@ namespace Networker.Server.Abstractions
         EventHandler<ServerInformationEventArgs> ServerInformationUpdated { get; set; }
         EventHandler<TcpConnectionConnectedEventArgs> ClientConnected { get; set; }
         EventHandler<TcpConnectionDisconnectedEventArgs> ClientDisconnected { get; set; }
-        void Broadcast(PacketBase packet);
+        void Broadcast<T>(T packet);
     }
 }

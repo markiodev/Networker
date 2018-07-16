@@ -5,7 +5,7 @@ using Networker.Common.Abstractions;
 namespace Networker.Common
 {
     public abstract class PacketHandlerBase<T> : IPacketHandler
-        where T: PacketBase
+        where T: class
     {
         public IPacketSerialiser PacketSerialiser { get; }
 

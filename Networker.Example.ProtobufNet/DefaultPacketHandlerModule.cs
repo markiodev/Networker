@@ -1,7 +1,7 @@
 ﻿using System;
 using Networker.Common;
 
-namespace Networker.DefaultPackets
+namespace Networker.Example.ProtoBuf
 {
     public class DefaultPacketHandlerModule : PacketHandlerModuleBase
     {

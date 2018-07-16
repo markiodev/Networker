@@ -1,16 +1,15 @@
 ﻿using System;
 using ZeroFormatter;
 
-namespace Networker.Common
+namespace Networker.Formatter.ZeroFormatter
 {
     [ZeroFormattable]
-    public abstract class PacketBase
+    public abstract class ZeroFormatterPacketBase
     {
-        public PacketBase()
+        public ZeroFormatterPacketBase()
         {
-            
         }
-        
+
         [Index(1)]
         public virtual string UniqueKey { get; set; }
     }

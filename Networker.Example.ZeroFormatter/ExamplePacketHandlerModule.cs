@@ -1,7 +1,7 @@
 ﻿using System;
 using Networker.Common;
 
-namespace Networker.V3.Example
+namespace Networker.Example.ZeroFormatter
 {
     public class ExamplePacketHandlerModule : PacketHandlerModuleBase
     {

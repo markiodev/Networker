@@ -7,9 +7,9 @@ namespace Networker.Server
     {
         public ServerBuilderOptions()
         {
-            this.TcpMaxConnections = 1000;
+            this.TcpMaxConnections = 100;
             this.UdpSocketObjectPoolSize = 5000;
-            this.PacketSizeBuffer = 32768;
+            this.PacketSizeBuffer = 5000;
             this.LogLevel = LogLevel.Error;
         }
 

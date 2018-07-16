@@ -9,14 +9,13 @@ namespace Networker.Server
 {
     public class ServerBuilder : IServerBuilder
     {
+        private readonly PacketHandlerModule module;
         private readonly List<IPacketHandlerModule> modules;
         private readonly ServerBuilderOptions options;
-        private Type packetSerialiser;
+        private Type logger;
         private IServiceCollection serviceCollection;
         private Type tcpSocketListenerFactory;
         private Type udpSocketListenerFactory;
-        private Type logger;
-        private PacketHandlerModule module;
 
         public ServerBuilder()
         {
@@ -25,13 +24,6 @@ namespace Networker.Server
             this.modules = new List<IPacketHandlerModule>();
             this.module = new PacketHandlerModule();
             this.modules.Add(this.module);
-        }
-
-        public IServerBuilder RegisterPacketHandler<TPacket, TPacketHandler>()
-            where TPacket: PacketBase where TPacketHandler: IPacketHandler
-        {
-            this.module.AddPacketHandler<TPacket, TPacketHandler>();
-            return this;
         }
 
         public IServer Build()
@@ -66,9 +58,6 @@ namespace Networker.Server
             if(this.logger == null)
                 this.serviceCollection.AddSingleton<ILogger>(new NoOpLogger());
 
-            if (this.packetSerialiser == null)
-                this.serviceCollection.AddSingleton<IPacketSerialiser, ZeroFormatterPacketSerialiser>();
-
             var serviceProvider = this.serviceCollection.BuildServiceProvider();
 
             foreach(var packetHandlerModule in this.modules)
@@ -86,6 +75,13 @@ namespace Networker.Server
         public IServiceCollection GetServiceCollection()
         {
             return this.serviceCollection;
+        }
+
+        public IServerBuilder RegisterPacketHandler<TPacket, TPacketHandler>()
+            where TPacket: class where TPacketHandler: IPacketHandler
+        {
+            this.module.AddPacketHandler<TPacket, TPacketHandler>();
+            return this;
         }
 
         public IServerBuilder RegisterPacketHandlerModule(IPacketHandlerModule packetHandlerModule)
@@ -107,6 +103,18 @@ namespace Networker.Server
             return this;
         }
 
+        public IServerBuilder SetMaximumConnections(int maxConnections)
+        {
+            this.options.TcpMaxConnections = maxConnections;
+            return this;
+        }
+
+        public IServerBuilder SetPacketBufferSize(int packetBufferSize)
+        {
+            this.options.PacketSizeBuffer = packetBufferSize;
+            return this;
+        }
+
         public IServerBuilder SetServiceCollection(IServiceCollection serviceCollection)
         {
             this.serviceCollection = serviceCollection;
@@ -121,11 +129,10 @@ namespace Networker.Server
             return this;
         }
 
-        public IServerBuilder UseSerialiser<T>()
-            where T: class, IPacketSerialiser
+        public IServerBuilder UseLogger(ILogger logger)
         {
-            this.packetSerialiser = typeof(T);
-            this.serviceCollection.AddSingleton<IPacketSerialiser, T>();
+            this.logger = logger.GetType();
+            this.serviceCollection.AddSingleton<ILogger>(logger);
             return this;
         }
 

@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Networker.Common;
 using Networker.Common.Abstractions;
 
-namespace Networker.DefaultPackets
+namespace Networker.Example.ProtoBuf
 {
     public class PingPacketHandler : PacketHandlerBase<PingPacket>
     {
@@ -17,10 +17,7 @@ namespace Networker.DefaultPackets
 
         public override async Task Process(PingPacket packet, ISender sender)
         {
-            sender.Send(new PingPacket
-                        {
-                            Time = packet.Time
-                        });
+            this.logger.Debug("Received a ping packet from " + sender.EndPoint);
         }
     }
 }
