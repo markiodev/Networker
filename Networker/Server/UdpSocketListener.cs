@@ -56,7 +56,7 @@ namespace Networker.Server
             }
 
             this.logger.Info($"Starting UDP listener on port {this.options.UdpPort}.");
-
+            this.listener.Listen(10000);
             this.Process();
         }
 
@@ -69,6 +69,8 @@ namespace Networker.Server
             {
                 this.ProcessReceivedData(this, recieveArgs);
             }
+
+            this.StartAccept(recieveArgs);
         }
 
         private void ProcessReceivedData(object sender, SocketAsyncEventArgs e)
@@ -77,10 +79,21 @@ namespace Networker.Server
 
             if(e.BytesTransferred > 0 && e.SocketError == SocketError.Success)
             {
+                e.SetBuffer(e.Offset, e.BytesTransferred);
                 this.serverPacketProcessor.ProcessUdp(e);
             }
 
             this.socketEventArgsPool.Push(e);
+        }
+
+        private void StartAccept(SocketAsyncEventArgs acceptEventArg)
+        {
+            bool willRaiseEvent = this.listener.AcceptAsync(acceptEventArg);
+
+            if (!willRaiseEvent)
+            {
+                this.ProcessReceivedData(this, acceptEventArg);
+            }
         }
     }
 }

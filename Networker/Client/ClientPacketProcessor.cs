@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Sockets;
+using System.Text;
 using Networker.Client.Abstractions;
 using Networker.Common;
 using Networker.Common.Abstractions;
@@ -14,24 +15,37 @@ namespace Networker.Client
         private readonly ILogger logger;
         private readonly ClientBuilderOptions options;
         private readonly IPacketHandlers packetHandlers;
-        private readonly IPacketIdentifierProvider packetIdentifierProvider;
         private readonly IPacketSerialiser packetSerialiser;
+        private readonly ObjectPool<ISender> tcpSenderObjectPool;
+        private readonly ObjectPool<ISender> udpSenderObjectPool;
 
         public ClientPacketProcessor(ClientBuilderOptions options,
             IPacketSerialiser packetSerialiser,
             ILogger logger,
-            IPacketHandlers packetHandlers,
-            IPacketIdentifierProvider packetIdentifierProvider)
+            IPacketHandlers packetHandlers)
         {
             this.options = options;
             this.packetSerialiser = packetSerialiser;
             this.logger = logger;
             this.packetHandlers = packetHandlers;
-            this.packetIdentifierProvider = packetIdentifierProvider;
 
-            this.bytePool = new ObjectPool<byte[]>(50);
+            this.tcpSenderObjectPool = new ObjectPool<ISender>(options.ObjectPoolSize);
 
-            for(var i = 0; i < this.bytePool.Capacity; i++)
+            for(var i = 0; i < this.tcpSenderObjectPool.Capacity; i++)
+            {
+                this.tcpSenderObjectPool.Push(new TcpSender(packetSerialiser));
+            }
+
+            this.udpSenderObjectPool = new ObjectPool<ISender>(options.ObjectPoolSize);
+
+            for(var i = 0; i < this.udpSenderObjectPool.Capacity; i++)
+            {
+                this.udpSenderObjectPool.Push(new UdpSender(packetSerialiser));
+            }
+
+            this.bytePool = new ObjectPool<byte[]>(options.ObjectPoolSize);
+
+            for(int i = 0; i < this.bytePool.Capacity; i++)
             {
                 this.bytePool.Push(new byte[options.PacketSizeBuffer]);
             }
@@ -39,25 +53,50 @@ namespace Networker.Client
 
         public void Process(Socket socket)
         {
-            var buffer = new byte[socket.Available];
+            var buffer = this.bytePool.Pop();
+            var sender = this.tcpSenderObjectPool.Pop();
 
-            socket.Receive(buffer);
+            try
+            {
+                socket.Receive(buffer);
 
-            this.Process(buffer,
-                new TcpSender(this.packetSerialiser)
-                {
-                    Socket = socket
-                });
+                var tcpSender = sender as TcpSender;
+                tcpSender.Socket = socket;
+
+                this.Process(buffer, sender);
+            }
+            catch(Exception ex)
+            {
+                this.logger.Error(ex);
+            }
+            finally
+            {
+                this.bytePool.Push(buffer);
+                this.tcpSenderObjectPool.Push(sender);
+            }
         }
 
         public void Process(UdpReceiveResult data)
         {
-            var buffer = data.Buffer;
-            this.Process(buffer,
-                new UdpSender(this.packetSerialiser)
-                {
-                    RemoteEndpoint = data.RemoteEndPoint
-                });
+            var sender = this.udpSenderObjectPool.Pop();
+
+            try
+            {
+                var buffer = data.Buffer;
+
+                var udpSender = sender as UdpSender;
+                udpSender.RemoteEndpoint = data.RemoteEndPoint;
+
+                this.Process(buffer, sender);
+            }
+            catch(Exception ex)
+            {
+                this.logger.Error(ex);
+            }
+            finally
+            {
+                this.udpSenderObjectPool.Push(sender);
+            }
         }
 
         private void Process(byte[] buffer, ISender sender)
@@ -67,16 +106,24 @@ namespace Networker.Client
 
             while(bytesRead < buffer.Length)
             {
-                int packetSize = BitConverter.ToInt32(buffer, currentPosition);
-
-                if(packetSize == 0)
-                {
-                    break;
-                }
+                int packetTypeNameLength = BitConverter.ToInt32(buffer, currentPosition);
 
                 currentPosition += 4;
 
-                var packetBytes = this.bytePool.Pop();
+                int packetSize = BitConverter.ToInt32(buffer, currentPosition);
+
+                currentPosition += 4;
+
+                var packetTypeName = Encoding.ASCII.GetString(buffer, currentPosition, packetTypeNameLength);
+                currentPosition += packetTypeNameLength;
+
+                if(string.IsNullOrEmpty(packetTypeName))
+                {
+                    this.logger.Error(new Exception("Packet was lost - Invalid"));
+                    return;
+                }
+
+                var packetHandler = this.packetHandlers.GetPacketHandlers()[packetTypeName];
 
                 if(buffer.Length - bytesRead < packetSize)
                 {
@@ -84,23 +131,19 @@ namespace Networker.Client
                     return;
                 }
 
-                Buffer.BlockCopy(buffer, currentPosition, packetBytes, 0, packetSize);
-
-                var packetIdentifier = this.packetIdentifierProvider.Provide(packetBytes);
-
-                if(string.IsNullOrEmpty(packetIdentifier))
+                if(this.packetSerialiser.CanReadOffset)
                 {
-                    this.logger.Error(new Exception("Packet was lost - Invalid"));
-                    return;
+                    packetHandler.Handle(buffer, currentPosition, packetSize, sender);
+                }
+                else
+                {
+                    var packetBytes = new byte[packetSize];
+                    Buffer.BlockCopy(buffer, currentPosition, packetBytes, 0, packetSize);
+                    packetHandler.Handle(packetBytes, sender);
                 }
 
-                var packetHandler = this.packetHandlers.GetPacketHandlers()[packetIdentifier];
-
-                packetHandler.Handle(packetBytes, sender);
-                this.bytePool.Push(packetBytes);
-
                 currentPosition += packetSize;
-                bytesRead += packetSize + 4;
+                bytesRead += packetSize + packetTypeNameLength + 8;
             }
         }
     }

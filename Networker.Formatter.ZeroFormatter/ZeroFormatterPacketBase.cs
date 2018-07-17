@@ -9,8 +9,5 @@ namespace Networker.Formatter.ZeroFormatter
         public ZeroFormatterPacketBase()
         {
         }
-
-        [Index(1)]
-        public virtual string UniqueKey { get; set; }
     }
 }

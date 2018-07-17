@@ -16,8 +16,8 @@ namespace Networker.Common
 
         public void Debug(string message)
         {
-            //Only log if I tell you to
-            //Console.WriteLine(message);
+            if(this.options.LogLevel == LogLevel.Debug)
+                Console.WriteLine(message);
         }
 
         public void Error(Exception ex)
@@ -27,7 +27,8 @@ namespace Networker.Common
 
         public void Info(string message)
         {
-            //Console.WriteLine(message);
+            if(this.options.LogLevel == LogLevel.Debug || this.options.LogLevel == LogLevel.Info)
+                Console.WriteLine(message);
         }
     }
 }

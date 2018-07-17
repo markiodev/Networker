@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using Networker.Common;
+using System.Text;
 using Networker.Common.Abstractions;
 using ZeroFormatter;
 
@@ -15,25 +15,16 @@ namespace Networker.Formatter.ZeroFormatter
 
         public byte[] Serialise<T>(T packet)
         {
-            var zeroFormatterPacket = packet as ZeroFormatterPacketBase;
-
-            if(zeroFormatterPacket != null)
-            {
-                zeroFormatterPacket.UniqueKey = packet.GetType()
-                                                      .Name;
-            }
-            else
-            {
-                throw new Exception("Packet must derive from ZeroFormatterPacketBase");
-            }
-
             using(var memoryStream = new MemoryStream())
             {
                 using(var binaryWriter = new BinaryWriter(memoryStream))
                 {
+                    var nameBytes = Encoding.ASCII.GetBytes(typeof(T).Name);
                     var serialised = ZeroFormatterSerializer.Serialize(packet);
+                    binaryWriter.Write(nameBytes.Length);
                     binaryWriter.Write(serialised.Length);
                     binaryWriter.Write(serialised);
+                    binaryWriter.Write(nameBytes);
                 }
 
                 var packetBytes = memoryStream.ToArray();

@@ -13,6 +13,7 @@ namespace Networker.Example.ProtoBuf
         static void Main(string[] args)
         {
             var server = new ServerBuilder().UseTcp(1000)
+                                            .SetMaximumConnections(6000)
                                             .UseUdp(5000)
                                             .UseLogger<ConsoleLogger>()
                                             .SetLogLevel(LogLevel.Info)
@@ -46,39 +47,6 @@ namespace Networker.Example.ProtoBuf
                                              Console.WriteLine(
                                                  $"Client Disconnected - {eventArgs.Connection.Socket.RemoteEndPoint}");
                                          };
-
-            for(var i = 0; i < 10; i++)
-            {
-                try
-                {
-                    var client = new ClientBuilder().UseIp("127.0.0.1")
-                                                    .UseTcp(1000)
-                                                    .UseUdp(5000)
-                                                    .RegisterPacketHandler<PingPacket,
-                                                        ClientPingPacketHandler>()
-                                                    .UseProtobufNet()
-                                                    .Build();
-
-                    client.Connect();
-
-                    Task.Factory.StartNew(() =>
-                                          {
-                                              while(true)
-                                              {
-                                                  client.Send(new PingPacket
-                                                              {
-                                                                  Time = DateTime.UtcNow
-                                                              });
-
-                                                  Thread.Sleep(10);
-                                              }
-                                          });
-                }
-                catch(Exception e)
-                {
-                    Console.WriteLine(e);
-                }
-            }
 
             Task.Factory.StartNew(() =>
                                   {

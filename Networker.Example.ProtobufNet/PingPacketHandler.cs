@@ -9,8 +9,7 @@ namespace Networker.Example.ProtoBuf
     {
         private readonly ILogger logger;
 
-        public PingPacketHandler(ILogger logger, IPacketSerialiser serialiser)
-            : base(serialiser)
+        public PingPacketHandler(ILogger logger)
         {
             this.logger = logger;
         }

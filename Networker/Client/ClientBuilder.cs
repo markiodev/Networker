@@ -47,6 +47,8 @@ namespace Networker.Client
 
             var serviceProvider = this.serviceCollection.BuildServiceProvider();
 
+            PacketSerialiserProvider.PacketSerialiser = serviceProvider.GetService<IPacketSerialiser>();
+
             foreach(var packetHandlerModule in this.modules)
             {
                 foreach(var packetHandler in packetHandlerModule.GetPacketHandlers())
@@ -81,6 +83,18 @@ namespace Networker.Client
         public IClientBuilder SetLogLevel(LogLevel logLevel)
         {
             this.options.LogLevel = logLevel;
+            return this;
+        }
+
+        public IClientBuilder SetPacketBufferPoolSize(int size)
+        {
+            this.options.ObjectPoolSize = size;
+            return this;
+        }
+
+        public IClientBuilder SetPacketBufferSize(int size)
+        {
+            this.options.PacketSizeBuffer = size;
             return this;
         }
 

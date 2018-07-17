@@ -26,6 +26,8 @@ namespace Networker.Client.Abstractions
         IClientBuilder UseTcp(int port);
         IClientBuilder UseUdp(int port, int localPort);
         IClientBuilder UseUdp(int port);
+        IClientBuilder SetPacketBufferSize(int size);
+        IClientBuilder SetPacketBufferPoolSize(int size);
         IServiceCollection GetServiceCollection();
     }
 }

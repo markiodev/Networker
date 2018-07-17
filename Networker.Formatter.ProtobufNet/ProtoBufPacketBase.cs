@@ -9,8 +9,5 @@ namespace Networker.Formatter.ProtobufNet
         {
             
         }
-
-        [ProtoMember(1)]
-        public string UniqueKey { get; set; }
     }
 }

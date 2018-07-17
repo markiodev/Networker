@@ -12,7 +12,6 @@ namespace Networker.Formatter.ProtobufNet
         {
             var serviceCollection = serverBuilder.GetServiceCollection();
             serviceCollection.AddSingleton<IPacketSerialiser, ProtoBufNetSerialiser>();
-            serviceCollection.AddSingleton<IPacketIdentifierProvider, ProtoBufNetPacketIdentifierProvider>();
 
             return serverBuilder;
         }
@@ -21,7 +20,6 @@ namespace Networker.Formatter.ProtobufNet
         {
             var serviceCollection = clientBuilder.GetServiceCollection();
             serviceCollection.AddSingleton<IPacketSerialiser, ProtoBufNetSerialiser>();
-            serviceCollection.AddSingleton<IPacketIdentifierProvider, ProtoBufNetPacketIdentifierProvider>();
             return clientBuilder;
         }
     }

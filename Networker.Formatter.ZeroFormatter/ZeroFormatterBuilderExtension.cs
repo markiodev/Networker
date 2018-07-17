@@ -12,8 +12,6 @@ namespace Networker.Formatter.ZeroFormatter
         {
             var serviceCollection = serverBuilder.GetServiceCollection();
             serviceCollection.AddSingleton<IPacketSerialiser, ZeroFormatterPacketSerialiser>();
-            serviceCollection
-                .AddSingleton<IPacketIdentifierProvider, ZeroFormatterPacketIdentifierProvider>();
 
             return serverBuilder;
         }
@@ -22,8 +20,6 @@ namespace Networker.Formatter.ZeroFormatter
         {
             var serviceCollection = clientBuilder.GetServiceCollection();
             serviceCollection.AddSingleton<IPacketSerialiser, ZeroFormatterPacketSerialiser>();
-            serviceCollection
-                .AddSingleton<IPacketIdentifierProvider, ZeroFormatterPacketIdentifierProvider>();
             return clientBuilder;
         }
     }

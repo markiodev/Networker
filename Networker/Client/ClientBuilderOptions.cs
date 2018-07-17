@@ -9,6 +9,7 @@ namespace Networker.Client
         {
             this.LogLevel = LogLevel.Error;
             this.PacketSizeBuffer = 3500;
+            this.ObjectPoolSize = 200;
         }
 
         public int TcpPort { get; set; }
@@ -17,5 +18,6 @@ namespace Networker.Client
         public int UdpPortLocal { get; set; }
         public LogLevel LogLevel { get; set; }
         public int PacketSizeBuffer { get; set; }
+        public int ObjectPoolSize { get; set; }
     }
 }

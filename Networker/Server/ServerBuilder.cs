@@ -60,7 +60,9 @@ namespace Networker.Server
 
             var serviceProvider = this.serviceCollection.BuildServiceProvider();
 
-            foreach(var packetHandlerModule in this.modules)
+            PacketSerialiserProvider.PacketSerialiser = serviceProvider.GetService<IPacketSerialiser>();
+
+            foreach (var packetHandlerModule in this.modules)
             {
                 foreach(var packetHandler in packetHandlerModule.GetPacketHandlers())
                 {
