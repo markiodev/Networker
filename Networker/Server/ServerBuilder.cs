@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Networker.Common;
 using Networker.Common.Abstractions;
@@ -57,9 +58,9 @@ namespace Networker.Server
 
             if(this.logger == null)
                 this.serviceCollection.AddSingleton<ILogger>(new NoOpLogger());
-
+            
             var serviceProvider = this.serviceCollection.BuildServiceProvider();
-
+            
             PacketSerialiserProvider.PacketSerialiser = serviceProvider.GetService<IPacketSerialiser>();
 
             foreach (var packetHandlerModule in this.modules)

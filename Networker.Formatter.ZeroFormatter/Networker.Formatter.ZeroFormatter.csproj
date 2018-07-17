@@ -1,7 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageId>Networker.Formatter.ZeroFormatter</PackageId>
+    <Authors>Networker</Authors>
+    <Product>Networker</Product>
+    <Version>1.0.0.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
