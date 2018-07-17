@@ -17,18 +17,13 @@ A simple to use TCP and UDP networking library for .NET, designed to be flexible
 * Works with [Unity Game Engine](https://unity3d.com)
 
 ### Supported Formatters
-* ZeroFormatter
-* Protobuf-net
+* ZeroFormatter [Networker.Formatter.ZeroFormatter](https://www.nuget.org/packages/Networker.Formatter.ZeroFormatter)
+* Protobuf-net [Networker.Formatter.ProtoBufNet](https://www.nuget.org/packages/Networker.Formatter.ProtoBufNet)
 
 ## Installation
 **NuGet Package Manager**
 ```
 Install-Package Networker
-```
-
-**dotnet cli**
-```
-dotnet add package Networker
 ```
 
 ## Getting Started
