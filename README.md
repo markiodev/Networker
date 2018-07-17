@@ -7,6 +7,8 @@ A simple to use TCP and UDP networking library for .NET Core and .NET Framework.
 # V3
 Version 3 is coming soon. This update will be a complete rewrite from the ground up and allow more flexibility, and much better performance.
 
+[Follow here for updates](https://github.com/MarkioE/Networker/issues/15) or follow me on [Twitter](http://twitter.com/themazza101)
+
 ## Features
 * TCP
 * UDP
