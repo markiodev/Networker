@@ -40,7 +40,7 @@ Creating a server is easy..
 
 ````csharp
 var server = new ServerBuilder()
-                .UseTcp(10000)
+                .UseTcp(1000)
                 .UseLogger<ConsoleLogger>()
                 .SetLogLevel(LogLevel.Info)
                 .UseZeroFormatter()
@@ -54,8 +54,7 @@ public class PingPacketHandler : PacketHandlerBase<PingPacket>
 {
     private readonly ILogger logger;
 
-    public PingPacketHandler(ILogger logger, IPacketSerialiser serialiser)
-        : base(serialiser)
+    public PingPacketHandler(ILogger logger)
     {
         this.logger = logger;
     }
