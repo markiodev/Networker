@@ -13,9 +13,12 @@ A simple to use TCP and UDP networking library for .NET, designed to be flexible
 * Socket Pooling
 * Object Pooling
 * Process thousands of requests per second
-* Incredibly fast packet serialization using ZeroFormatter
 * Dependency Injection using [Service Collection](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.dependencyinjection.servicecollection?view=aspnetcore-2.1)
 * Works with [Unity Game Engine](https://unity3d.com)
+
+### Supported Formatters
+* ZeroFormatter
+* Protobuf-net
 
 ## Installation
 **NuGet Package Manager**
@@ -37,9 +40,10 @@ Creating a server is easy..
 
 ````csharp
 var server = new ServerBuilder()
-                .UseTcp(10000)
+                .UseTcp(1000)
                 .UseLogger<ConsoleLogger>()
                 .SetLogLevel(LogLevel.Info)
+                .UseZeroFormatter()
                 .Build();
 ````
 
@@ -50,8 +54,7 @@ public class PingPacketHandler : PacketHandlerBase<PingPacket>
 {
     private readonly ILogger logger;
 
-    public PingPacketHandler(ILogger logger, IPacketSerialiser serialiser)
-        : base(serialiser)
+    public PingPacketHandler(ILogger logger)
     {
         this.logger = logger;
     }
