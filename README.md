@@ -4,6 +4,12 @@
 # Networker
 A simple to use TCP and UDP networking library for .NET, designed to be flexible, scalable and FAST.
 
+## Installation
+**NuGet Package Manager**
+```
+Install-Package Networker
+```
+
 ## Supported Frameworks
 * .NET Standard 2.0
 
@@ -17,18 +23,15 @@ A simple to use TCP and UDP networking library for .NET, designed to be flexible
 * Works with [Unity Game Engine](https://unity3d.com)
 
 ### Supported Formatters
-* ZeroFormatter
-* Protobuf-net
-
-## Installation
-**NuGet Package Manager**
+#### ZeroFormatter 
+[Networker.Formatter.ZeroFormatter](https://www.nuget.org/packages/Networker.Formatter.ZeroFormatter)
 ```
-Install-Package Networker
+Install-Package Networker.Formatter.ZeroFormatter
 ```
-
-**dotnet cli**
+#### Protobuf-net 
+[Networker.Formatter.ProtoBufNet](https://www.nuget.org/packages/Networker.Formatter.ProtoBufNet)
 ```
-dotnet add package Networker
+Install-Package Networker.Formatter.ProtoBufNet
 ```
 
 ## Getting Started
