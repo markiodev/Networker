@@ -1,14 +1,15 @@
 ﻿using System;
+using Networker.Server.Abstractions;
 
 namespace Networker.Server
 {
     public class TcpConnectionConnectedEventArgs : EventArgs
     {
-        public TcpConnectionConnectedEventArgs(TcpConnection connection)
+        public TcpConnectionConnectedEventArgs(ITcpConnection connection)
         {
             this.Connection = connection;
         }
 
-        public TcpConnection Connection { get; }
+        public ITcpConnection Connection { get; }
     }
 }

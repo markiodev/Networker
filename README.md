@@ -2,125 +2,72 @@
 [![NuGet](https://img.shields.io/nuget/v/networker.svg)](https://www.nuget.org/packages/Networker/)
 
 # Networker
-A simple to use TCP and UDP networking library for .NET Core and .NET Framework.
+A simple to use TCP and UDP networking library for .NET, designed to be flexible, scalable and FAST.
 
-# V3
-Version 3 is coming soon. This update will be a complete rewrite from the ground up and allow more flexibility, and much better performance.
+## Installation
+**NuGet Package Manager**
+```
+Install-Package Networker
+```
 
-[Follow here for updates](https://github.com/MarkioE/Networker/issues/15)
+## Supported Frameworks
+* .NET Standard 2.0
 
 ## Features
 * TCP
 * UDP
-* Low memory footprint
-* Handle thousands of simultaneous connections
-* Incredibly fast serialization using ZeroFormatter
-* Plug in your choice of logging
-* Plug in your choice of IOC - [Service Collection (Default)](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.dependencyinjection.servicecollection?view=aspnetcore-2.1) - [DryIoc (NuGet)](https://www.nuget.org/packages/Networker.DryIoc/)
-* Unity (.NET 4.6+ & .NET Standard)
+* Socket Pooling
+* Object Pooling
+* Process thousands of requests per second
+* Dependency Injection using [Service Collection](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.dependencyinjection.servicecollection?view=aspnetcore-2.1)
+* Works with [Unity Game Engine](https://unity3d.com)
 
-## Supported Frameworks
-* .NET Standard 2.0
-* .NET Standard 1.6
-* .NET Core
-* .NET Framework 4.6+
-
-## Installing
-Install-Package Networker
+### Supported Formatters
+#### ZeroFormatter 
+[Networker.Formatter.ZeroFormatter](https://www.nuget.org/packages/Networker.Formatter.ZeroFormatter)
+```
+Install-Package Networker.Formatter.ZeroFormatter
+```
+#### Protobuf-net 
+[Networker.Formatter.ProtoBufNet](https://www.nuget.org/packages/Networker.Formatter.ProtoBufNet)
+```
+Install-Package Networker.Formatter.ProtoBufNet
+```
 
 ## Getting Started
+Find more information about how to get started on our [Wiki](https://github.com/MarkioE/Networker/wiki) or view the [Examples](https://github.com/MarkioE/Networker/tree/master/Examples).
 
-Networker uses a client-server architecture for communication.
+## Example
 
-Many clients can connect to a single server.
+Creating a server is easy..
 
-### Creating a TCP Server
-```csharp
-public class Program
+````csharp
+var server = new ServerBuilder()
+                .UseTcp(1000)
+                .UseLogger<ConsoleLogger>()
+                .SetLogLevel(LogLevel.Info)
+                .UseZeroFormatter()
+                .Build();
+````
+
+You can handle a packet easily using dependency injection, logging and built-in deserialisation.
+
+````csharp
+public class PingPacketHandler : PacketHandlerBase<PingPacket>
+{
+    private readonly ILogger logger;
+
+    public PingPacketHandler(ILogger logger)
     {
-        static void Main(string[] args)
-        {
-            var server = new NetworkerServerBuilder()
-            .UseConsoleLogger()
-            .UseTcp(1050)
-            .RegisterPacketHandler<ChatMessagePacket, ChatMessagePacketHandler>()
-            .Build<DefaultServer>()
-            .Start();
-        }
+        this.logger = logger;
     }
-```
 
-### Creating a TCP Client
-```csharp
-public class Program
+    public override async Task Process(PingPacket packet, ISender sender)
     {
-        static void Main(string[] args)
-        {
-            var client = new NetworkerClientBuilder()
-            .UseConsoleLogger()
-            .UseIp("127.0.0.1")
-            .UseTcp(1050)
-            .RegisterPacketHandler<ChatMessagePacket, ChatMessageReceivedPacketHandler>()
-            .Build<DefaultClient>()
-            .Connect();
-        }
+        this.logger.Debug("Received a ping packet from " + sender.EndPoint);
     }
-```
+}
+````
 
-### Creating a Packet
-```csharp
-public class ChatMessagePacket : NetworkerPacketBase
-    {
-        [Index(0)]
-        public virtual string Message { get; set; }
-
-        [Index(1)]
-        public virtual string Sender { get; set; }
-    }
-```
-
-### Creating a Client Packet Handler
-```csharp
-public class ChatMessageReceivedPacketHandler : PacketHandlerBase<ChatMessagePacket>
-    {
-        public override void Handle(ChatMessagePacket packet)
-        {
-            var window = MainWindow.Instance;
-
-            window.Dispatcher.Invoke(() =>
-                                     {
-                                         window.MessageListBox.Items.Add($"{packet.Sender}: {packet.Message}");
-                                     });
-        }
-    }
-```
-
-### Creating a Server Packet Handler
-```csharp
-public class ChatMessagePacketHandler : ServerPacketHandlerBase<ChatMessagePacket>
-    {
-        private readonly ITcpConnectionsProvider connectionsProvider;
-
-        public ChatMessagePacketHandler(ITcpConnectionsProvider connectionsProvider)
-        {
-            this.connectionsProvider = connectionsProvider;
-        }
-
-        public override void Handle(INetworkerConnection sender, ChatMessagePacket packet)
-        {
-            foreach(var tcpConnection in this.connectionsProvider.Provide())
-            {
-                tcpConnection.Send(packet);
-            }
-        }
-    }
-```
-
-### Sending a packet from Client to Server
-```csharp
-this.client.Send(new ChatMessagePacket
-                             {
-                                 Sender = Environment.MachineName,
-                                 Message = this.MessageBox.Text
-                             });
-```
+## Older Versions
+Version 3 included a large rewrite and various breaking changes. To use V2 please see [V2 Branch](https://github.com/MarkioE/Networker/tree/features/v2.1)
