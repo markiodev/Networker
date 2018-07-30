@@ -35,7 +35,7 @@ Install-Package Networker.Formatter.ProtoBufNet
 ```
 
 ## Getting Started
-Find more information about how to get started on our [Wiki](https://github.com/MarkioE/Networker/wiki) or view the [Examples](https://github.com/MarkioE/Networker/tree/master/Examples).
+Find more information about how to get started on our [Wiki](https://github.com/MarkioE/Networker/wiki) or view the Examples found inside the repository.
 
 ## Example
 
