@@ -88,6 +88,7 @@ namespace Networker.Client
 
         public int Ping()
         {
+            throw new NotImplementedException();
             return 1235;
         }
 
