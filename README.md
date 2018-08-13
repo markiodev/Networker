@@ -10,6 +10,19 @@ A simple to use TCP and UDP networking library for .NET, designed to be flexible
 Install-Package Networker
 ```
 
+**You must then install one of the following formatters**
+
+#### ZeroFormatter 
+[Networker.Formatter.ZeroFormatter](https://www.nuget.org/packages/Networker.Formatter.ZeroFormatter)
+```
+Install-Package Networker.Formatter.ZeroFormatter
+```
+#### Protobuf-net 
+[Networker.Formatter.ProtoBufNet](https://www.nuget.org/packages/Networker.Formatter.ProtoBufNet)
+```
+Install-Package Networker.Formatter.ProtoBufNet
+```
+
 ## Supported Frameworks
 * .NET Standard 2.0
 
@@ -21,18 +34,6 @@ Install-Package Networker
 * Process thousands of requests per second
 * Dependency Injection using [Service Collection](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.dependencyinjection.servicecollection?view=aspnetcore-2.1)
 * Works with [Unity Game Engine](https://unity3d.com)
-
-### Supported Formatters
-#### ZeroFormatter 
-[Networker.Formatter.ZeroFormatter](https://www.nuget.org/packages/Networker.Formatter.ZeroFormatter)
-```
-Install-Package Networker.Formatter.ZeroFormatter
-```
-#### Protobuf-net 
-[Networker.Formatter.ProtoBufNet](https://www.nuget.org/packages/Networker.Formatter.ProtoBufNet)
-```
-Install-Package Networker.Formatter.ProtoBufNet
-```
 
 ## Getting Started
 Find more information about how to get started on our [Wiki](https://github.com/MarkioE/Networker/wiki) or view the Examples found inside the repository.
