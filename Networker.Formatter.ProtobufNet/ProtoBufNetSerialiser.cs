@@ -22,6 +22,8 @@ namespace Networker.Formatter.ProtobufNet
         }
 
         public bool CanReadOffset => true;
+        public bool CanReadName => true;
+        public bool CanReadLength => true;
 
         public T Deserialise<T>(byte[] packetBytes, int offset, int length)
         {

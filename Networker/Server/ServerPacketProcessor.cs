@@ -57,15 +57,29 @@ namespace Networker.Server
 
             while(bytesRead < length)
             {
-                int packetNameSize = BitConverter.ToInt32(buffer, currentPosition);
-                currentPosition += 4;
+                int packetNameSize = this.packetSerialiser.CanReadName ? BitConverter.ToInt32(buffer, currentPosition) : 0;
 
-                int packetSize = BitConverter.ToInt32(buffer, currentPosition);
-                currentPosition += 4;
+                if (this.packetSerialiser.CanReadName)
+                {
+                    currentPosition += 4;
+                }
+
+                int packetSize = this.packetSerialiser.CanReadLength ? BitConverter.ToInt32(buffer, currentPosition) : 0;
+
+                if (this.packetSerialiser.CanReadLength)
+                {
+                    currentPosition += 4;
+                }
 
                 try
                 {
-                    var packetTypeName = Encoding.ASCII.GetString(buffer, currentPosition, packetNameSize);
+                    string packetTypeName = "Default";
+
+                    if (this.packetSerialiser.CanReadName)
+                    {
+                        packetTypeName = Encoding.ASCII.GetString(buffer, currentPosition, packetNameSize);
+                    }
+
                     var packetHandler = this.packetHandlers.GetPacketHandlers()[packetTypeName];
 
                     if(string.IsNullOrEmpty(packetTypeName))
@@ -79,7 +93,10 @@ namespace Networker.Server
                         return;
                     }
 
-                    currentPosition += packetNameSize;
+                    if (this.packetSerialiser.CanReadName)
+                    {
+                        currentPosition += packetNameSize;
+                    }
 
                     if(this.packetSerialiser.CanReadOffset)
                     {
@@ -97,9 +114,24 @@ namespace Networker.Server
                     this.logger.Error(e);
                 }
 
-                currentPosition += packetSize;
-                bytesRead += packetSize + packetNameSize + 8;
-                if(isTcp)
+                if (this.packetSerialiser.CanReadLength)
+                {
+                    currentPosition += packetSize;
+                }
+
+                bytesRead += packetSize + packetNameSize;
+
+                if (this.packetSerialiser.CanReadName)
+                {
+                    bytesRead += 4;
+                }
+
+                if (this.packetSerialiser.CanReadLength)
+                {
+                    bytesRead += 4;
+                }
+
+                if (isTcp)
                     this.serverInformation.ProcessedTcpPackets++;
                 else
                     this.serverInformation.ProcessedUdpPackets++;

@@ -41,6 +41,7 @@ namespace Networker.Client
             this.serviceCollection.AddSingleton<IClient, Client>();
             this.serviceCollection.AddSingleton<IClientPacketProcessor, ClientPacketProcessor>();
             this.serviceCollection.AddSingleton<IPacketHandlers>(packetHandlers);
+            this.serviceCollection.AddSingleton<ILogLevelProvider, LogLevelProvider>();
 
             if(this.logger == null)
                 this.serviceCollection.AddSingleton<ILogger, NoOpLogger>();
@@ -48,14 +49,20 @@ namespace Networker.Client
             var serviceProvider = this.serviceCollection.BuildServiceProvider();
 
             PacketSerialiserProvider.PacketSerialiser = serviceProvider.GetService<IPacketSerialiser>();
+            serviceProvider.GetService<ILogLevelProvider>().SetLogLevel(this.options.LogLevel);
 
             foreach(var packetHandlerModule in this.modules)
             {
                 foreach(var packetHandler in packetHandlerModule.GetPacketHandlers())
                 {
-                    packetHandlers.Add(packetHandler.Key.Name,
+                    packetHandlers.Add(PacketSerialiserProvider.PacketSerialiser.CanReadName ? packetHandler.Key.Name : "Default",
                         (IPacketHandler)serviceProvider.GetService(packetHandler.Value));
                 }
+            }
+
+            if (!PacketSerialiserProvider.PacketSerialiser.CanReadName && packetHandlers.GetPacketHandlers().Count > 1)
+            {
+                throw new Exception("A PacketSerialiser which cannot identify a packet can only support up to one packet type");
             }
 
             return serviceProvider.GetService<IClient>();

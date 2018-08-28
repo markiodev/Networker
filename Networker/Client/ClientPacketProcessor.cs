@@ -106,29 +106,47 @@ namespace Networker.Client
 
             while(bytesRead < buffer.Length)
             {
-                int packetTypeNameLength = BitConverter.ToInt32(buffer, currentPosition);
+                int packetTypeNameLength = this.packetSerialiser.CanReadName
+                                               ? BitConverter.ToInt32(buffer, currentPosition)
+                                               : 0;
 
-                currentPosition += 4;
-
-                int packetSize = BitConverter.ToInt32(buffer, currentPosition);
-
-                currentPosition += 4;
-
-                var packetTypeName = Encoding.ASCII.GetString(buffer, currentPosition, packetTypeNameLength);
-                currentPosition += packetTypeNameLength;
-
-                if(string.IsNullOrEmpty(packetTypeName))
+                if(this.packetSerialiser.CanReadName)
                 {
-                    this.logger.Error(new Exception("Packet was lost - Invalid"));
-                    return;
+                    currentPosition += 4;
+                }
+
+                int packetSize = this.packetSerialiser.CanReadLength
+                                     ? BitConverter.ToInt32(buffer, currentPosition)
+                                     : 0;
+
+                if(this.packetSerialiser.CanReadLength)
+                {
+                    currentPosition += 4;
+                }
+
+                string packetTypeName = "Default";
+
+                if(!this.packetSerialiser.CanReadName)
+                {
+                    packetTypeName = Encoding.ASCII.GetString(buffer, currentPosition, packetTypeNameLength);
+                    currentPosition += packetTypeNameLength;
+
+                    if(string.IsNullOrEmpty(packetTypeName))
+                    {
+                        this.logger.Error(new Exception("Packet was lost - Invalid"));
+                        return;
+                    }
                 }
 
                 var packetHandler = this.packetHandlers.GetPacketHandlers()[packetTypeName];
 
-                if(buffer.Length - bytesRead < packetSize)
+                if(this.packetSerialiser.CanReadLength)
                 {
-                    this.logger.Error(new Exception("Packet was lost"));
-                    return;
+                    if(buffer.Length - bytesRead < packetSize)
+                    {
+                        this.logger.Error(new Exception("Packet was lost"));
+                        return;
+                    }
                 }
 
                 if(this.packetSerialiser.CanReadOffset)
@@ -143,7 +161,17 @@ namespace Networker.Client
                 }
 
                 currentPosition += packetSize;
-                bytesRead += packetSize + packetTypeNameLength + 8;
+                bytesRead += packetSize + packetTypeNameLength;
+
+                if(this.packetSerialiser.CanReadName)
+                {
+                    bytesRead += 4;
+                }
+
+                if(this.packetSerialiser.CanReadLength)
+                {
+                    bytesRead += 4;
+                }
             }
         }
     }
