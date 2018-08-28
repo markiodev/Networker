@@ -1,22 +1,21 @@
 ﻿using System;
 using Networker.Common.Abstractions;
-using Networker.Server;
 
 namespace Networker.Common
 {
     public class ConsoleLogger : ILogger
     {
-        private readonly ServerBuilderOptions options;
+        private readonly ILogLevelProvider _logLevelProvider;
 
-        public ConsoleLogger(ServerBuilderOptions options)
+        public ConsoleLogger(ILogLevelProvider logLevelProvider)
         {
-            this.options = options;
+            _logLevelProvider = logLevelProvider;
             Console.WriteLine("WARNING: Using Console Logging can be detrimental to performance");
         }
 
         public void Debug(string message)
         {
-            if(this.options.LogLevel == LogLevel.Debug)
+            if (_logLevelProvider.GetLogLevel() == LogLevel.Debug)
                 Console.WriteLine(message);
         }
 
@@ -27,7 +26,7 @@ namespace Networker.Common
 
         public void Info(string message)
         {
-            if(this.options.LogLevel == LogLevel.Debug || this.options.LogLevel == LogLevel.Info)
+            if (_logLevelProvider.GetLogLevel() == LogLevel.Debug || _logLevelProvider.GetLogLevel() == LogLevel.Info)
                 Console.WriteLine(message);
         }
     }

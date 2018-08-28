@@ -38,5 +38,7 @@ namespace Networker.Formatter.ZeroFormatter
         }
 
         public bool CanReadOffset => false;
+        public bool CanReadName => true;
+        public bool CanReadLength => true;
     }
 }

@@ -12,6 +12,7 @@ namespace Networker.Client
     {
         private readonly ClientBuilderOptions options;
         private readonly IClientPacketProcessor packetProcessor;
+        private readonly ILogger logger;
         private readonly IPacketSerialiser packetSerialiser;
         private bool isRunning = true;
         private Socket tcpSocket;
@@ -20,11 +21,13 @@ namespace Networker.Client
 
         public Client(ClientBuilderOptions options,
             IPacketSerialiser packetSerialiser,
-            IClientPacketProcessor packetProcessor)
+            IClientPacketProcessor packetProcessor,
+            ILogger logger)
         {
             this.options = options;
             this.packetSerialiser = packetSerialiser;
             this.packetProcessor = packetProcessor;
+            this.logger = logger;
         }
 
         public EventHandler<Socket> Connected { get; set; }
@@ -73,13 +76,22 @@ namespace Networker.Client
 
                 Task.Factory.StartNew(() =>
                                       {
+                                          this.logger.Info($"Connecting to UDP at {this.options.Ip}:{this.options.UdpPort}");
+
                                           while(this.isRunning)
                                           {
-                                              var data = this.udpClient.ReceiveAsync()
-                                                             .GetAwaiter()
-                                                             .GetResult();
+                                              try
+                                              {
+                                                  var data = this.udpClient.ReceiveAsync()
+                                                                 .GetAwaiter()
+                                                                 .GetResult();
 
-                                              this.packetProcessor.Process(data);
+                                                  this.packetProcessor.Process(data);
+                                              }
+                                              catch(Exception ex)
+                                              {
+                                                  this.logger.Error(ex);
+                                              }
                                           }
                                           this.udpClient = null;
                                       });
