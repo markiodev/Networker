@@ -17,6 +17,7 @@ A simple to use TCP and UDP networking library for .NET, designed to be flexible
 * Works with [Unity Game Engine](https://unity3d.com)
 
 ## Installation
+V3 is currently in pre-release. Get the latest build below.
 **NuGet Package Manager**
 ```
 Install-Package Networker -IncludePrerelease
