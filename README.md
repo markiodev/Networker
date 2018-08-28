@@ -19,7 +19,7 @@ A simple to use TCP and UDP networking library for .NET, designed to be flexible
 ## Installation
 **NuGet Package Manager**
 ```
-Install-Package Networker
+Install-Package Networker -IncludePrerelease
 ```
 
 **You must then install one of the following formatters**
