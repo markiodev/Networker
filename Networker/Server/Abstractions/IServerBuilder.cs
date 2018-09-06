@@ -20,7 +20,7 @@ namespace Networker.Server.Abstractions
 
         IServerBuilder SetLogLevel(LogLevel logLevel);
 
-        IServerBuilder SetServiceCollection(IServiceCollection serviceCollection);
+        IServerBuilder SetServiceCollection(IServiceCollection serviceCollection, Func<IServiceProvider> serviceProviderFactory = null);
 
         IServerBuilder UseLogger<T>()
             where T: class, ILogger;

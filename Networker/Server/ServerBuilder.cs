@@ -15,6 +15,7 @@ namespace Networker.Server
         private readonly ServerBuilderOptions options;
         private Type logger;
         private IServiceCollection serviceCollection;
+        private Func<IServiceProvider> serviceProviderFactory;
         private Type tcpSocketListenerFactory;
         private Type udpSocketListenerFactory;
 
@@ -60,7 +61,7 @@ namespace Networker.Server
             if(this.logger == null)
                 this.serviceCollection.AddSingleton<ILogger>(new NoOpLogger());
             
-            var serviceProvider = this.serviceCollection.BuildServiceProvider();
+            var serviceProvider = this.serviceProviderFactory != null ? serviceProviderFactory.Invoke() : this.serviceCollection.BuildServiceProvider();
 
             serviceProvider.GetService<ILogLevelProvider>().SetLogLevel(this.options.LogLevel);
 
@@ -126,9 +127,10 @@ namespace Networker.Server
             return this;
         }
 
-        public IServerBuilder SetServiceCollection(IServiceCollection serviceCollection)
+        public IServerBuilder SetServiceCollection(IServiceCollection serviceCollection, Func<IServiceProvider> serviceProviderFactory = null)
         {
             this.serviceCollection = serviceCollection;
+            this.serviceProviderFactory = serviceProviderFactory;
             return this;
         }
 
