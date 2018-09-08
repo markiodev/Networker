@@ -22,6 +22,15 @@ namespace Networker.Common.Abstractions
 
         private Type logger = typeof(NoOpLogger);
 
+        public BuilderBase()
+        {
+            this.options = Activator.CreateInstance<TBuilderOptions>();
+            this.serviceCollection = new ServiceCollection();
+            this.modules = new List<IPacketHandlerModule>();
+            this.module = new PacketHandlerModule();
+            this.modules.Add(this.module);
+        }
+
         public abstract TResult Build();
 
         public IServiceCollection GetServiceCollection()

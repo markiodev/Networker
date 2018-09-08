@@ -8,13 +8,9 @@ namespace Networker.Client
 {
     public class ClientBuilder : BuilderBase<IClientBuilder, IClient, ClientBuilderOptions>, IClientBuilder
     {
-        public ClientBuilder()
+        public ClientBuilder() : base()
         {
-            this.options = new ClientBuilderOptions();
-            this.serviceCollection = new ServiceCollection();
-            this.modules = new List<IPacketHandlerModule>();
-            this.module = new PacketHandlerModule();
-            this.modules.Add(this.module);
+
         }
 
         public override IClient Build()

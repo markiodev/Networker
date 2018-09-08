@@ -12,13 +12,9 @@ namespace Networker.Server
         private Type tcpSocketListenerFactory;
         private Type udpSocketListenerFactory;
 
-        public ServerBuilder()
+        public ServerBuilder() : base()
         {
-            this.options = new ServerBuilderOptions();
-            this.serviceCollection = new ServiceCollection();
-            this.modules = new List<IPacketHandlerModule>();
-            this.module = new PacketHandlerModule();
-            this.modules.Add(this.module);
+
         }
 
         public override IServer Build()
