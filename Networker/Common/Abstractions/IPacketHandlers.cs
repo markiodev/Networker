@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using Networker.Common.Abstractions;
+﻿using System.Collections.Generic;
 
-namespace Networker.Server.Abstractions
+namespace Networker.Common.Abstractions
 {
     public interface IPacketHandlers
     {

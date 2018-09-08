@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Net.Sockets;
-using Networker.Common;
 
 namespace Networker.Client.Abstractions
 {

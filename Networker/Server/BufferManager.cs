@@ -1,9 +1,8 @@
-﻿using System;
+﻿using Networker.Server.Abstractions;
 using System.Collections.Generic;
 using System.Net.Sockets;
-using Networker.Common.Abstractions;
 
-namespace Networker.Common
+namespace Networker.Server
 {
     public class BufferManager : IBufferManager
     {

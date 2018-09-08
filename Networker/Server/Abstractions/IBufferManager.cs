@@ -1,7 +1,6 @@
-﻿using System;
-using System.Net.Sockets;
+﻿using System.Net.Sockets;
 
-namespace Networker.Common.Abstractions
+namespace Networker.Server.Abstractions
 {
     public interface IBufferManager
     {

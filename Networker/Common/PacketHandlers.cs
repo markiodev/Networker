@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Networker.Common.Abstractions;
-using Networker.Server.Abstractions;
 
-namespace Networker.Server
+namespace Networker.Common
 {
     public class PacketHandlers : IPacketHandlers
     {

@@ -1,33 +1,14 @@
-﻿using System;
-using Microsoft.Extensions.DependencyInjection;
-using Networker.Common;
-using Networker.Common.Abstractions;
+﻿using Networker.Common.Abstractions;
 
 namespace Networker.Client.Abstractions
 {
-    public interface IClientBuilder
+    public interface IClientBuilder : IBuilder<IClientBuilder, IClient>
     {
-        IClient Build();
-
-        IClientBuilder RegisterPacketHandler<TPacket, TPacketHandler>()
-            where TPacket: class where TPacketHandler: IPacketHandler;
-
-        IClientBuilder RegisterPacketHandlerModule<T>()
-            where T: IPacketHandlerModule;
-
-        IClientBuilder SetLogLevel(LogLevel logLevel);
-
-        IClientBuilder UseIp(string ip);
-
-        IClientBuilder UseLogger<T>()
-            where T: class, ILogger;
-
-        IClientBuilder UseLogger(ILogger logger);
-        IClientBuilder UseTcp(int port);
+        //Udp
         IClientBuilder UseUdp(int port, int localPort);
-        IClientBuilder UseUdp(int port);
-        IClientBuilder SetPacketBufferSize(int size);
+
+        //Info
         IClientBuilder SetPacketBufferPoolSize(int size);
-        IServiceCollection GetServiceCollection();
+        IClientBuilder UseIp(string ip);
     }
 }

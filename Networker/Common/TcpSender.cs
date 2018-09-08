@@ -1,10 +1,8 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Net.Sockets;
-using Networker.Common;
 using Networker.Common.Abstractions;
 
-namespace Networker.Server
+namespace Networker.Common
 {
     public class TcpSender : ISender
     {

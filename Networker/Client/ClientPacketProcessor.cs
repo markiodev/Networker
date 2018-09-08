@@ -4,8 +4,6 @@ using System.Text;
 using Networker.Client.Abstractions;
 using Networker.Common;
 using Networker.Common.Abstractions;
-using Networker.Server;
-using Networker.Server.Abstractions;
 
 namespace Networker.Client
 {

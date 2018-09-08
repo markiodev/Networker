@@ -1,9 +1,7 @@
-﻿using System;
-using System.Net;
-using Networker.Common;
+﻿using System.Net;
 using Networker.Common.Abstractions;
 
-namespace Networker.Server
+namespace Networker.Common
 {
     public class UdpSender : ISender
     {

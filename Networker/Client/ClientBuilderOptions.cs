@@ -1,9 +1,9 @@
-﻿using System;
-using Networker.Common;
+﻿using Networker.Common;
+using Networker.Common.Abstractions;
 
 namespace Networker.Client
 {
-    public class ClientBuilderOptions
+    public class ClientBuilderOptions : IBuilderOptions
     {
         public ClientBuilderOptions()
         {
