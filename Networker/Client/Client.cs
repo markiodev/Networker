@@ -3,7 +3,6 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using Networker.Client.Abstractions;
-using Networker.Common;
 using Networker.Common.Abstractions;
 
 namespace Networker.Client

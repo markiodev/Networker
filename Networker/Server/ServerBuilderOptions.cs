@@ -1,9 +1,9 @@
-﻿using System;
-using Networker.Common;
+﻿using Networker.Common;
+using Networker.Common.Abstractions;
 
 namespace Networker.Server
 {
-    public class ServerBuilderOptions
+    public class ServerBuilderOptions : IBuilderOptions
     {
         public ServerBuilderOptions()
         {
