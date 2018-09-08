@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Networker.Client.Abstractions;
-using Networker.Common;
 using Networker.Common.Abstractions;
 
 namespace Networker.Client
