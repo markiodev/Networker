@@ -29,5 +29,6 @@ namespace Networker.Client.Abstractions
         IClientBuilder SetPacketBufferSize(int size);
         IClientBuilder SetPacketBufferPoolSize(int size);
         IServiceCollection GetServiceCollection();
+        IClientBuilder SetServiceCollection(IServiceCollection serviceCollection, Func<IServiceProvider> serviceProviderFactory = null);
     }
 }

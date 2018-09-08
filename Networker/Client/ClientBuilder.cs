@@ -14,7 +14,8 @@ namespace Networker.Client
         private readonly PacketHandlerModule module;
         private readonly List<IPacketHandlerModule> modules;
         private readonly ClientBuilderOptions options;
-        private readonly ServiceCollection serviceCollection;
+        private IServiceCollection serviceCollection;
+        private Func<IServiceProvider> serviceProviderFactory;
         private Type logger;
 
         public ClientBuilder()
@@ -46,7 +47,7 @@ namespace Networker.Client
             if(this.logger == null)
                 this.serviceCollection.AddSingleton<ILogger, NoOpLogger>();
 
-            var serviceProvider = this.serviceCollection.BuildServiceProvider();
+            var serviceProvider = this.serviceProviderFactory != null ? serviceProviderFactory.Invoke() : this.serviceCollection.BuildServiceProvider();
 
             PacketSerialiserProvider.PacketSerialiser = serviceProvider.GetService<IPacketSerialiser>();
             serviceProvider.GetService<ILogLevelProvider>().SetLogLevel(this.options.LogLevel);
@@ -108,6 +109,13 @@ namespace Networker.Client
         public IClientBuilder UseIp(string ip)
         {
             this.options.Ip = ip;
+            return this;
+        }
+
+        public IClientBuilder SetServiceCollection(IServiceCollection serviceCollection, Func<IServiceProvider> serviceProviderFactory = null)
+        {
+            this.serviceCollection = serviceCollection;
+            this.serviceProviderFactory = serviceProviderFactory;
             return this;
         }
 
