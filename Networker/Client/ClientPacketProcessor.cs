@@ -56,12 +56,14 @@ namespace Networker.Client
 
             try
             {
-                socket.Receive(buffer);
+                int receivedAmount = socket.Receive(buffer);
+                byte[] bytesReceived = new byte[receivedAmount];
+                Buffer.BlockCopy(buffer, 0, bytesReceived, 0, receivedAmount);
 
                 var tcpSender = sender as TcpSender;
                 tcpSender.Socket = socket;
 
-                this.Process(buffer, sender);
+                this.Process(bytesReceived, sender);
             }
             catch(Exception ex)
             {
@@ -104,40 +106,55 @@ namespace Networker.Client
 
             while(bytesRead < buffer.Length)
             {
-                int packetTypeNameLength = this.packetSerialiser.CanReadName
-                                               ? BitConverter.ToInt32(buffer, currentPosition)
-                                               : 0;
+                int packetTypeNameLength = this.packetSerialiser.CanReadName ? BitConverter.ToInt32(buffer, currentPosition) : 0;
 
                 if(this.packetSerialiser.CanReadName)
                 {
                     currentPosition += 4;
                 }
 
-                int packetSize = this.packetSerialiser.CanReadLength
-                                     ? BitConverter.ToInt32(buffer, currentPosition)
-                                     : 0;
+                int packetSize = this.packetSerialiser.CanReadLength ? BitConverter.ToInt32(buffer, currentPosition) : 0;
 
                 if(this.packetSerialiser.CanReadLength)
                 {
                     currentPosition += 4;
                 }
 
-                string packetTypeName = "Default";
-
-                if(!this.packetSerialiser.CanReadName)
+                try
                 {
-                    packetTypeName = Encoding.ASCII.GetString(buffer, currentPosition, packetTypeNameLength);
-                    currentPosition += packetTypeNameLength;
+                    string packetTypeName = "Default";
 
-                    if(string.IsNullOrEmpty(packetTypeName))
+                    if (this.packetSerialiser.CanReadName)
+                    {
+                        packetTypeName = Encoding.ASCII.GetString(buffer, currentPosition, packetTypeNameLength);
+                        currentPosition += packetTypeNameLength;
+                    }
+
+                    if (string.IsNullOrEmpty(packetTypeName))
                     {
                         this.logger.Error(new Exception("Packet was lost - Invalid"));
                         return;
                     }
+
+                    var packetHandler = this.packetHandlers.GetPacketHandlers()[packetTypeName];
+
+                    if (this.packetSerialiser.CanReadOffset)
+                    {
+                        packetHandler.Handle(buffer, currentPosition, packetSize, sender);
+                    }
+                    else
+                    {
+                        var packetBytes = new byte[packetSize];
+                        Buffer.BlockCopy(buffer, currentPosition, packetBytes, 0, packetSize);
+                        packetHandler.Handle(packetBytes, sender);
+                    }
+
                 }
-
-                var packetHandler = this.packetHandlers.GetPacketHandlers()[packetTypeName];
-
+                catch (Exception e)
+                {
+                    this.logger.Error(e);
+                }
+                
                 if(this.packetSerialiser.CanReadLength)
                 {
                     if(buffer.Length - bytesRead < packetSize)
@@ -145,17 +162,6 @@ namespace Networker.Client
                         this.logger.Error(new Exception("Packet was lost"));
                         return;
                     }
-                }
-
-                if(this.packetSerialiser.CanReadOffset)
-                {
-                    packetHandler.Handle(buffer, currentPosition, packetSize, sender);
-                }
-                else
-                {
-                    var packetBytes = new byte[packetSize];
-                    Buffer.BlockCopy(buffer, currentPosition, packetBytes, 0, packetSize);
-                    packetHandler.Handle(packetBytes, sender);
                 }
 
                 currentPosition += packetSize;

@@ -78,9 +78,8 @@ namespace Networker.Server
                     if (this.packetSerialiser.CanReadName)
                     {
                         packetTypeName = Encoding.ASCII.GetString(buffer, currentPosition, packetNameSize);
+                        currentPosition += packetNameSize;
                     }
-
-                    var packetHandler = this.packetHandlers.GetPacketHandlers()[packetTypeName];
 
                     if(string.IsNullOrEmpty(packetTypeName))
                     {
@@ -93,10 +92,7 @@ namespace Networker.Server
                         return;
                     }
 
-                    if (this.packetSerialiser.CanReadName)
-                    {
-                        currentPosition += packetNameSize;
-                    }
+                    var packetHandler = this.packetHandlers.GetPacketHandlers()[packetTypeName];
 
                     if(this.packetSerialiser.CanReadOffset)
                     {
