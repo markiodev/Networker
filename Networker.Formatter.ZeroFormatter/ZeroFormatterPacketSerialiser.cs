@@ -8,14 +8,19 @@ namespace Networker.Formatter.ZeroFormatter
 {
     public class ZeroFormatterPacketSerialiser : IPacketSerialiser
     {
-        public T Deserialise<T>(byte[] packetBytes)
-        {
-            return ZeroFormatterSerializer.Deserialize<T>(packetBytes);
-        }
 
         public T Deserialise<T>(byte[] packetBytes, int offset, int length)
         {
-            return default(T);
+            if (offset == 0 && length == 0)
+                return ZeroFormatterSerializer.Deserialize<T>(packetBytes);
+
+            if (length == 0)
+                length = packetBytes.Length - offset;
+
+            byte[] newPacketBytes = new byte[length];
+            Buffer.BlockCopy(packetBytes, offset, newPacketBytes, 0, length);
+                
+            return ZeroFormatterSerializer.Deserialize<T>(newPacketBytes);
         }
 
         public byte[] Serialise<T>(T packet)
