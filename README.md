@@ -1,3 +1,5 @@
+Note from Mark (developer): I'm currently rennovating a house so I have put development of Networker on hold until Feb 2019, but I am around to view pull requests or issues.
+
 [![Build status](https://ci.appveyor.com/api/projects/status/k2yi64f298bgjxra?svg=true)](https://ci.appveyor.com/project/MarkioE/networker)
 [![NuGet](https://img.shields.io/nuget/v/networker.svg)](https://www.nuget.org/packages/Networker/)
 
