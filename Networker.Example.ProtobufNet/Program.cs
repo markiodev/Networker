@@ -16,8 +16,11 @@ namespace Networker.Example.ProtoBuf
             var server = new ServerBuilder().UseTcp(1000)
                                             .SetMaximumConnections(6000)
                                             .UseUdp(5000)
-                                            //.UseLogger<ConsoleLogger>()
-                                            .SetLogLevel(LogLevel.Information)
+                                            .ConfigureLogging(loggingBuilder =>
+                                                              {
+                                                                  loggingBuilder.SetMinimumLevel(
+                                                                      LogLevel.Debug);
+                                                              })
                                             .RegisterPacketHandlerModule<DefaultPacketHandlerModule>()
                                             .UseProtobufNet()
                                             .Build();

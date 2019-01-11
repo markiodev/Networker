@@ -15,21 +15,21 @@ namespace Networker.Example.ZeroFormatter
     {
         static void Main(string[] args)
         {
-var server = new ServerBuilder()
-                .UseTcp(1000)
-                .UseUdp(5000)
-                .RegisterPacketHandlerModule<DefaultPacketHandlerModule>()
-                .RegisterPacketHandlerModule<ExamplePacketHandlerModule>()
-                .UseZeroFormatter()
-                .ConfigureLogging(loggingBuilder =>
-                                    {
-                                        loggingBuilder.AddConsole();
-                                        loggingBuilder.SetMinimumLevel(
-                                            LogLevel.Debug);
-                                    })
-                .Build();
+            var server = new ServerBuilder()
+                            .UseTcp(1000)
+                            .UseUdp(5000)
+                            .RegisterPacketHandlerModule<DefaultPacketHandlerModule>()
+                            .RegisterPacketHandlerModule<ExamplePacketHandlerModule>()
+                            .UseZeroFormatter()
+                            .ConfigureLogging(loggingBuilder =>
+                                                {
+                                                    loggingBuilder.AddConsole();
+                                                    loggingBuilder.SetMinimumLevel(
+                                                        LogLevel.Debug);
+                                                })
+                            .Build();
 
-server.Start();
+            server.Start();
 
             server.ServerInformationUpdated += (sender, eventArgs) =>
                                                {
