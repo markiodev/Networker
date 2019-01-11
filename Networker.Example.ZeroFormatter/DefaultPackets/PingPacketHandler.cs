@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Networker.Common;
 using Networker.Common.Abstractions;
 
@@ -9,7 +10,7 @@ public class PingPacketHandler : PacketHandlerBase<PingPacket>
 {
     private readonly ILogger logger;
 
-    public PingPacketHandler(ILogger logger, IPacketSerialiser serialiser)
+    public PingPacketHandler(ILogger<PingPacketHandler> logger, IPacketSerialiser serialiser)
         : base(serialiser)
     {
         this.logger = logger;
@@ -17,7 +18,7 @@ public class PingPacketHandler : PacketHandlerBase<PingPacket>
 
     public override async Task Process(PingPacket packet, ISender sender)
     {
-        this.logger.Debug("Received a ping packet from " + sender.EndPoint);
+        this.logger.LogDebug("Received a ping packet from " + sender.EndPoint);
     }
 }
 }

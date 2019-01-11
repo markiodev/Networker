@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Networker.Common;
 using Networker.Common.Abstractions;
 
@@ -16,7 +17,7 @@ namespace Networker.Example.ProtoBuf
 
         public override async Task Process(PingPacket packet, ISender sender)
         {
-            this.logger.Debug("Received a ping packet from " + sender.EndPoint);
+            this.logger.LogDebug("Received a ping packet from " + sender.EndPoint);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Sockets;
 using System.Text;
+using Microsoft.Extensions.Logging;
 using Networker.Client.Abstractions;
 using Networker.Common;
 using Networker.Common.Abstractions;
@@ -19,7 +20,7 @@ namespace Networker.Client
 
         public ClientPacketProcessor(ClientBuilderOptions options,
             IPacketSerialiser packetSerialiser,
-            ILogger logger,
+            ILogger<ClientPacketProcessor> logger,
             IPacketHandlers packetHandlers)
         {
             this.options = options;

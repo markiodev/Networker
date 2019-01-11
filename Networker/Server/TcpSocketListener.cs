@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using Microsoft.Extensions.Logging;
 using Networker.Common;
 using Networker.Common.Abstractions;
 using Networker.Server.Abstractions;
@@ -23,7 +24,7 @@ namespace Networker.Server
         public TcpSocketListener(ServerBuilderOptions serverBuilderOptions,
             IServerPacketProcessor serverPacketProcessor,
             IBufferManager bufferManager,
-            ILogger logger,
+            ILogger<TcpSocketListener> logger,
             ITcpConnections tcpConnections)
         {
             this.serverBuilderOptions = serverBuilderOptions;
@@ -69,14 +70,14 @@ namespace Networker.Server
             this.listenSocket.Listen(this.serverBuilderOptions.TcpMaxConnections);
             this.StartAccept(null);
 
-            this.logger.Info($"Started TCP listener on port {this.serverBuilderOptions.TcpPort}.");
+            this.logger.LogInformation($"Started TCP listener on port {this.serverBuilderOptions.TcpPort}.");
         }
 
         private void CloseClientSocket(SocketAsyncEventArgs e)
         {
             AsyncUserToken token = e.UserToken as AsyncUserToken;
 
-            this.logger.Info(
+            this.logger.LogInformation(
                 $"TCP Client Disconnected. IP: {(token.Socket.RemoteEndPoint as IPEndPoint).Address}");
 
             var connection =
@@ -123,7 +124,7 @@ namespace Networker.Server
 
             var connection = this.tcpConnections.Add(((AsyncUserToken)readEventArgs.UserToken).Socket);
 
-            this.logger.Debug(
+            this.logger.LogDebug(
                 $"TCP Client Connected. IP: {(connection.Socket.RemoteEndPoint as IPEndPoint).Address}");
 
             this.ClientConnected?.Invoke(this, new TcpConnectionConnectedEventArgs(connection));

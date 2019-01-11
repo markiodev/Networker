@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Extensions.Logging;
 using Networker.Common.Abstractions;
 using Networker.Server.Abstractions;
 
@@ -8,13 +9,13 @@ namespace Networker.Server
     {
         private readonly IBufferManager bufferManager;
         private readonly ITcpConnections connections;
-        private readonly ILogger logger;
+        private readonly ILogger<TcpSocketListener> logger;
         private readonly IServerPacketProcessor serverPacketProcessor;
         private readonly ServerBuilderOptions options;
 
         public DefaultTcpSocketListenerFactory(IServerPacketProcessor serverPacketProcessor,
             IBufferManager bufferManager,
-            ILogger logger,
+            ILogger<TcpSocketListener> logger,
             ITcpConnections connections,
             ServerBuilderOptions options)
         {

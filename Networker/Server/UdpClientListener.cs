@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Networker.Common;
 using Networker.Common.Abstractions;
 using Networker.Server.Abstractions;
@@ -19,7 +20,7 @@ namespace Networker.Server
         private readonly IServerInformation serverInformation;
 
         public UdpClientListener(ServerBuilderOptions options,
-            ILogger logger,
+            ILogger<UdpClientListener> logger,
             IServerPacketProcessor serverPacketProcessor,
             IBufferManager bufferManager,
             IServerInformation serverInformation)
@@ -52,7 +53,7 @@ namespace Networker.Server
             this.client = new UdpClient(this.options.UdpPort);
             this.endPoint = new IPEndPoint(IPAddress.Loopback, this.options.UdpPort);
 
-            this.logger.Info($"Starting UDP listener on port {this.options.UdpPort}.");
+            this.logger.LogInformation($"Starting UDP listener on port {this.options.UdpPort}.");
 
             Task.Factory.StartNew(() =>
                                   {

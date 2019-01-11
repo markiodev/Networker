@@ -2,7 +2,9 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Networker.Client.Abstractions;
+using Networker.Common;
 using Networker.Common.Abstractions;
 
 namespace Networker.Client
@@ -11,7 +13,7 @@ namespace Networker.Client
     {
         private readonly ClientBuilderOptions options;
         private readonly IClientPacketProcessor packetProcessor;
-        private readonly ILogger logger;
+        private readonly ILogger<Client> logger;
         private readonly IPacketSerialiser packetSerialiser;
         private bool isRunning = true;
         private Socket tcpSocket;
@@ -21,7 +23,7 @@ namespace Networker.Client
         public Client(ClientBuilderOptions options,
             IPacketSerialiser packetSerialiser,
             IClientPacketProcessor packetProcessor,
-            ILogger logger)
+            ILogger<Client> logger)
         {
             this.options = options;
             this.packetSerialiser = packetSerialiser;
@@ -75,7 +77,7 @@ namespace Networker.Client
 
                 Task.Factory.StartNew(() =>
                                       {
-                                          this.logger.Info($"Connecting to UDP at {this.options.Ip}:{this.options.UdpPort}");
+                                          this.logger.LogInformation($"Connecting to UDP at {this.options.Ip}:{this.options.UdpPort}");
 
                                           while(this.isRunning)
                                           {

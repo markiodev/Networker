@@ -17,7 +17,7 @@ namespace Networker.Server
 
         public override IServer Build()
         {
-            SetupSharedDependencies();
+            this.SetupSharedDependencies();
 
             this.serviceCollection.AddSingleton<ITcpConnections, TcpConnections>();
             this.serviceCollection.AddSingleton<IServer, Server>();
@@ -36,7 +36,7 @@ namespace Networker.Server
                     .AddSingleton<IUdpSocketListenerFactory, DefaultUdpSocketListenerFactory>();
 
 
-            var serviceProvider = GetServiceProvider();
+            var serviceProvider = this.GetServiceProvider();
 
             return serviceProvider.GetService<IServer>();
         }

@@ -1,4 +1,6 @@
 ﻿
+using Microsoft.Extensions.Logging;
+
 namespace Networker.Common.Abstractions
 {
     public interface IBuilderOptions

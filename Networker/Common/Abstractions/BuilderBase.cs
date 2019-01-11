@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
 
 namespace Networker.Common.Abstractions
 {
@@ -19,7 +21,7 @@ namespace Networker.Common.Abstractions
         //Builder Options
         protected TBuilderOptions options;
 
-        private Type logger = typeof(NoOpLogger);
+        private Action<ILoggingBuilder> loggingBuilder;
 
         public BuilderBase()
         {
@@ -70,21 +72,15 @@ namespace Networker.Common.Abstractions
             return this as TBuilder;
         }
 
+        public TBuilder ConfigureLogging(Action<ILoggingBuilder> loggingBuilder)
+        {
+            this.loggingBuilder = loggingBuilder;
+            return this as TBuilder;
+        }
+
         public TBuilder SetPacketBufferSize(int size)
         {
             this.options.PacketSizeBuffer = size;
-            return this as TBuilder;
-        }
-
-        public TBuilder UseLogger<T>() where T : class, ILogger
-        {
-            this.logger = typeof(T);
-            return this as TBuilder;
-        }
-
-        public TBuilder UseLogger(ILogger logger)
-        {
-            this.logger = logger.GetType();
             return this as TBuilder;
         }
 
@@ -102,7 +98,6 @@ namespace Networker.Common.Abstractions
 
         protected void SetupSharedDependencies()
         {
-            var packetHandlers = new PacketHandlers();
             foreach (var packetHandlerModule in this.modules)
             {
                 foreach (var packetHandler in packetHandlerModule.GetPacketHandlers())
@@ -111,18 +106,23 @@ namespace Networker.Common.Abstractions
                 }
             }
 
+            if(this.loggingBuilder == null)
+            {
+                this.loggingBuilder = (loggingBuilder) =>
+                                      {
+                                      };
+            }
+            
             this.serviceCollection.AddSingleton<TBuilderOptions>(this.options);
-            this.serviceCollection.AddSingleton(typeof(ILogger), logger);
             this.serviceCollection.AddSingleton<IPacketHandlers, PacketHandlers>();
-            this.serviceCollection.AddSingleton<ILogLevelProvider, LogLevelProvider>();
+            this.serviceCollection.AddLogging(this.loggingBuilder);
         }
 
         protected IServiceProvider GetServiceProvider()
         {
-            var serviceProvider = this.serviceProviderFactory != null ? serviceProviderFactory.Invoke() : this.serviceCollection.BuildServiceProvider();
+            var serviceProvider = this.serviceProviderFactory != null ? this.serviceProviderFactory.Invoke() : this.serviceCollection.BuildServiceProvider();
 
             PacketSerialiserProvider.PacketSerialiser = serviceProvider.GetService<IPacketSerialiser>();
-            serviceProvider.GetService<ILogLevelProvider>().SetLogLevel(this.options.LogLevel);
 
             IPacketHandlers packetHandlers = serviceProvider.GetService<IPacketHandlers>();
             foreach (var packetHandlerModule in this.modules)

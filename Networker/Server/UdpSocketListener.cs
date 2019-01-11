@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
+using Microsoft.Extensions.Logging;
 using Networker.Common;
 using Networker.Common.Abstractions;
 using Networker.Server.Abstractions;
@@ -18,7 +19,7 @@ namespace Networker.Server
         private Socket listener;
 
         public UdpSocketListener(ServerBuilderOptions options,
-            ILogger logger,
+            ILogger<UdpSocketListener> logger,
             IServerPacketProcessor serverPacketProcessor,
             IBufferManager bufferManager)
         {
@@ -55,7 +56,7 @@ namespace Networker.Server
                 this.socketEventArgsPool.Push(socketEventArgs);
             }
 
-            this.logger.Info($"Starting UDP listener on port {this.options.UdpPort}.");
+            this.logger.LogDebug($"Starting UDP listener on port {this.options.UdpPort}.");
             this.listener.Listen(10000);
             this.Process();
         }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System;
+using Microsoft.Extensions.Logging;
 
 namespace Networker.Common.Abstractions
 {
@@ -21,9 +22,8 @@ namespace Networker.Common.Abstractions
 
         //Logging
         TBuilder SetLogLevel(LogLevel logLevel);
-        TBuilder UseLogger<T>()
-            where T : class, ILogger;
-        TBuilder UseLogger(ILogger logger);
+
+        TBuilder ConfigureLogging(Action<ILoggingBuilder> loggingBuilder);
 
         //Tcp
         TBuilder UseTcp(int port);

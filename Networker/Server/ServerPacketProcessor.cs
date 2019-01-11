@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using Microsoft.Extensions.Logging;
 using Networker.Common;
 using Networker.Common.Abstractions;
 using Networker.Server.Abstractions;
@@ -18,7 +19,7 @@ namespace Networker.Server
         private readonly ObjectPool<ISender> udpSenderObjectPool;
 
         public ServerPacketProcessor(ServerBuilderOptions options,
-            ILogger logger,
+            ILogger<ServerPacketProcessor> logger,
             IPacketHandlers packetHandlers,
             IServerInformation serverInformation,
             IPacketSerialiser packetSerialiser)
@@ -28,19 +29,15 @@ namespace Networker.Server
             this.serverInformation = serverInformation;
             this.packetSerialiser = packetSerialiser;
 
-            this.tcpSenderObjectPool = new ObjectPool<ISender>(options.TcpMaxConnections);
+            tcpSenderObjectPool = new ObjectPool<ISender>(options.TcpMaxConnections);
 
-            for(var i = 0; i < this.tcpSenderObjectPool.Capacity; i++)
-            {
-                this.tcpSenderObjectPool.Push(new TcpSender(packetSerialiser));
-            }
+            for (var i = 0; i < tcpSenderObjectPool.Capacity; i++)
+                tcpSenderObjectPool.Push(new TcpSender(packetSerialiser));
 
-            this.udpSenderObjectPool = new ObjectPool<ISender>(options.TcpMaxConnections * 2);
+            udpSenderObjectPool = new ObjectPool<ISender>(options.TcpMaxConnections * 2);
 
-            for(var i = 0; i < this.udpSenderObjectPool.Capacity; i++)
-            {
-                this.udpSenderObjectPool.Push(new UdpSender(packetSerialiser));
-            }
+            for (var i = 0; i < udpSenderObjectPool.Capacity; i++)
+                udpSenderObjectPool.Push(new UdpSender(packetSerialiser));
         }
 
         public void ProcessFromBuffer(ISender sender,
@@ -49,56 +46,45 @@ namespace Networker.Server
             int length = 0,
             bool isTcp = true)
         {
-            int bytesRead = 0;
-            int currentPosition = offset;
+            var bytesRead = 0;
+            var currentPosition = offset;
 
-            if(length == 0)
+            if (length == 0)
                 length = buffer.Length;
 
-            while(bytesRead < length)
+            while (bytesRead < length)
             {
-                int packetNameSize = this.packetSerialiser.CanReadName ? BitConverter.ToInt32(buffer, currentPosition) : 0;
+                var packetNameSize = packetSerialiser.CanReadName ? BitConverter.ToInt32(buffer, currentPosition) : 0;
 
-                if (this.packetSerialiser.CanReadName)
-                {
-                    currentPosition += 4;
-                }
+                if (packetSerialiser.CanReadName) currentPosition += 4;
 
-                int packetSize = this.packetSerialiser.CanReadLength ? BitConverter.ToInt32(buffer, currentPosition) : 0;
+                var packetSize = packetSerialiser.CanReadLength ? BitConverter.ToInt32(buffer, currentPosition) : 0;
 
-                if (this.packetSerialiser.CanReadLength)
-                {
-                    currentPosition += 4;
-                }
+                if (packetSerialiser.CanReadLength) currentPosition += 4;
 
                 try
                 {
-                    string packetTypeName = "Default";
+                    var packetTypeName = "Default";
 
-                    if (this.packetSerialiser.CanReadName)
-                    {
+                    if (packetSerialiser.CanReadName)
                         packetTypeName = Encoding.ASCII.GetString(buffer, currentPosition, packetNameSize);
-                    }
 
-                    var packetHandler = this.packetHandlers.GetPacketHandlers()[packetTypeName];
+                    var packetHandler = packetHandlers.GetPacketHandlers()[packetTypeName];
 
-                    if(string.IsNullOrEmpty(packetTypeName))
+                    if (string.IsNullOrEmpty(packetTypeName))
                     {
-                        if(isTcp)
-                            this.serverInformation.InvalidTcpPackets++;
+                        if (isTcp)
+                            serverInformation.InvalidTcpPackets++;
                         else
-                            this.serverInformation.InvalidUdpPackets++;
+                            serverInformation.InvalidUdpPackets++;
 
-                        this.logger.Error(new Exception("Packet was lost - Invalid"));
+                        logger.Error(new Exception("Packet was lost - Invalid"));
                         return;
                     }
 
-                    if (this.packetSerialiser.CanReadName)
-                    {
-                        currentPosition += packetNameSize;
-                    }
+                    if (packetSerialiser.CanReadName) currentPosition += packetNameSize;
 
-                    if(this.packetSerialiser.CanReadOffset)
+                    if (packetSerialiser.CanReadOffset)
                     {
                         packetHandler.Handle(buffer, currentPosition, packetSize, sender);
                     }
@@ -109,75 +95,66 @@ namespace Networker.Server
                         packetHandler.Handle(packetBytes, sender);
                     }
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
-                    this.logger.Error(e);
+                    logger.Error(e);
                 }
 
-                if (this.packetSerialiser.CanReadLength)
-                {
-                    currentPosition += packetSize;
-                }
+                if (packetSerialiser.CanReadLength) currentPosition += packetSize;
 
                 bytesRead += packetSize + packetNameSize;
 
-                if (this.packetSerialiser.CanReadName)
-                {
-                    bytesRead += 4;
-                }
+                if (packetSerialiser.CanReadName) bytesRead += 4;
 
-                if (this.packetSerialiser.CanReadLength)
-                {
-                    bytesRead += 4;
-                }
+                if (packetSerialiser.CanReadLength) bytesRead += 4;
 
                 if (isTcp)
-                    this.serverInformation.ProcessedTcpPackets++;
+                    serverInformation.ProcessedTcpPackets++;
                 else
-                    this.serverInformation.ProcessedUdpPackets++;
+                    serverInformation.ProcessedUdpPackets++;
             }
         }
 
         public void ProcessTcp(SocketAsyncEventArgs socketEvent)
         {
-            var sender = this.tcpSenderObjectPool.Pop() as TcpSender;
+            var sender = tcpSenderObjectPool.Pop() as TcpSender;
             try
             {
-                sender.Socket = ((AsyncUserToken)socketEvent.UserToken).Socket;
-                this.ProcessPacketsFromSocketEventArgs(sender, socketEvent);
+                sender.Socket = ((AsyncUserToken) socketEvent.UserToken).Socket;
+                ProcessPacketsFromSocketEventArgs(sender, socketEvent);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
-                this.logger.Error(e);
+                logger.Error(e);
             }
 
-            this.tcpSenderObjectPool.Push(sender);
+            tcpSenderObjectPool.Push(sender);
         }
 
         public void ProcessUdp(SocketAsyncEventArgs socketEvent)
         {
-            var sender = this.udpSenderObjectPool.Pop() as UdpSender;
+            var sender = udpSenderObjectPool.Pop() as UdpSender;
             try
             {
                 sender.RemoteEndpoint = socketEvent.RemoteEndPoint;
-                this.ProcessPacketsFromSocketEventArgs(sender, socketEvent, false);
+                ProcessPacketsFromSocketEventArgs(sender, socketEvent, false);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
-                this.logger.Error(e);
+                logger.Error(e);
             }
 
-            this.udpSenderObjectPool.Push(sender);
+            udpSenderObjectPool.Push(sender);
         }
 
         public void ProcessUdpFromBuffer(EndPoint endPoint, byte[] buffer, int offset = 0, int length = 0)
         {
-            var sender = this.udpSenderObjectPool.Pop() as UdpSender;
+            var sender = udpSenderObjectPool.Pop() as UdpSender;
             try
             {
                 sender.RemoteEndpoint = endPoint;
 
-                this.ProcessFromBuffer(sender,
+                ProcessFromBuffer(sender,
                     buffer,
                     offset,
                     length,
@@ -185,17 +162,17 @@ namespace Networker.Server
             }
             catch (Exception e)
             {
-                this.logger.Error(e);
+                logger.Error(e);
             }
 
-            this.udpSenderObjectPool.Push(sender);
+            udpSenderObjectPool.Push(sender);
         }
 
         private void ProcessPacketsFromSocketEventArgs(ISender sender,
             SocketAsyncEventArgs eventArgs,
             bool isTcp = true)
         {
-            this.ProcessFromBuffer(sender,
+            ProcessFromBuffer(sender,
                 eventArgs.Buffer,
                 eventArgs.Offset,
                 eventArgs.BytesTransferred,

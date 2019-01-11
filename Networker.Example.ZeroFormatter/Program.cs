@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Networker.Client;
 using Networker.Common;
 using Networker.Example.ZeroFormatter.DefaultPackets;
 using Networker.Formatter.ZeroFormatter;
 using Networker.Server;
+using ZeroFormatter.Segments;
 
 namespace Networker.Example.ZeroFormatter
 {
@@ -13,16 +15,22 @@ namespace Networker.Example.ZeroFormatter
     {
         static void Main(string[] args)
         {
-            var server = new ServerBuilder().UseTcp(1000)
-                                            .UseUdp(5000)
-                                            .UseLogger<ConsoleLogger>()
-                                            .SetLogLevel(LogLevel.Info)
-                                            .RegisterPacketHandlerModule<DefaultPacketHandlerModule>()
-                                            .RegisterPacketHandlerModule<ExamplePacketHandlerModule>()
-                                            .UseZeroFormatter()
-                                            .Build();
+var server = new ServerBuilder()
+                .UseTcp(1000)
+                .UseUdp(5000)
+                .RegisterPacketHandlerModule<DefaultPacketHandlerModule>()
+                .RegisterPacketHandlerModule<ExamplePacketHandlerModule>()
+                .UseZeroFormatter()
+                .ConfigureLogging(loggingBuilder =>
+                                    {
+                                        loggingBuilder.AddConsole();
+                                        loggingBuilder.SetMinimumLevel(
+                                            LogLevel.Debug);
+                                    })
+                .Build();
 
-            server.Start();
+server.Start();
+
             server.ServerInformationUpdated += (sender, eventArgs) =>
                                                {
                                                    var dateTime = DateTime.UtcNow;

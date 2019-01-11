@@ -13,11 +13,11 @@ namespace Networker.Client
 
         public override IClient Build()
         {
-            SetupSharedDependencies();
+            this.SetupSharedDependencies();
             this.serviceCollection.AddSingleton<IClient, Client>();
             this.serviceCollection.AddSingleton<IClientPacketProcessor, ClientPacketProcessor>();
 
-            var serviceProvider = GetServiceProvider();
+            var serviceProvider = this.GetServiceProvider();
 
             return serviceProvider.GetService<IClient>();
         }

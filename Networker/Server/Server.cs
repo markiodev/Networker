@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Networker.Common;
 using Networker.Common.Abstractions;
 using Networker.Server.Abstractions;
@@ -15,7 +16,7 @@ namespace Networker.Server
         private ServerInformationEventArgs eventArgs;
 
         public Server(ServerBuilderOptions options,
-            ILogger logger,
+            ILogger<Server> logger,
             IServiceProvider serviceProvider,
             IPacketHandlers packetHandlers,
             ITcpConnections tcpConnections,

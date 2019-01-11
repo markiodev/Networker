@@ -4,6 +4,7 @@ using System.IO.Pipelines;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Networker.Common;
 using Networker.Common.Abstractions;
 using Networker.Server;
@@ -87,7 +88,7 @@ namespace Networker.Pipelines
 
         private async Task ProcessLinesAsync(Socket socket)
         {
-            this.logger.Debug($"[{socket.RemoteEndPoint}]: connected");
+            this.logger.LogDebug($"[{socket.RemoteEndPoint}]: connected");
 
             var pipe = new Pipe();
             Task writing = this.FillPipeAsync(socket, pipe.Writer);
@@ -95,7 +96,7 @@ namespace Networker.Pipelines
 
             await Task.WhenAll(reading, writing);
 
-            this.logger.Debug($"[{socket.RemoteEndPoint}]: disconnected");
+            this.logger.LogDebug($"[{socket.RemoteEndPoint}]: disconnected");
         }
 
         private async Task ReadPipeAsync(Socket socket, PipeReader reader)

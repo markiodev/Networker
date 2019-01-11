@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Networker.Client;
 using Networker.Common;
 using Networker.Formatter.ProtobufNet;
@@ -15,8 +16,8 @@ namespace Networker.Example.ProtoBuf
             var server = new ServerBuilder().UseTcp(1000)
                                             .SetMaximumConnections(6000)
                                             .UseUdp(5000)
-                                            .UseLogger<ConsoleLogger>()
-                                            .SetLogLevel(LogLevel.Info)
+                                            //.UseLogger<ConsoleLogger>()
+                                            .SetLogLevel(LogLevel.Information)
                                             .RegisterPacketHandlerModule<DefaultPacketHandlerModule>()
                                             .UseProtobufNet()
                                             .Build();

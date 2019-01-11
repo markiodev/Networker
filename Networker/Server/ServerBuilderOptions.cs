@@ -1,4 +1,5 @@
-﻿using Networker.Common;
+﻿using Microsoft.Extensions.Logging;
+using Networker.Common;
 using Networker.Common.Abstractions;
 
 namespace Networker.Server

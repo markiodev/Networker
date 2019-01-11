@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Extensions.Logging;
 using Networker.Common.Abstractions;
 using Networker.Server.Abstractions;
 
@@ -7,13 +8,13 @@ namespace Networker.Server
     public class DefaultUdpSocketListenerFactory : IUdpSocketListenerFactory
     {
         private readonly IBufferManager bufferManager;
-        private readonly ILogger logger;
+        private readonly ILogger<UdpClientListener> logger;
         private readonly ServerBuilderOptions options;
         private readonly IServerPacketProcessor serverPacketProcessor;
         private IServerInformation serverInformation;
 
         public DefaultUdpSocketListenerFactory(ServerBuilderOptions options,
-            ILogger logger,
+            ILogger<UdpClientListener> logger,
             IServerPacketProcessor serverPacketProcessor,
             IBufferManager bufferManager,
             IServerInformation serverInformation)
