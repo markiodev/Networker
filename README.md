@@ -1,5 +1,3 @@
-Note from Mark (developer): I'm currently renovating a house so I have put development of Networker on hold until Feb 2019, but I am around to view pull requests or issues.
-
 [![Build status](https://ci.appveyor.com/api/projects/status/k2yi64f298bgjxra?svg=true)](https://ci.appveyor.com/project/MarkioE/networker)
 [![NuGet](https://img.shields.io/nuget/v/networker.svg)](https://www.nuget.org/packages/Networker/)
 
@@ -15,7 +13,8 @@ A simple to use TCP and UDP networking library for .NET, designed to be flexible
 * Socket Pooling
 * Object Pooling
 * Process thousands of requests per second
-* Dependency Injection using [Service Collection](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.dependencyinjection.servicecollection?view=aspnetcore-2.1)
+* Dependency Injection using [Micrsoft.Extensions.DependencyInjection.ServiceCollection](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.dependencyinjection.servicecollection?view=aspnetcore-2.1)
+* Logging using [Microsoft.Extensions.Logging](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.logging?view=aspnetcore-2.2)
 * Works with [Unity Game Engine](https://unity3d.com)
 
 ## Installation
@@ -48,10 +47,19 @@ Creating a server is easy..
 ````csharp
 var server = new ServerBuilder()
                 .UseTcp(1000)
-                .UseLogger<ConsoleLogger>()
-                .SetLogLevel(LogLevel.Info)
+                .UseUdp(5000)
+                .RegisterPacketHandlerModule<DefaultPacketHandlerModule>()
+                .RegisterPacketHandlerModule<ExamplePacketHandlerModule>()
                 .UseZeroFormatter()
+                .ConfigureLogging(loggingBuilder =>
+                                    {
+                                        loggingBuilder.AddConsole();
+                                        loggingBuilder.SetMinimumLevel(
+                                            LogLevel.Debug);
+                                    })
                 .Build();
+
+server.Start();
 ````
 
 You can handle a packet easily using dependency injection, logging and built-in deserialisation.
@@ -61,7 +69,7 @@ public class PingPacketHandler : PacketHandlerBase<PingPacket>
 {
     private readonly ILogger logger;
 
-    public PingPacketHandler(ILogger logger)
+    public PingPacketHandler(ILogger<PingPacketHandler> logger)
     {
         this.logger = logger;
     }
