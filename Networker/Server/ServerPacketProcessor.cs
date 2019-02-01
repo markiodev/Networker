@@ -17,6 +17,8 @@ namespace Networker.Server
         private readonly IServerInformation serverInformation;
         private readonly ObjectPool<ISender> tcpSenderObjectPool;
         private readonly ObjectPool<ISender> udpSenderObjectPool;
+        private readonly ObjectPool<IPacketContext> packetContextObjectPool;
+        private IUdpSocketSender _socketSender;
 
         public ServerPacketProcessor(ServerBuilderOptions options,
             ILogger<ServerPacketProcessor> logger,
@@ -37,7 +39,17 @@ namespace Networker.Server
             udpSenderObjectPool = new ObjectPool<ISender>(options.TcpMaxConnections * 2);
 
             for (var i = 0; i < udpSenderObjectPool.Capacity; i++)
-                udpSenderObjectPool.Push(new UdpSender(packetSerialiser));
+                udpSenderObjectPool.Push(new UdpSender(_socketSender));
+
+            packetContextObjectPool = new ObjectPool<IPacketContext>(options.TcpMaxConnections * 2);
+
+            for (var i = 0; i < packetContextObjectPool.Capacity; i++)
+                packetContextObjectPool.Push(new PacketContext());
+        }
+
+        public void SetUdpSender(IUdpSocketSender sender)
+        {
+            _socketSender = sender;
         }
 
         public void ProcessFromBuffer(ISender sender,
@@ -84,16 +96,25 @@ namespace Networker.Server
 
                     if (packetSerialiser.CanReadName) currentPosition += packetNameSize;
 
+                    var packetContext = this.packetContextObjectPool.Pop();
+                    packetContext.Sender = sender;
+
                     if (packetSerialiser.CanReadOffset)
                     {
-                        packetHandler.Handle(buffer, currentPosition, packetSize, sender);
+                        packetContext.PacketBytes = buffer;
+                        packetHandler.Handle(buffer, currentPosition, packetSize, packetContext).GetAwaiter().GetResult();
                     }
                     else
                     {
                         var packetBytes = new byte[packetSize];
+                        packetContext.PacketBytes = new byte[packetSize];
                         Buffer.BlockCopy(buffer, currentPosition, packetBytes, 0, packetSize);
-                        packetHandler.Handle(packetBytes, sender);
+                        Buffer.BlockCopy(buffer, currentPosition, packetContext.PacketBytes, 0, packetSize);
+                        
+                        packetHandler.Handle(packetBytes, packetContext).GetAwaiter().GetResult();
                     }
+
+                    packetContextObjectPool.Push(packetContext);
                 }
                 catch (Exception e)
                 {
@@ -136,7 +157,7 @@ namespace Networker.Server
             var sender = udpSenderObjectPool.Pop() as UdpSender;
             try
             {
-                sender.RemoteEndpoint = socketEvent.RemoteEndPoint;
+                sender.RemoteEndpoint = socketEvent.RemoteEndPoint as IPEndPoint;
                 ProcessPacketsFromSocketEventArgs(sender, socketEvent, false);
             }
             catch (Exception e)
@@ -152,7 +173,7 @@ namespace Networker.Server
             var sender = udpSenderObjectPool.Pop() as UdpSender;
             try
             {
-                sender.RemoteEndpoint = endPoint;
+                sender.RemoteEndpoint = endPoint as IPEndPoint;
 
                 ProcessFromBuffer(sender,
                     buffer,

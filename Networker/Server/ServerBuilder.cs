@@ -26,14 +26,19 @@ namespace Networker.Server
             this.serviceCollection.AddSingleton<IBufferManager>(new BufferManager(
                 this.options.PacketSizeBuffer * this.options.TcpMaxConnections * 5,
                 this.options.PacketSizeBuffer));
+            this.serviceCollection.AddSingleton<IUdpSocketSender, UdpSocketSender>();
 
             if(this.tcpSocketListenerFactory == null)
                 this.serviceCollection
                     .AddSingleton<ITcpSocketListenerFactory, DefaultTcpSocketListenerFactory>();
 
-            if(this.udpSocketListenerFactory == null)
+            if (this.udpSocketListenerFactory == null)
+            {
                 this.serviceCollection
                     .AddSingleton<IUdpSocketListenerFactory, DefaultUdpSocketListenerFactory>();
+            }
+
+            this.serviceCollection.AddSingleton<IUdpSocketListener>(collection => collection.GetService<IUdpSocketListenerFactory>().Create());
 
 
             var serviceProvider = this.GetServiceProvider();

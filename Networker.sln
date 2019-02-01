@@ -19,6 +19,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Networker.Example.ZeroForma
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Networker.Example.Protobuf.Client", "Networker.Example.Protobuf.Client\Networker.Example.Protobuf.Client.csproj", "{1AC50FF8-E5F0-454C-A9D8-EF4A9F803674}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameServer", "GameServer\GameServer.csproj", "{4AA5A3F3-1085-46A6-98C9-BC8A75BF33FF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,6 +55,10 @@ Global
 		{1AC50FF8-E5F0-454C-A9D8-EF4A9F803674}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1AC50FF8-E5F0-454C-A9D8-EF4A9F803674}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1AC50FF8-E5F0-454C-A9D8-EF4A9F803674}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4AA5A3F3-1085-46A6-98C9-BC8A75BF33FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4AA5A3F3-1085-46A6-98C9-BC8A75BF33FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4AA5A3F3-1085-46A6-98C9-BC8A75BF33FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4AA5A3F3-1085-46A6-98C9-BC8A75BF33FF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -61,6 +67,7 @@ Global
 		{2EA49830-2E11-4FEA-901D-08AB4B64E6B1} = {B2B344C1-EABE-41DD-B4BF-6FCAA2E4474D}
 		{8CEC54CE-7A32-43C2-93A9-EDDDE6A7CBDA} = {B2B344C1-EABE-41DD-B4BF-6FCAA2E4474D}
 		{1AC50FF8-E5F0-454C-A9D8-EF4A9F803674} = {B2B344C1-EABE-41DD-B4BF-6FCAA2E4474D}
+		{4AA5A3F3-1085-46A6-98C9-BC8A75BF33FF} = {B2B344C1-EABE-41DD-B4BF-6FCAA2E4474D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A022B3C8-E866-480E-82A5-17935BA812CC}

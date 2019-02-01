@@ -7,9 +7,19 @@ namespace Networker.DefaultFormatter
 {
     public class DefaultNetworkerPacketSerialiser : IPacketSerialiser
     {
+        public byte[] Package(string name, byte[] bytes)
+        {
+            throw new NotImplementedException();
+        }
+
         public bool CanReadOffset => false;
         public bool CanReadName => true;
         public bool CanReadLength => true;
+
+        public T Deserialise<T>(byte[] packetBytes)
+        {
+            throw new NotImplementedException();
+        }
 
         public T Deserialise<T>(byte[] packetBytes, int offset, int length)
         {

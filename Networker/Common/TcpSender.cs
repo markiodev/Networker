@@ -6,20 +6,20 @@ namespace Networker.Common
 {
     public class TcpSender : ISender
     {
-        private readonly IPacketSerialiser packetSerialiser;
+        private readonly IPacketSerialiser _packetSerialiser;
 
         public TcpSender(IPacketSerialiser packetSerialiser)
         {
-            this.packetSerialiser = packetSerialiser;
+            this._packetSerialiser = packetSerialiser;
         }
 
         public Socket Socket { get; set; }
 
         public void Send<T>(T packet)
         {
-            this.Socket.Send(this.packetSerialiser.Serialise(packet));
+            this.Socket.Send(this._packetSerialiser.Serialise(packet));
         }
 
-        public EndPoint EndPoint => this.Socket.RemoteEndPoint;
+        public IPEndPoint EndPoint => this.Socket.RemoteEndPoint as IPEndPoint;
     }
 }

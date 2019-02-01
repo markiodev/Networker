@@ -19,16 +19,16 @@ namespace Networker.Common
             this.PacketSerialiser = PacketSerialiserProvider.Provide();
         }
 
-        public async Task Handle(byte[] packet, ISender sender)
+        public async Task Handle(byte[] packet, IPacketContext context)
         {
-            await this.Process(this.PacketSerialiser.Deserialise<T>(packet, 0, 0), sender);
+            await this.Process(this.PacketSerialiser.Deserialise<T>(packet), context);
         }
 
-        public async Task Handle(byte[] packet, int offset, int length, ISender sender)
+        public async Task Handle(byte[] packet, int offset, int length, IPacketContext context)
         {
-            await this.Process(this.PacketSerialiser.Deserialise<T>(packet, offset, length), sender);
+            await this.Process(this.PacketSerialiser.Deserialise<T>(packet, offset, length), context);
         }
 
-        public abstract Task Process(T packet, ISender sender);
+        public abstract Task Process(T packet, IPacketContext context);
     }
 }

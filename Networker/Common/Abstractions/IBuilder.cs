@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace Networker.Common.Abstractions
@@ -19,11 +20,12 @@ namespace Networker.Common.Abstractions
         TBuilder RegisterPacketHandlerModule(IPacketHandlerModule packetHandlerModule);
         TBuilder RegisterPacketHandlerModule<T>()
             where T : IPacketHandlerModule;
-
-        //Logging
-        TBuilder SetLogLevel(LogLevel logLevel);
-
+        
+        //Microsoft Stuff
+        TBuilder RegisterTypes(Action<IServiceCollection> serviceCollection);
         TBuilder ConfigureLogging(Action<ILoggingBuilder> loggingBuilder);
+        TBuilder UseConfiguration(IConfiguration configuration);
+        TBuilder UseConfiguration<T>(IConfiguration configuration) where T : class;
 
         //Tcp
         TBuilder UseTcp(int port);

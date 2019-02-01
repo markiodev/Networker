@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Networker.Client.Abstractions;
@@ -11,11 +13,13 @@ namespace Networker.Client
 {
     public class Client : IClient
     {
+        private readonly ILogger<Client> logger;
         private readonly ClientBuilderOptions options;
         private readonly IClientPacketProcessor packetProcessor;
-        private readonly ILogger<Client> logger;
         private readonly IPacketSerialiser packetSerialiser;
+        private readonly byte[] pingPacketBuffer;
         private bool isRunning = true;
+        private readonly PingOptions pingOptions;
         private Socket tcpSocket;
         private UdpClient udpClient;
         private IPEndPoint udpEndpoint;
@@ -29,6 +33,8 @@ namespace Networker.Client
             this.packetSerialiser = packetSerialiser;
             this.packetProcessor = packetProcessor;
             this.logger = logger;
+            this.pingPacketBuffer = Encoding.ASCII.GetBytes("aaaaaaaaaaaaaaaaaaaaaaaa");
+            this.pingOptions = new PingOptions(64, true);
         }
 
         public EventHandler<Socket> Connected { get; set; }
@@ -77,7 +83,8 @@ namespace Networker.Client
 
                 Task.Factory.StartNew(() =>
                                       {
-                                          this.logger.LogInformation($"Connecting to UDP at {this.options.Ip}:{this.options.UdpPort}");
+                                          this.logger.LogInformation(
+                                              $"Connecting to UDP at {this.options.Ip}:{this.options.UdpPort}");
 
                                           while(this.isRunning)
                                           {
@@ -94,22 +101,32 @@ namespace Networker.Client
                                                   this.logger.Error(ex);
                                               }
                                           }
+
                                           this.udpClient = null;
                                       });
             }
         }
 
-        public int Ping()
+        public long Ping()
         {
-            throw new NotImplementedException();
-            return 1235;
+            var pingSender = new Ping();
+            var timeout = 10000;
+            var reply = pingSender.Send(this.options.Ip, timeout, this.pingPacketBuffer, this.pingOptions);
+
+            if(reply.Status == IPStatus.Success)
+            {
+                return reply.RoundtripTime;
+            }
+
+            this.logger.LogError($"Could not get ping " + reply.Status);
+            return -1;
         }
 
         public void Send<T>(T packet)
         {
             if(this.tcpSocket == null)
             {
-                throw new Exception("TCP client has not been initialised");
+                throw new Exception("TCP client has not been initialised. Have you called .Connect()?");
             }
 
             var serialisedPacket = this.packetSerialiser.Serialise(packet);
@@ -117,11 +134,21 @@ namespace Networker.Client
             var result = this.tcpSocket.Send(serialisedPacket);
         }
 
+        public void SendUdp(byte[] packet)
+        {
+            if(this.udpClient == null)
+            {
+                throw new Exception("UDP client has not been initialised. Have you called .Connect()?");
+            }
+
+            this.udpClient.Send(packet, packet.Length, this.udpEndpoint);
+        }
+
         public void SendUdp<T>(T packet)
         {
             if(this.udpClient == null)
             {
-                throw new Exception("UDP client has not been initialised");
+                throw new Exception("UDP client has not been initialised. Have you called .Connect()?");
             }
 
             var serialisedPacket = this.packetSerialiser.Serialise(packet);

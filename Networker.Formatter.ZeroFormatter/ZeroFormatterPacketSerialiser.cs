@@ -15,7 +15,7 @@ namespace Networker.Formatter.ZeroFormatter
 
         public T Deserialise<T>(byte[] packetBytes, int offset, int length)
         {
-            return default(T);
+            throw new NotImplementedException();
         }
 
         public byte[] Serialise<T>(T packet)
@@ -30,6 +30,24 @@ namespace Networker.Formatter.ZeroFormatter
                     binaryWriter.Write(serialised.Length);
                     binaryWriter.Write(nameBytes);
                     binaryWriter.Write(serialised);
+                }
+
+                var packetBytes = memoryStream.ToArray();
+                return packetBytes;
+            }
+        }
+
+        public byte[] Package(string name, byte[] bytes)
+        {
+            using (var memoryStream = new MemoryStream())
+            {
+                using (var binaryWriter = new BinaryWriter(memoryStream))
+                {
+                    var nameBytes = Encoding.ASCII.GetBytes(name);
+                    binaryWriter.Write(nameBytes.Length);
+                    binaryWriter.Write(bytes.Length);
+                    binaryWriter.Write(nameBytes);
+                    binaryWriter.Write(bytes);
                 }
 
                 var packetBytes = memoryStream.ToArray();

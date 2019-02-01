@@ -7,7 +7,6 @@ namespace Networker.Server
 {
     public class DefaultUdpSocketListenerFactory : IUdpSocketListenerFactory
     {
-        private readonly IBufferManager bufferManager;
         private readonly ILogger<UdpClientListener> logger;
         private readonly ServerBuilderOptions options;
         private readonly IServerPacketProcessor serverPacketProcessor;
@@ -16,13 +15,11 @@ namespace Networker.Server
         public DefaultUdpSocketListenerFactory(ServerBuilderOptions options,
             ILogger<UdpClientListener> logger,
             IServerPacketProcessor serverPacketProcessor,
-            IBufferManager bufferManager,
             IServerInformation serverInformation)
         {
             this.options = options;
             this.logger = logger;
             this.serverPacketProcessor = serverPacketProcessor;
-            this.bufferManager = bufferManager;
             this.serverInformation = serverInformation;
         }
 
@@ -36,7 +33,6 @@ namespace Networker.Server
             return new UdpClientListener(this.options,
                 this.logger,
                 this.serverPacketProcessor,
-                this.bufferManager,
                 this.serverInformation);
         }
     }

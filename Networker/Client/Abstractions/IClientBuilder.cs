@@ -10,5 +10,7 @@ namespace Networker.Client.Abstractions
         //Info
         IClientBuilder SetPacketBufferPoolSize(int size);
         IClientBuilder UseIp(string ip);
+
+        T Build<T>() where T : IClient;
     }
 }

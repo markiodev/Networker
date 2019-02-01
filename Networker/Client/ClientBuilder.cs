@@ -1,43 +1,52 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Networker.Client.Abstractions;
 using Networker.Common.Abstractions;
+using Networker.Server.Abstractions;
 
 namespace Networker.Client
 {
     public class ClientBuilder : BuilderBase<IClientBuilder, IClient, ClientBuilderOptions>, IClientBuilder
     {
-        public ClientBuilder() : base()
-        {
-
-        }
-
         public override IClient Build()
         {
-            this.SetupSharedDependencies();
-            this.serviceCollection.AddSingleton<IClient, Client>();
-            this.serviceCollection.AddSingleton<IClientPacketProcessor, ClientPacketProcessor>();
+            SetupSharedDependencies();
+            serviceCollection.AddSingleton<IClient, Client>();
+            serviceCollection.AddSingleton<IClientPacketProcessor, ClientPacketProcessor>();
+            serviceCollection.AddSingleton<IUdpSocketSender, UdpClientSender>();
 
-            var serviceProvider = this.GetServiceProvider();
-
+            var serviceProvider = GetServiceProvider();
             return serviceProvider.GetService<IClient>();
         }
 
         public IClientBuilder SetPacketBufferPoolSize(int size)
         {
-            this.options.ObjectPoolSize = size;
+            options.ObjectPoolSize = size;
             return this;
         }
 
         public IClientBuilder UseIp(string ip)
         {
-            this.options.Ip = ip;
+            if (ip == "localhost") ip = "127.0.0.1";
+
+            options.Ip = ip;
             return this;
+        }
+
+        public T Build<T>() where T : IClient
+        {
+            SetupSharedDependencies();
+            serviceCollection.AddSingleton(typeof(T), typeof(Client));
+            serviceCollection.AddSingleton<IClientPacketProcessor, ClientPacketProcessor>();
+            serviceCollection.AddSingleton<IUdpSocketSender, UdpClientSender>();
+
+            var serviceProvider = GetServiceProvider();
+            return serviceProvider.GetService<T>();
         }
 
         public IClientBuilder UseUdp(int port, int localPort)
         {
-            this.options.UdpPort = port;
-            this.options.UdpPortLocal = localPort;
+            options.UdpPort = port;
+            options.UdpPortLocal = localPort;
             return this;
         }
     }
