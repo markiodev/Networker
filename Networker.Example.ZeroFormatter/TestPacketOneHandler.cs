@@ -10,8 +10,8 @@ namespace Networker.Example.ZeroFormatter
         public TestPacketOneHandler(IPacketSerialiser packetSerialiser)
             : base(packetSerialiser) { }
 
-
-        public override async Task Process(TestPacketThing packet, ISender socket)
+        
+        public override async Task Process(TestPacketThing packet, IPacketContext context)
         {
         }
     }

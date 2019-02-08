@@ -19,7 +19,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Networker.Example.ZeroForma
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Networker.Example.Protobuf.Client", "Networker.Example.Protobuf.Client\Networker.Example.Protobuf.Client.csproj", "{1AC50FF8-E5F0-454C-A9D8-EF4A9F803674}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameServer", "GameServer\GameServer.csproj", "{4AA5A3F3-1085-46A6-98C9-BC8A75BF33FF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameServer", "GameServer\GameServer.csproj", "{4AA5A3F3-1085-46A6-98C9-BC8A75BF33FF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

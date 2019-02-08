@@ -6,19 +6,19 @@ using Networker.Common.Abstractions;
 
 namespace Networker.Example.ZeroFormatter.DefaultPackets
 {
-public class PingPacketHandler : PacketHandlerBase<PingPacket>
-{
-    private readonly ILogger logger;
-
-    public PingPacketHandler(ILogger<PingPacketHandler> logger, IPacketSerialiser serialiser)
-        : base(serialiser)
+    public class PingPacketHandler : PacketHandlerBase<PingPacket>
     {
-        this.logger = logger;
-    }
+        private readonly ILogger logger;
 
-    public override async Task Process(PingPacket packet, ISender sender)
-    {
-        this.logger.LogDebug("Received a ping packet from " + sender.EndPoint);
+        public PingPacketHandler(ILogger<PingPacketHandler> logger, IPacketSerialiser serialiser)
+            : base(serialiser)
+        {
+            this.logger = logger;
+        }
+
+        public override async Task Process(PingPacket packet, IPacketContext context)
+        {
+            this.logger.LogDebug("Received a ping packet from " + context.Sender.EndPoint);
+        }
     }
-}
 }

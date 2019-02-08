@@ -21,9 +21,28 @@ namespace Networker.Formatter.ProtobufNet
             }
         }
 
+        public byte[] Package(string name, byte[] bytes)
+        {
+            return new byte[] { };
+        }
+
         public bool CanReadOffset => true;
         public bool CanReadName => true;
         public bool CanReadLength => true;
+
+        public T Deserialise<T>(byte[] packetBytes)
+        {
+            var memoryStream = this.memoryStreamObjectPool.Pop();
+
+            memoryStream.SetLength(0);
+            memoryStream.Write(packetBytes, 0, packetBytes.Length);
+
+            var deserialised = Serializer.Deserialize<T>(memoryStream);
+
+            this.memoryStreamObjectPool.Push(memoryStream);
+
+            return deserialised;
+        }
 
         public T Deserialise<T>(byte[] packetBytes, int offset, int length)
         {
