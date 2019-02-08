@@ -10,7 +10,8 @@ namespace Networker.Client.Abstractions
         void Connect();
         void Send<T>(T packet);
         void SendUdp<T>(T packet);
-        int Ping();
+        void SendUdp(byte[] packet);
+        long Ping();
         void Stop();
     }
 }

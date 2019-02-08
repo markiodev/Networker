@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using Networker.Common;
 using Networker.Common.Abstractions;
 using Networker.Server.Abstractions;
 
@@ -11,123 +9,107 @@ namespace Networker.Server
     public class Server : IServer
     {
         private readonly IPacketSerialiser packetSerialiser;
-        private readonly IServerInformation serverInformation;
         private readonly ITcpConnections tcpConnections;
         private ServerInformationEventArgs eventArgs;
 
         public Server(ServerBuilderOptions options,
-            ILogger<Server> logger,
-            IServiceProvider serviceProvider,
-            IPacketHandlers packetHandlers,
             ITcpConnections tcpConnections,
-            IServerPacketProcessor serverPacketProcessor,
             ITcpSocketListenerFactory tcpSocketListenerFactory,
-            IUdpSocketListenerFactory udpSocketListenerFactory,
+            IUdpSocketListener udpSocketListener,
             IBufferManager bufferManager,
             IServerInformation serverInformation,
             IPacketSerialiser packetSerialiser)
         {
             this.tcpConnections = tcpConnections;
-            this.serverInformation = serverInformation;
+            Information = serverInformation;
             this.packetSerialiser = packetSerialiser;
             bufferManager.InitBuffer();
 
-            if(options.TcpPort > 0)
-            {
-                this.TcpListener = tcpSocketListenerFactory.Create();
-            }
+            if (options.TcpPort > 0) TcpListener = tcpSocketListenerFactory.Create();
 
-            if(options.UdpPort > 0)
-            {
-                this.UdpListener = udpSocketListenerFactory.Create();
-            }
+            if (options.UdpPort > 0) UdpListener = udpSocketListener;
 
             Task.Factory.StartNew(() =>
-                                  {
-                                      while(this.serverInformation.IsRunning)
-                                      {
-                                          if(this.eventArgs == null)
-                                          {
-                                              this.eventArgs = new ServerInformationEventArgs();
-                                          }
+            {
+                while (Information.IsRunning)
+                {
+                    if (eventArgs == null) eventArgs = new ServerInformationEventArgs();
 
-                                          this.eventArgs.ProcessedTcpPackets =
-                                              serverInformation.ProcessedTcpPackets;
-                                          this.eventArgs.InvalidTcpPackets =
-                                              serverInformation.InvalidTcpPackets;
-                                          this.eventArgs.ProcessedUdpPackets =
-                                              serverInformation.ProcessedUdpPackets;
-                                          this.eventArgs.InvalidUdpPackets =
-                                              serverInformation.InvalidUdpPackets;
-                                          this.eventArgs.TcpConnections = tcpConnections.GetConnections()
-                                                                                        .Count;
+                    eventArgs.ProcessedTcpPackets =
+                        serverInformation.ProcessedTcpPackets;
+                    eventArgs.InvalidTcpPackets =
+                        serverInformation.InvalidTcpPackets;
+                    eventArgs.ProcessedUdpPackets =
+                        serverInformation.ProcessedUdpPackets;
+                    eventArgs.InvalidUdpPackets =
+                        serverInformation.InvalidUdpPackets;
+                    eventArgs.TcpConnections = tcpConnections.GetConnections()
+                        .Count;
 
-                                          this.ServerInformationUpdated?.Invoke(this, this.eventArgs);
+                    ServerInformationUpdated?.Invoke(this, eventArgs);
 
-                                          this.serverInformation.ProcessedTcpPackets = 0;
-                                          this.serverInformation.InvalidTcpPackets = 0;
-                                          this.serverInformation.ProcessedUdpPackets = 0;
-                                          this.serverInformation.InvalidUdpPackets = 0;
+                    Information.ProcessedTcpPackets = 0;
+                    Information.InvalidTcpPackets = 0;
+                    Information.ProcessedUdpPackets = 0;
+                    Information.InvalidUdpPackets = 0;
 
-                                          Thread.Sleep(10000);
-                                      }
-                                  });
+                    Thread.Sleep(10000);
+                }
+            });
         }
 
         public ITcpSocketListener TcpListener { get; }
         public IUdpSocketListener UdpListener { get; }
+        public IServerInformation Information { get; }
         public EventHandler<TcpConnectionConnectedEventArgs> ClientConnected { get; set; }
         public EventHandler<TcpConnectionDisconnectedEventArgs> ClientDisconnected { get; set; }
         public EventHandler<ServerInformationEventArgs> ServerInformationUpdated { get; set; }
 
         public void Broadcast<T>(T packet)
         {
-            if(this.UdpListener == null)
-            {
-                throw new Exception("UDP is not enabled");
-            }
+            if (UdpListener == null) throw new Exception("UDP is not enabled");
 
-            var socket = this.UdpListener.GetSocket();
-            var endpoint = this.UdpListener.GetEndPoint();
-            socket.SendTo(this.packetSerialiser.Serialise(packet), endpoint);
+            var socket = UdpListener.GetSocket();
+            var endpoint = UdpListener.GetEndPoint();
+            socket.SendTo(packetSerialiser.Serialise(packet), endpoint);
         }
 
         public ITcpConnections GetConnections()
         {
-            return this.tcpConnections;
+            return tcpConnections;
         }
 
         public void Start()
         {
-            this.TcpListener?.Listen();
-            this.UdpListener?.Listen();
+            TcpListener?.Listen();
+            UdpListener?.Listen();
 
-            if(this.TcpListener != null)
+            if (TcpListener != null)
             {
-                this.TcpListener.ClientConnected += this.ClientConnectedEvent;
-                this.TcpListener.ClientDisconnected += this.ClientDisconnectedEvent;
+                TcpListener.ClientConnected += ClientConnectedEvent;
+                TcpListener.ClientDisconnected += ClientDisconnectedEvent;
             }
         }
 
         public void Stop()
         {
-            this.serverInformation.IsRunning = false;
+            Information.IsRunning = false;
 
-            if(this.TcpListener != null)
+            if (TcpListener != null)
             {
-                this.TcpListener.ClientConnected -= this.ClientConnectedEvent;
-                this.TcpListener.ClientDisconnected -= this.ClientDisconnectedEvent;
+                TcpListener.ClientConnected -= ClientConnectedEvent;
+                TcpListener.ClientDisconnected -= ClientDisconnectedEvent;
             }
         }
 
         private void ClientConnectedEvent(object sender, TcpConnectionConnectedEventArgs e)
         {
-            this.ClientConnected?.Invoke(this, e);
+            ClientConnected?.Invoke(this, e);
         }
 
         private void ClientDisconnectedEvent(object sender, TcpConnectionDisconnectedEventArgs e)
         {
-            this.ClientDisconnected?.Invoke(this, e);
+            ClientDisconnected?.Invoke(this, e);
         }
     }
 }

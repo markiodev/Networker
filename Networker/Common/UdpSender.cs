@@ -1,25 +1,25 @@
 ﻿using System.Net;
 using Networker.Common.Abstractions;
+using Networker.Server.Abstractions;
 
 namespace Networker.Common
 {
     public class UdpSender : ISender
     {
-        private readonly IPacketSerialiser packetSerialiser;
+        private readonly IUdpSocketSender _socketSender;
 
-        public UdpSender(IPacketSerialiser packetSerialiser)
+        public UdpSender(IUdpSocketSender socketSender)
         {
-            this.packetSerialiser = packetSerialiser;
+            _socketSender = socketSender;
         }
 
         public EndPoint RemoteEndpoint { get; set; }
 
         public void Send<T>(T packet)
         {
-            //todo: Finish this
-            this.packetSerialiser.Serialise(packet);
+            _socketSender.SendTo(packet, EndPoint);
         }
 
-        public EndPoint EndPoint => this.RemoteEndpoint;
+        public IPEndPoint EndPoint => RemoteEndpoint as IPEndPoint;
     }
 }

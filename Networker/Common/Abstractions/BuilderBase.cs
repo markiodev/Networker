@@ -1,45 +1,49 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 
 namespace Networker.Common.Abstractions
 {
-    public abstract class BuilderBase<TBuilder, TResult, TBuilderOptions> : IBuilder<TBuilder, TResult> 
+    public abstract class BuilderBase<TBuilder, TResult, TBuilderOptions> : IBuilder<TBuilder, TResult>
         where TBuilder : class, IBuilder<TBuilder, TResult>
         where TBuilderOptions : class, IBuilderOptions
     {
+        private IConfiguration configuration;
+
+        private Action<ILoggingBuilder> loggingBuilder;
+
         //Modules
         protected PacketHandlerModule module;
         protected List<IPacketHandlerModule> modules;
 
-        //Service Collection
-        protected IServiceCollection serviceCollection;
-        protected Func<IServiceProvider> serviceProviderFactory;
-
         //Builder Options
         protected TBuilderOptions options;
 
-        private Action<ILoggingBuilder> loggingBuilder;
+        //Service Collection
+        protected IServiceCollection serviceCollection;
+        private Action<IServiceCollection> serviceCollectionFactory;
+        protected Func<IServiceProvider> serviceProviderFactory;
 
         public BuilderBase()
         {
-            this.options = Activator.CreateInstance<TBuilderOptions>();
-            this.serviceCollection = new ServiceCollection();
-            this.modules = new List<IPacketHandlerModule>();
-            this.module = new PacketHandlerModule();
-            this.modules.Add(this.module);
+            options = Activator.CreateInstance<TBuilderOptions>();
+            serviceCollection = new ServiceCollection();
+            modules = new List<IPacketHandlerModule>();
+            module = new PacketHandlerModule();
+            modules.Add(module);
         }
 
         public abstract TResult Build();
 
         public IServiceCollection GetServiceCollection()
         {
-            return this.serviceCollection;
+            return serviceCollection;
         }
 
-        public TBuilder SetServiceCollection(IServiceCollection serviceCollection, Func<IServiceProvider> serviceProviderFactory = null)
+        public TBuilder SetServiceCollection(IServiceCollection serviceCollection,
+            Func<IServiceProvider> serviceProviderFactory = null)
         {
             this.serviceCollection = serviceCollection;
             this.serviceProviderFactory = serviceProviderFactory;
@@ -50,25 +54,25 @@ namespace Networker.Common.Abstractions
             where TPacket : class
             where TPacketHandler : IPacketHandler
         {
-            this.module.AddPacketHandler<TPacket, TPacketHandler>();
+            module.AddPacketHandler<TPacket, TPacketHandler>();
             return this as TBuilder;
         }
 
         public TBuilder RegisterPacketHandlerModule(IPacketHandlerModule packetHandlerModule)
         {
-            this.modules.Add(packetHandlerModule);
+            modules.Add(packetHandlerModule);
             return this as TBuilder;
         }
 
         public TBuilder RegisterPacketHandlerModule<T>() where T : IPacketHandlerModule
         {
-            this.modules.Add(Activator.CreateInstance<T>());
+            modules.Add(Activator.CreateInstance<T>());
             return this as TBuilder;
         }
-
-        public TBuilder SetLogLevel(LogLevel logLevel)
+        
+        public TBuilder RegisterTypes(Action<IServiceCollection> serviceCollection)
         {
-            this.options.LogLevel = logLevel;
+            serviceCollectionFactory = serviceCollection;
             return this as TBuilder;
         }
 
@@ -78,66 +82,88 @@ namespace Networker.Common.Abstractions
             return this as TBuilder;
         }
 
+        public TBuilder UseConfiguration(IConfiguration configuration)
+        {
+            this.configuration = configuration;
+            serviceCollection.AddSingleton(configuration);
+            return this as TBuilder;
+        }
+
+        public TBuilder UseConfiguration<T>(IConfiguration configuration) where T : class
+        {
+            this.configuration = configuration;
+            serviceCollection.AddSingleton(configuration);
+            serviceCollection.Configure<T>(configuration);
+            return this as TBuilder;
+        }
+
         public TBuilder SetPacketBufferSize(int size)
         {
-            this.options.PacketSizeBuffer = size;
+            options.PacketSizeBuffer = size;
             return this as TBuilder;
         }
 
         public TBuilder UseTcp(int port)
         {
-            this.options.TcpPort = port;
+            options.TcpPort = port;
             return this as TBuilder;
         }
 
         public TBuilder UseUdp(int port)
         {
-            this.options.UdpPort = port;
+            options.UdpPort = port;
             return this as TBuilder;
         }
 
         protected void SetupSharedDependencies()
         {
-            foreach (var packetHandlerModule in this.modules)
+            foreach (var packetHandlerModule in modules)
+            foreach (var packetHandler in packetHandlerModule.GetPacketHandlers())
+                serviceCollection.AddSingleton(packetHandler.Value);
+
+            serviceCollection.AddSingleton(options);
+            serviceCollection.AddSingleton<IPacketHandlers, PacketHandlers>();
+
+            if (loggingBuilder == null)
             {
-                foreach (var packetHandler in packetHandlerModule.GetPacketHandlers())
+                loggingBuilder = loggerBuilderFactory =>
                 {
-                    this.serviceCollection.AddSingleton(packetHandler.Value);
-                }
+                };
             }
 
-            if(this.loggingBuilder == null)
-            {
-                this.loggingBuilder = (loggingBuilder) =>
-                                      {
-                                      };
-            }
-            
-            this.serviceCollection.AddSingleton<TBuilderOptions>(this.options);
-            this.serviceCollection.AddSingleton<IPacketHandlers, PacketHandlers>();
-            this.serviceCollection.AddLogging(this.loggingBuilder);
+            serviceCollection.AddLogging(loggingBuilder);
+            serviceCollectionFactory?.Invoke(serviceCollection);
         }
 
         protected IServiceProvider GetServiceProvider()
         {
-            var serviceProvider = this.serviceProviderFactory != null ? this.serviceProviderFactory.Invoke() : this.serviceCollection.BuildServiceProvider();
-
-            PacketSerialiserProvider.PacketSerialiser = serviceProvider.GetService<IPacketSerialiser>();
-
-            IPacketHandlers packetHandlers = serviceProvider.GetService<IPacketHandlers>();
-            foreach (var packetHandlerModule in this.modules)
+            var serviceProvider = serviceProviderFactory != null
+                ? serviceProviderFactory.Invoke()
+                : serviceCollection.BuildServiceProvider();
+            try
             {
-                foreach (var packetHandler in packetHandlerModule.GetPacketHandlers())
-                {
-                    packetHandlers.Add(PacketSerialiserProvider.PacketSerialiser.CanReadName ? packetHandler.Key.Name : "Default",
-                        (IPacketHandler)serviceProvider.GetService(packetHandler.Value));
-                }
+                PacketSerialiserProvider.PacketSerialiser = serviceProvider.GetService<IPacketSerialiser>();
             }
+            catch(Exception ex)
+            {
+                throw new Exception("No packet serialiser has been configured for Networker");
+            }
+
+            if (PacketSerialiserProvider.PacketSerialiser == null)
+            {
+                throw new Exception("No packet serialiser has been configured for Networker");
+            }
+
+            var packetHandlers = serviceProvider.GetService<IPacketHandlers>();
+            foreach (var packetHandlerModule in modules)
+            foreach (var packetHandler in packetHandlerModule.GetPacketHandlers())
+                packetHandlers.Add(
+                    PacketSerialiserProvider.PacketSerialiser.CanReadName ? packetHandler.Key.Name : "Default",
+                    (IPacketHandler) serviceProvider.GetService(packetHandler.Value));
 
             if (!PacketSerialiserProvider.PacketSerialiser.CanReadName && packetHandlers.GetPacketHandlers().Count > 1)
-            {
-                throw new Exception("A PacketSerialiser which cannot identify a packet can only support up to one packet type");
-            }
+                throw new Exception(
+                    "A PacketSerialiser which cannot identify a packet can only support up to one packet type");
 
             return serviceProvider;
         }

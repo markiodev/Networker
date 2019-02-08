@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Sockets;
+using Networker.Server.Abstractions;
 
 namespace Networker.Client.Abstractions
 {
@@ -7,5 +8,6 @@ namespace Networker.Client.Abstractions
     {
         void Process(Socket socket);
         void Process(UdpReceiveResult data);
+        void SetUdpSocketSender(IUdpSocketSender socketSender);
     }
 }
