@@ -14,10 +14,10 @@ namespace Networker.Example.ProtoBuf
         {
             this.logger = logger;
         }
-
-        public override async Task Process(PingPacket packet, ISender sender)
+        
+        public override async Task Process(PingPacket packet, IPacketContext context)
         {
-            this.logger.LogDebug("Received a ping packet from " + sender.EndPoint);
+            this.logger.LogDebug("Received a ping packet from " + context.Sender.EndPoint);
         }
     }
 }
