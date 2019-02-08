@@ -37,9 +37,6 @@ Install-Package Networker.Formatter.ZeroFormatter
 Install-Package Networker.Formatter.ProtoBufNet
 ```
 
-## Getting Started
-Find more information about how to get started on our [Wiki](https://github.com/MarkioE/Networker/wiki) or view the Examples found inside the repository.
-
 ## Tutorial - Creating a Basic Unity Multiplayer Game with Networker
 [Get started with this tutorial written by the library developer Mark Eastwood](https://markeastwood.net/?p=7)
 
