@@ -73,6 +73,7 @@ namespace Networker.Server
             if (UdpListener == null) throw new Exception("UDP is not enabled");
 
             var socket = UdpListener.GetSocket();
+            socket.EnableBroadcast = true;
             socket.SendTo(packetSerialiser.Serialise(packet), new IPEndPoint(IPAddress.Broadcast, this.options.UdpPort));
         }
 
