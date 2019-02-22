@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Networker.Common.Abstractions;
@@ -9,6 +10,7 @@ namespace Networker.Server
     public class Server : IServer
     {
         private readonly IPacketSerialiser packetSerialiser;
+        private readonly ServerBuilderOptions options;
         private readonly ITcpConnections tcpConnections;
         private ServerInformationEventArgs eventArgs;
 
@@ -20,6 +22,7 @@ namespace Networker.Server
             IServerInformation serverInformation,
             IPacketSerialiser packetSerialiser)
         {
+            this.options = options;
             this.tcpConnections = tcpConnections;
             Information = serverInformation;
             this.packetSerialiser = packetSerialiser;
@@ -70,8 +73,7 @@ namespace Networker.Server
             if (UdpListener == null) throw new Exception("UDP is not enabled");
 
             var socket = UdpListener.GetSocket();
-            var endpoint = UdpListener.GetEndPoint();
-            socket.SendTo(packetSerialiser.Serialise(packet), endpoint);
+            socket.SendTo(packetSerialiser.Serialise(packet), new IPEndPoint(IPAddress.Broadcast, this.options.UdpPort));
         }
 
         public ITcpConnections GetConnections()
