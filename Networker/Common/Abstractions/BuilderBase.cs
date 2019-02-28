@@ -135,7 +135,7 @@ namespace Networker.Common.Abstractions
             serviceCollectionFactory?.Invoke(serviceCollection);
         }
 
-        protected IServiceProvider GetServiceProvider()
+        public IServiceProvider GetServiceProvider()
         {
             var serviceProvider = serviceProviderFactory != null
                 ? serviceProviderFactory.Invoke()
