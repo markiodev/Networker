@@ -14,6 +14,8 @@ namespace Networker.Common.Abstractions
         IServiceCollection GetServiceCollection();
         TBuilder SetServiceCollection(IServiceCollection serviceCollection, Func<IServiceProvider> serviceProviderFactory = null);
 
+        IServiceProvider GetServiceProvider();
+
         //Packet Handler
         TBuilder RegisterPacketHandler<TPacket, TPacketHandler>()
             where TPacket : class where TPacketHandler : IPacketHandler;
