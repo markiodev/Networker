@@ -1,11 +1,11 @@
-﻿using System;
-using System.Net.Sockets;
-using System.Text;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Networker.Client.Abstractions;
 using Networker.Common;
 using Networker.Common.Abstractions;
 using Networker.Server.Abstractions;
+using System;
+using System.Net.Sockets;
+using System.Text;
 
 namespace Networker.Client
 {

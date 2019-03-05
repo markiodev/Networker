@@ -1,8 +1,7 @@
-﻿using System;
+﻿using Networker.Common;
+using Networker.Server.Abstractions;
 using System.Collections.Generic;
 using System.Net.Sockets;
-using Networker.Common;
-using Networker.Server.Abstractions;
 
 namespace Networker.Server
 {
@@ -15,7 +14,7 @@ namespace Networker.Server
         {
             this.objectPool = new ObjectPool<ITcpConnection>(options.TcpMaxConnections);
 
-            for(var i = 0; i < this.objectPool.Capacity; i++)
+            for (var i = 0; i < this.objectPool.Capacity; i++)
             {
                 this.objectPool.Push(new TcpConnection(null));
             }
@@ -28,7 +27,7 @@ namespace Networker.Server
             var connection = this.objectPool.Pop();
             connection.Socket = socket;
 
-            lock(this.connections)
+            lock (this.connections)
             {
                 this.connections.Add(connection);
             }
@@ -38,7 +37,7 @@ namespace Networker.Server
 
         public List<ITcpConnection> GetConnections()
         {
-            lock(this.connections)
+            lock (this.connections)
             {
                 return this.connections;
             }
@@ -46,7 +45,7 @@ namespace Networker.Server
 
         public void Remove(ITcpConnection connection)
         {
-            lock(this.connections)
+            lock (this.connections)
             {
                 this.connections.Remove(connection);
             }

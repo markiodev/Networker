@@ -1,12 +1,11 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using Networker.Common;
+using Networker.Server.Abstractions;
+using System;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
-using Microsoft.Extensions.Logging;
-using Networker.Common;
-using Networker.Common.Abstractions;
-using Networker.Server.Abstractions;
 
 namespace Networker.Server
 {
@@ -56,7 +55,7 @@ namespace Networker.Server
             this.listenSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             this.listenSocket.Bind(new IPEndPoint(IPAddress.Any, this.serverBuilderOptions.TcpPort));
 
-            for(int i = 0; i < this.serverBuilderOptions.TcpMaxConnections; i++)
+            for (int i = 0; i < this.serverBuilderOptions.TcpMaxConnections; i++)
             {
                 var socketAsyncEventArgs = new SocketAsyncEventArgs();
                 socketAsyncEventArgs.Completed += new EventHandler<SocketAsyncEventArgs>(this.Completed);
@@ -83,7 +82,7 @@ namespace Networker.Server
             var connection =
                 this.tcpConnections.GetConnections().FirstOrDefault(f => f.Socket == ((AsyncUserToken)e.UserToken).Socket);
 
-            if(connection != null)
+            if (connection != null)
             {
                 this.tcpConnections.Remove(connection);
             }
@@ -95,14 +94,14 @@ namespace Networker.Server
             {
                 token.Socket.Shutdown(SocketShutdown.Send);
             }
-            catch(Exception) { }
+            catch (Exception) { }
 
             this.socketEventArgsPool.Push(e);
         }
 
         private void Completed(object sender, SocketAsyncEventArgs e)
         {
-            switch(e.LastOperation)
+            switch (e.LastOperation)
             {
                 case SocketAsyncOperation.Receive:
                     this.ProcessReceive(e);
@@ -131,7 +130,7 @@ namespace Networker.Server
 
             this.maxNumberAcceptedClients.WaitOne();
             bool willRaiseEvent = e.AcceptSocket.ReceiveAsync(readEventArgs);
-            if(!willRaiseEvent)
+            if (!willRaiseEvent)
             {
                 this.ProcessReceive(readEventArgs);
             }
@@ -143,7 +142,7 @@ namespace Networker.Server
         {
             try
             {
-                if(e.BytesTransferred > 0 && e.SocketError == SocketError.Success)
+                if (e.BytesTransferred > 0 && e.SocketError == SocketError.Success)
                 {
                     this.serverPacketProcessor.ProcessTcp(e);
 
@@ -154,7 +153,7 @@ namespace Networker.Server
                     this.CloseClientSocket(e);
                 }
             }
-            catch(Exception exception)
+            catch (Exception exception)
             {
                 this.logger.Error(exception);
             }
@@ -162,12 +161,12 @@ namespace Networker.Server
 
         private void ProcessSend(SocketAsyncEventArgs e)
         {
-            if(e.SocketError == SocketError.Success)
+            if (e.SocketError == SocketError.Success)
             {
                 AsyncUserToken token = (AsyncUserToken)e.UserToken;
 
                 bool willRaiseEvent = token.Socket.ReceiveAsync(e);
-                if(!willRaiseEvent)
+                if (!willRaiseEvent)
                 {
                     this.ProcessReceive(e);
                 }
@@ -182,7 +181,7 @@ namespace Networker.Server
         {
             try
             {
-                if(acceptEventArg == null)
+                if (acceptEventArg == null)
                 {
                     acceptEventArg = new SocketAsyncEventArgs();
                     acceptEventArg.Completed +=
@@ -194,12 +193,12 @@ namespace Networker.Server
                 }
 
                 bool willRaiseEvent = this.listenSocket.AcceptAsync(acceptEventArg);
-                if(!willRaiseEvent)
+                if (!willRaiseEvent)
                 {
                     this.ProcessAccept(acceptEventArg);
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 this.logger.Error(e);
             }

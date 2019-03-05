@@ -1,7 +1,6 @@
-﻿using System;
+﻿using Networker.Common.Abstractions;
 using System.Net;
 using System.Net.Sockets;
-using Networker.Common.Abstractions;
 
 namespace Networker.Server.Abstractions
 {
