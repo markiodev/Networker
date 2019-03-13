@@ -1,9 +1,11 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/k2yi64f298bgjxra?svg=true)](https://ci.appveyor.com/project/MarkioE/networker)
 [![NuGet](https://img.shields.io/nuget/v/networker.svg)](https://www.nuget.org/packages/Networker/)
-[![Discord Chat](https://img.shields.io/discord/555316734966497280.svg)](https://discord.gg/NdEqhAe)  
 
 # Networker
 A simple to use TCP and UDP networking library for .NET, designed to be flexible, scalable and FAST.
+
+## Contributing
+Get involved and join us in Discord (https://discord.gg/NdEqhAe)
 
 ## Supported Frameworks
 * .NET Standard 2.0
