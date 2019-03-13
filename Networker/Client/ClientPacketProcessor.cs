@@ -139,12 +139,11 @@ namespace Networker.Client
 
                 var packetHandler = packetHandlers.GetPacketHandlers()[packetTypeName];
 
-                if (packetSerialiser.CanReadLength)
-                    if (buffer.Length - bytesRead < packetSize)
-                    {
-                        logger.Error(new Exception("Packet was lost"));
-                        return;
-                    }
+                if (packetSerialiser.CanReadLength && buffer.Length - bytesRead < packetSize)
+                {
+                    logger.Error(new Exception("Packet was lost"));
+                    return;
+                }
 
                 var context = _packetContextObjectPool.Pop();
                 context.Sender = sender;
@@ -168,7 +167,6 @@ namespace Networker.Client
                 bytesRead += packetSize + packetTypeNameLength;
 
                 if (packetSerialiser.CanReadName) bytesRead += 4;
-
                 if (packetSerialiser.CanReadLength) bytesRead += 4;
             }
         }

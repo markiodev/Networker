@@ -129,7 +129,7 @@ namespace Networker.Client
                 throw new Exception("TCP client has not been initialised. Have you called .Connect()?");
             }
 
-            var result = this.tcpSocket.Send(packet);
+            this.tcpSocket.Send(packet);
         }
 
         public void SendUdp<T>(T packet) => SendUdp(this.packetSerialiser.Serialise(packet));

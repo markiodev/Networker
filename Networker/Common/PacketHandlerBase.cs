@@ -1,11 +1,10 @@
-﻿using System;
+﻿using Networker.Common.Abstractions;
 using System.Threading.Tasks;
-using Networker.Common.Abstractions;
 
 namespace Networker.Common
 {
     public abstract class PacketHandlerBase<T> : IPacketHandler
-        where T: class
+        where T : class
     {
         public IPacketSerialiser PacketSerialiser { get; }
 

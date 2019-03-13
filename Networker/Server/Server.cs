@@ -81,6 +81,8 @@ namespace Networker.Server
 
         public void Start()
         {
+            Information.IsRunning = true;
+
             TcpListener?.Listen();
             UdpListener?.Listen();
 
