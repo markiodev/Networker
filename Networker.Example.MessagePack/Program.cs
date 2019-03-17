@@ -3,22 +3,22 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Networker.Client;
-using Networker.Example.ZeroFormatter.DefaultPackets;
-using Networker.Formatter.ZeroFormatter;
+using Networker.Example.MessagePack.DefaultPackets;
+using Networker.Formatter.MessagePack;
 using Networker.Server;
 
-namespace Networker.Example.ZeroFormatter
+namespace Networker.Example.MessagePack
 {
-    class Program
+	class Program
     {
         static void Main(string[] args)
         {
             var server = new ServerBuilder()
                             .UseTcp(1000)
                             .UseUdp(5000)
-                            .RegisterPacketHandlerModule<DefaultPacketHandlerModule>()
+							.RegisterPacketHandlerModule<DefaultPacketHandlerModule>()
                             .RegisterPacketHandlerModule<ExamplePacketHandlerModule>()
-                            .UseZeroFormatter()
+                            .UseMessagePack()
                             .ConfigureLogging(loggingBuilder =>
                                                 {
                                                     loggingBuilder.AddConsole();
@@ -64,7 +64,7 @@ namespace Networker.Example.ZeroFormatter
                                                     .UseUdp(5000)
                                                     .RegisterPacketHandler<PingPacket,
                                                         ClientPingPacketHandler>()
-                                                    .UseZeroFormatter()
+                                                    .UseMessagePack()
                                                     .Build();
 
                     client.Connect();
