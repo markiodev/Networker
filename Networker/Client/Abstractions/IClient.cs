@@ -16,7 +16,8 @@ namespace Networker.Client.Abstractions
 
         long Ping(int timeout = 10000);
 
-        void Connect();
+        ConnectResult Connect();
+
         void Stop();
     }
 }
