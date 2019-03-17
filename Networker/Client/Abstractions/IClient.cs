@@ -9,7 +9,7 @@ namespace Networker.Client.Abstractions
         EventHandler<Socket> Disconnected { get; set; }
 
         void Send<T>(T packet);
-        void Send(byte[] packet);
+        // void Send(byte[] packet);
 
         void SendUdp<T>(T packet);
         void SendUdp(byte[] packet);
