@@ -18,6 +18,7 @@ namespace Networker.Client
         private readonly IPacketSerialiser packetSerialiser;
         private readonly ObjectPool<ISender> tcpSenderObjectPool;
         private readonly ObjectPool<ISender> udpSenderObjectPool;
+
         private IUdpSocketSender _udpSocketSender;
         private ObjectPool<IPacketContext> _packetContextObjectPool;
 

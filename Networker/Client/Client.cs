@@ -18,8 +18,9 @@ namespace Networker.Client
         private readonly IClientPacketProcessor packetProcessor;
         private readonly IPacketSerialiser packetSerialiser;
         private readonly byte[] pingPacketBuffer;
-        private bool isRunning = true;
         private readonly PingOptions pingOptions;
+
+        private bool isRunning = true;
         private Socket tcpSocket;
         private UdpClient udpClient;
         private IPEndPoint udpEndpoint;
@@ -79,6 +80,7 @@ namespace Networker.Client
             return new ConnectResult(true);
         }
 
+        /// <inheritdoc />
         public long Ping(int timeout)
         {
             var pingSender = new Ping();
@@ -93,7 +95,10 @@ namespace Networker.Client
             return -1;
         }
 
+        /// <inheritdoc />
         public void Send<T>(T packet) => Send(this.packetSerialiser.Serialise(packet));
+
+        /// <inheritdoc />
         public void Send(byte[] packet)
         {
             if (this.tcpSocket == null)
@@ -104,7 +109,10 @@ namespace Networker.Client
             this.tcpSocket.Send(packet);
         }
 
+        /// <inheritdoc />
         public void SendUdp<T>(T packet) => SendUdp(this.packetSerialiser.Serialise(packet));
+
+        /// <inheritdoc />
         public void SendUdp(byte[] packet)
         {
             if (this.udpClient == null)
@@ -115,6 +123,7 @@ namespace Networker.Client
             this.udpClient.Send(packet, packet.Length, this.udpEndpoint);
         }
 
+        /// <inheritdoc />
         public void Stop()
         {
             this.isRunning = false;
