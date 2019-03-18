@@ -81,7 +81,15 @@ namespace Networker.Server
                     if (packetSerialiser.CanReadName)
                         packetTypeName = Encoding.ASCII.GetString(buffer, currentPosition, packetNameSize);
 
-                    var packetHandler = packetHandlers.GetPacketHandlers()[packetTypeName];
+                    var packetHandlerDictionary = packetHandlers.GetPacketHandlers();
+
+                    if (!packetHandlerDictionary.ContainsKey(packetTypeName))
+                    {
+						logger.LogWarning($"Could not handle packet {packetTypeName}. Make sure you have registered a handler");
+						return;
+                    }
+
+                    var packetHandler = packetHandlerDictionary[packetTypeName];
 
                     if (string.IsNullOrEmpty(packetTypeName))
                     {

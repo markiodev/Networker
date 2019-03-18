@@ -77,9 +77,13 @@ namespace Networker.Client
 
             if(this.options.UdpPort > 0 && this.udpClient == null)
             {
-                this.udpClient = new UdpClient(this.options.UdpPortLocal);
+                this.udpClient = new UdpClient();
+                this.udpClient.ExclusiveAddressUse = false;
+                this.udpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+
                 var address = IPAddress.Parse(this.options.Ip);
                 this.udpEndpoint = new IPEndPoint(address, this.options.UdpPort);
+				this.udpClient.Client.Bind(this.udpEndpoint);
 
                 Task.Factory.StartNew(() =>
                                       {

@@ -45,8 +45,11 @@ namespace Networker.Server
 
         public void Listen()
         {
-            client = new UdpClient(options.UdpPort);
+            client = new UdpClient();
+            client.ExclusiveAddressUse = false;
+            client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
             endPoint = new IPEndPoint(IPAddress.Loopback, options.UdpPort);
+			client.Client.Bind(endPoint);
 
             logger.LogInformation($"Starting UDP listener on port {options.UdpPort}.");
 
