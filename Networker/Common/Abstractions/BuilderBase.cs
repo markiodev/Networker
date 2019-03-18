@@ -76,6 +76,12 @@ namespace Networker.Common.Abstractions
             return this as TBuilder;
         }
 
+        public TBuilder RegisterMiddleware<T>() where T : IMiddlewareHandler
+        {
+			this.serviceCollection.AddSingleton(typeof(T));
+	        return this as TBuilder;
+        }
+
         public TBuilder ConfigureLogging(Action<ILoggingBuilder> loggingBuilder)
         {
             this.loggingBuilder = loggingBuilder;

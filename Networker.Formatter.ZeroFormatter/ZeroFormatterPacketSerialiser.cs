@@ -8,7 +8,8 @@ namespace Networker.Formatter.ZeroFormatter
 {
     public class ZeroFormatterPacketSerialiser : IPacketSerialiser
     {
-        public T Deserialise<T>(byte[] packetBytes)
+
+	    public T Deserialise<T>(byte[] packetBytes)
         {
             return ZeroFormatterSerializer.Deserialize<T>(packetBytes);
         }

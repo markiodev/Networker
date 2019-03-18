@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Networker.Common;
 using Networker.Common.Abstractions;
@@ -19,17 +22,20 @@ namespace Networker.Server
         private readonly ObjectPool<ISender> udpSenderObjectPool;
         private readonly ObjectPool<IPacketContext> packetContextObjectPool;
         private IUdpSocketSender _socketSender;
+        private List<IMiddlewareHandler> middlewares;
 
         public ServerPacketProcessor(ServerBuilderOptions options,
             ILogger<ServerPacketProcessor> logger,
             IPacketHandlers packetHandlers,
             IServerInformation serverInformation,
-            IPacketSerialiser packetSerialiser)
+            IPacketSerialiser packetSerialiser,
+            IEnumerable<IMiddlewareHandler> middlewares)
         {
             this.logger = logger;
             this.packetHandlers = packetHandlers;
             this.serverInformation = serverInformation;
             this.packetSerialiser = packetSerialiser;
+            this.middlewares = middlewares.ToList();
 
             tcpSenderObjectPool = new ObjectPool<ISender>(options.TcpMaxConnections);
 
@@ -52,7 +58,7 @@ namespace Networker.Server
             _socketSender = sender;
         }
 
-        public void ProcessFromBuffer(ISender sender,
+        public async Task ProcessFromBuffer(ISender sender,
             byte[] buffer,
             int offset = 0,
             int length = 0,
@@ -105,9 +111,21 @@ namespace Networker.Server
                     if (packetSerialiser.CanReadName) currentPosition += packetNameSize;
 
                     var packetContext = this.packetContextObjectPool.Pop();
+                    packetContext.PacketName = packetTypeName;
                     packetContext.Sender = sender;
+                    packetContext.Serialiser = this.packetSerialiser;
+                    packetContext.Handler = packetHandler;
 
-                    if (packetSerialiser.CanReadOffset)
+                    foreach(var middlewareHandler in this.middlewares)
+                    {
+	                    if(!await middlewareHandler.Process(packetContext))
+		                    break;
+                    }
+
+                    await packetHandler.Handle(packetContext);
+					
+
+                    /*if (packetSerialiser.CanReadOffset)
                     {
                         packetContext.PacketBytes = buffer;
                         packetHandler.Handle(buffer, currentPosition, packetSize, packetContext).GetAwaiter().GetResult();
@@ -120,7 +138,7 @@ namespace Networker.Server
                         Buffer.BlockCopy(buffer, currentPosition, packetContext.PacketBytes, 0, packetSize);
                         
                         packetHandler.Handle(packetBytes, packetContext).GetAwaiter().GetResult();
-                    }
+                    }*/
 
                     packetContextObjectPool.Push(packetContext);
                 }

@@ -23,8 +23,8 @@ namespace Networker.Common.Abstractions
         TBuilder RegisterPacketHandlerModule<T>()
             where T : IPacketHandlerModule;
         
-        //Microsoft Stuff
         TBuilder RegisterTypes(Action<IServiceCollection> serviceCollection);
+        TBuilder RegisterMiddleware<T>() where T : IMiddlewareHandler;
         TBuilder ConfigureLogging(Action<ILoggingBuilder> loggingBuilder);
         TBuilder UseConfiguration(IConfiguration configuration);
         TBuilder UseConfiguration<T>(IConfiguration configuration) where T : class;
