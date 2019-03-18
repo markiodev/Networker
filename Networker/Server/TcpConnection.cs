@@ -7,9 +7,12 @@ namespace Networker.Server
     {
         public Socket Socket { get; set; }
 
-        public TcpConnection(Socket socket)
+        public object UserTag { get; set; }
+
+        public TcpConnection(Socket socket, object userTag = null)
         {
             this.Socket = socket;
+            this.UserTag = userTag;
         }
     }
 }

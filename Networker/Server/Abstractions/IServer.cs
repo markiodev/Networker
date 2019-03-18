@@ -12,8 +12,12 @@ namespace Networker.Server.Abstractions
         EventHandler<TcpConnectionConnectedEventArgs> ClientConnected { get; set; }
         EventHandler<TcpConnectionDisconnectedEventArgs> ClientDisconnected { get; set; }
 
+        /// <summary>
+        /// Broadcast a UDP Packet to all clients.
+        /// </summary>
+        /// <typeparam name="T">The packet type.</typeparam>
+        /// <param name="packet">The packet.</param>
         void Broadcast<T>(T packet);
-        // void Broadcast(byte[] packet);
 
         void Start();
         void Stop();
