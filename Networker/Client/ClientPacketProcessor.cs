@@ -1,11 +1,11 @@
-﻿using System;
-using System.Net.Sockets;
-using System.Text;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Networker.Client.Abstractions;
 using Networker.Common;
 using Networker.Common.Abstractions;
 using Networker.Server.Abstractions;
+using System;
+using System.Net.Sockets;
+using System.Text;
 
 namespace Networker.Client
 {
@@ -18,6 +18,7 @@ namespace Networker.Client
         private readonly IPacketSerialiser packetSerialiser;
         private readonly ObjectPool<ISender> tcpSenderObjectPool;
         private readonly ObjectPool<ISender> udpSenderObjectPool;
+
         private IUdpSocketSender _udpSocketSender;
         private ObjectPool<IPacketContext> _packetContextObjectPool;
 
@@ -139,12 +140,11 @@ namespace Networker.Client
 
                 var packetHandler = packetHandlers.GetPacketHandlers()[packetTypeName];
 
-                if (packetSerialiser.CanReadLength)
-                    if (buffer.Length - bytesRead < packetSize)
-                    {
-                        logger.Error(new Exception("Packet was lost"));
-                        return;
-                    }
+                if (packetSerialiser.CanReadLength && buffer.Length - bytesRead < packetSize)
+                {
+                    logger.Error(new Exception("Packet was lost"));
+                    return;
+                }
 
                 var context = _packetContextObjectPool.Pop();
                 context.Sender = sender;
@@ -168,7 +168,6 @@ namespace Networker.Client
                 bytesRead += packetSize + packetTypeNameLength;
 
                 if (packetSerialiser.CanReadName) bytesRead += 4;
-
                 if (packetSerialiser.CanReadLength) bytesRead += 4;
             }
         }

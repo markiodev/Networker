@@ -1,6 +1,5 @@
-﻿using System;
+﻿using Networker.Server.Abstractions;
 using System.Net.Sockets;
-using Networker.Server.Abstractions;
 
 namespace Networker.Server
 {
@@ -12,6 +11,5 @@ namespace Networker.Server
         {
             this.Socket = socket;
         }
-        
     }
 }

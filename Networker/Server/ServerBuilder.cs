@@ -1,7 +1,7 @@
-﻿using System;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Networker.Common.Abstractions;
 using Networker.Server.Abstractions;
+using System;
 
 namespace Networker.Server
 {
@@ -28,7 +28,7 @@ namespace Networker.Server
                 this.options.PacketSizeBuffer));
             this.serviceCollection.AddSingleton<IUdpSocketSender, UdpSocketSender>();
 
-            if(this.tcpSocketListenerFactory == null)
+            if (this.tcpSocketListenerFactory == null)
                 this.serviceCollection
                     .AddSingleton<ITcpSocketListenerFactory, DefaultTcpSocketListenerFactory>();
 
@@ -53,7 +53,7 @@ namespace Networker.Server
         }
 
         public IServerBuilder UseTcpSocketListener<T>()
-            where T: class, ITcpSocketListenerFactory
+            where T : class, ITcpSocketListenerFactory
         {
             this.tcpSocketListenerFactory = typeof(T);
             this.serviceCollection.AddSingleton<ITcpSocketListenerFactory, T>();
@@ -61,7 +61,7 @@ namespace Networker.Server
         }
 
         public IServerBuilder UseUdpSocketListener<T>()
-            where T: class, IUdpSocketListenerFactory
+            where T : class, IUdpSocketListenerFactory
         {
             this.udpSocketListenerFactory = typeof(T);
             this.serviceCollection.AddSingleton<IUdpSocketListenerFactory, T>();

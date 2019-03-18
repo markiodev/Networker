@@ -1,14 +1,22 @@
-﻿using System;
+﻿using Networker.Common.Abstractions;
+using Networker.Server.Abstractions;
+using System;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Networker.Common.Abstractions;
-using Networker.Server.Abstractions;
 
 namespace Networker.Server
 {
     public class Server : IServer
     {
+        public ITcpSocketListener TcpListener { get; }
+        public IUdpSocketListener UdpListener { get; }
+        public IServerInformation Information { get; }
+
+        public EventHandler<TcpConnectionConnectedEventArgs> ClientConnected { get; set; }
+        public EventHandler<TcpConnectionDisconnectedEventArgs> ClientDisconnected { get; set; }
+        public EventHandler<ServerInformationEventArgs> ServerInformationUpdated { get; set; }
+
         private readonly IPacketSerialiser packetSerialiser;
         private readonly ServerBuilderOptions options;
         private readonly ITcpConnections tcpConnections;
@@ -38,16 +46,11 @@ namespace Networker.Server
                 {
                     if (eventArgs == null) eventArgs = new ServerInformationEventArgs();
 
-                    eventArgs.ProcessedTcpPackets =
-                        serverInformation.ProcessedTcpPackets;
-                    eventArgs.InvalidTcpPackets =
-                        serverInformation.InvalidTcpPackets;
-                    eventArgs.ProcessedUdpPackets =
-                        serverInformation.ProcessedUdpPackets;
-                    eventArgs.InvalidUdpPackets =
-                        serverInformation.InvalidUdpPackets;
-                    eventArgs.TcpConnections = tcpConnections.GetConnections()
-                        .Count;
+                    eventArgs.ProcessedTcpPackets = serverInformation.ProcessedTcpPackets;
+                    eventArgs.InvalidTcpPackets = serverInformation.InvalidTcpPackets;
+                    eventArgs.ProcessedUdpPackets = serverInformation.ProcessedUdpPackets;
+                    eventArgs.InvalidUdpPackets = serverInformation.InvalidUdpPackets;
+                    eventArgs.TcpConnections = tcpConnections.GetConnections().Count;
 
                     ServerInformationUpdated?.Invoke(this, eventArgs);
 
@@ -61,20 +64,14 @@ namespace Networker.Server
             });
         }
 
-        public ITcpSocketListener TcpListener { get; }
-        public IUdpSocketListener UdpListener { get; }
-        public IServerInformation Information { get; }
-        public EventHandler<TcpConnectionConnectedEventArgs> ClientConnected { get; set; }
-        public EventHandler<TcpConnectionDisconnectedEventArgs> ClientDisconnected { get; set; }
-        public EventHandler<ServerInformationEventArgs> ServerInformationUpdated { get; set; }
-
-        public void Broadcast<T>(T packet)
+        public void Broadcast<T>(T packet) => Broadcast(packetSerialiser.Serialise(packet));
+        public void Broadcast(byte[] packet)
         {
             if (UdpListener == null) throw new Exception("UDP is not enabled");
 
             var socket = UdpListener.GetSocket();
             socket.EnableBroadcast = true;
-            socket.SendTo(packetSerialiser.Serialise(packet), new IPEndPoint(IPAddress.Broadcast, this.options.UdpPort));
+            socket.SendTo(packet, new IPEndPoint(IPAddress.Broadcast, this.options.UdpPort));
         }
 
         public ITcpConnections GetConnections()
@@ -84,6 +81,8 @@ namespace Networker.Server
 
         public void Start()
         {
+            Information.IsRunning = true;
+
             TcpListener?.Listen();
             UdpListener?.Listen();
 
