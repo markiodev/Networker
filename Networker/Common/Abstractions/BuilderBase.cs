@@ -76,9 +76,9 @@ namespace Networker.Common.Abstractions
             return this as TBuilder;
         }
 
-        public TBuilder RegisterMiddleware<T>() where T : IMiddlewareHandler
+        public TBuilder RegisterMiddleware<T>() where T : class, IMiddlewareHandler
         {
-			this.serviceCollection.AddSingleton(typeof(T));
+			this.serviceCollection.AddSingleton<IMiddlewareHandler, T>();
 	        return this as TBuilder;
         }
 

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Networker.Example.ZeroFormatter.Middleware
+namespace Networker.Example.Json.Middleware
 {
 	public class RoleRequired : Attribute
 	{

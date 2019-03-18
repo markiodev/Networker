@@ -21,7 +21,7 @@ namespace Networker.Common
 				return this.Data[name] as T;
 			}
 
-			return default;
+			return null;
 		}
 
 		public T GetPacket<T>()

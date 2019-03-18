@@ -5,11 +5,11 @@ VisualStudioVersion = 15.0.27004.2006
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Networker", "Networker\Networker.csproj", "{9BE176AA-8128-438D-B6AB-3075545DDB9F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Networker.Formatter.ProtobufNet", "Networker.Formatter.ProtobufNet\Networker.Formatter.ProtobufNet.csproj", "{D6D436EA-9516-4C04-B90A-813B1EFE9252}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Networker.Extensions.ProtobufNet", "Networker.Formatter.ProtobufNet\Networker.Extensions.ProtobufNet.csproj", "{D6D436EA-9516-4C04-B90A-813B1EFE9252}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{B2B344C1-EABE-41DD-B4BF-6FCAA2E4474D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Networker.Formatter.ZeroFormatter", "Networker.Formatter.ZeroFormatter\Networker.Formatter.ZeroFormatter.csproj", "{9FD6B788-45D0-4C59-ACF3-14C842E41754}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Networker.Extensions.ZeroFormatter", "Networker.Formatter.ZeroFormatter\Networker.Extensions.ZeroFormatter.csproj", "{9FD6B788-45D0-4C59-ACF3-14C842E41754}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Networker.Example.ProtoBuf", "Networker.Example.ProtobufNet\Networker.Example.ProtoBuf.csproj", "{2EA49830-2E11-4FEA-901D-08AB4B64E6B1}"
 EndProject

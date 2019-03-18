@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Networker.Formatter.ProtobufNet\Networker.Formatter.ProtobufNet.csproj" />
+    <ProjectReference Include="..\Networker.Formatter.ProtobufNet\Networker.Extensions.ProtobufNet.csproj" />
     <ProjectReference Include="..\Networker\Networker.csproj" />
   </ItemGroup>
 

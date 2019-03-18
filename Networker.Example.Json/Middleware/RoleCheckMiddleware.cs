@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Networker.Common.Abstractions;
 
-namespace Networker.Example.ZeroFormatter.Middleware
+namespace Networker.Example.Json.Middleware
 {
 	public class RoleCheckMiddleware : IMiddlewareHandler
 	{
@@ -13,7 +13,10 @@ namespace Networker.Example.ZeroFormatter.Middleware
 			var roleAttribute = context.Handler.GetType()
 			                           .GetCustomAttribute<RoleRequired>();
 
-			if(roleAttribute.RoleName == "Admin" && IsAdmin(context.Sender))
+			if(roleAttribute == null)
+				return true;
+
+			if(roleAttribute.RoleName == "Admin" && this.IsAdmin(context.Sender))
 			{
 				return true;
 			}

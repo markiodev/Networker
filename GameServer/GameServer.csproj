@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Networker.Formatter.ZeroFormatter\Networker.Formatter.ZeroFormatter.csproj" />
+    <ProjectReference Include="..\Networker.Formatter.ZeroFormatter\Networker.Extensions.ZeroFormatter.csproj" />
     <ProjectReference Include="..\Networker\Networker.csproj" />
   </ItemGroup>
 

@@ -115,6 +115,20 @@ namespace Networker.Server
                     packetContext.Sender = sender;
                     packetContext.Serialiser = this.packetSerialiser;
                     packetContext.Handler = packetHandler;
+					
+                    if (packetSerialiser.CanReadOffset)
+                    {
+						//todo: Fix
+                        //packetContext.PacketBytes = buffer;
+                        //packetHandler.Handle(buffer, currentPosition, packetSize, packetContext).GetAwaiter().GetResult();
+                    }
+                    else
+                    {
+                        var packetBytes = new byte[packetSize];
+                        packetContext.PacketBytes = new byte[packetSize];
+                        Buffer.BlockCopy(buffer, currentPosition, packetBytes, 0, packetSize);
+                        Buffer.BlockCopy(buffer, currentPosition, packetContext.PacketBytes, 0, packetSize);
+                    }
 
                     foreach(var middlewareHandler in this.middlewares)
                     {
@@ -124,23 +138,7 @@ namespace Networker.Server
 
                     await packetHandler.Handle(packetContext);
 					
-
-                    /*if (packetSerialiser.CanReadOffset)
-                    {
-                        packetContext.PacketBytes = buffer;
-                        packetHandler.Handle(buffer, currentPosition, packetSize, packetContext).GetAwaiter().GetResult();
-                    }
-                    else
-                    {
-                        var packetBytes = new byte[packetSize];
-                        packetContext.PacketBytes = new byte[packetSize];
-                        Buffer.BlockCopy(buffer, currentPosition, packetBytes, 0, packetSize);
-                        Buffer.BlockCopy(buffer, currentPosition, packetContext.PacketBytes, 0, packetSize);
-                        
-                        packetHandler.Handle(packetBytes, packetContext).GetAwaiter().GetResult();
-                    }*/
-
-                    packetContextObjectPool.Push(packetContext);
+					packetContextObjectPool.Push(packetContext);
                 }
                 catch (Exception e)
                 {
@@ -205,7 +203,7 @@ namespace Networker.Server
                     buffer,
                     offset,
                     length,
-                    false);
+                    false).GetAwaiter().GetResult();
             }
             catch (Exception e)
             {
@@ -223,7 +221,7 @@ namespace Networker.Server
                 eventArgs.Buffer,
                 eventArgs.Offset,
                 eventArgs.BytesTransferred,
-                isTcp);
+                isTcp).GetAwaiter().GetResult();
         }
     }
 }

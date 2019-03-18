@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Networker.Common.Abstractions;
-using Networker.Example.ZeroFormatter.Middleware;
+using Networker.Example.Json.Middleware;
 
-namespace Networker.Example.ZeroFormatter
+namespace Networker.Example.Json
 {
 	[RoleRequired(RoleName = "Admin")]
 	public class TestPacketOneHandler : IPacketHandler
@@ -18,16 +18,6 @@ namespace Networker.Example.ZeroFormatter
 			{
 
 			}
-		}
-
-		//todo: REMOVE THESE
-		public async Task Handle(byte[] packet, IPacketContext packetContext)
-		{
-		}
-
-		public Task Handle(byte[] packet, int offset, int length, IPacketContext packetContext)
-		{
-			return null;
 		}
 	}
 }

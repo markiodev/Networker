@@ -24,7 +24,7 @@ namespace Networker.Common.Abstractions
             where T : IPacketHandlerModule;
         
         TBuilder RegisterTypes(Action<IServiceCollection> serviceCollection);
-        TBuilder RegisterMiddleware<T>() where T : IMiddlewareHandler;
+        TBuilder RegisterMiddleware<T>() where T : class, IMiddlewareHandler;
         TBuilder ConfigureLogging(Action<ILoggingBuilder> loggingBuilder);
         TBuilder UseConfiguration(IConfiguration configuration);
         TBuilder UseConfiguration<T>(IConfiguration configuration) where T : class;

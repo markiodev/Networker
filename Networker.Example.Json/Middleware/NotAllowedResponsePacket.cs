@@ -1,4 +1,6 @@
-﻿namespace Networker.Example.ZeroFormatter.Middleware
+﻿using System;
+
+namespace Networker.Example.Json.Middleware
 {
 	public class NotAllowedResponsePacket
 	{

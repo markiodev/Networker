@@ -10,8 +10,7 @@ namespace Networker.Example.ZeroFormatter.DefaultPackets
     {
         private readonly ILogger logger;
 
-        public PingPacketHandler(ILogger<PingPacketHandler> logger, IPacketSerialiser serialiser)
-            : base(serialiser)
+        public PingPacketHandler(ILogger<PingPacketHandler> logger)
         {
             this.logger = logger;
         }

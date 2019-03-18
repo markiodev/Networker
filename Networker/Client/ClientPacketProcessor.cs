@@ -149,7 +149,7 @@ namespace Networker.Client
                 var context = _packetContextObjectPool.Pop();
                 context.Sender = sender;
 
-                if (packetSerialiser.CanReadOffset)
+                /*if (packetSerialiser.CanReadOffset)
                 {
                     context.PacketBytes = buffer;
                     packetHandler.Handle(buffer, currentPosition, packetSize, context).GetAwaiter().GetResult();
@@ -160,7 +160,7 @@ namespace Networker.Client
                     Buffer.BlockCopy(buffer, currentPosition, packetBytes, 0, packetSize);
                     context.PacketBytes = packetBytes;
                     packetHandler.Handle(packetBytes, context).GetAwaiter().GetResult();
-                }
+                }*/
 
                 _packetContextObjectPool.Push(context);
 

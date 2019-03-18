@@ -7,9 +7,6 @@ namespace Networker.Example.ZeroFormatter.DefaultPackets
 {
     public class ClientPingPacketHandler : PacketHandlerBase<PingPacket>
     {
-        public ClientPingPacketHandler(IPacketSerialiser packetSerialiser)
-            : base(packetSerialiser) { }
-        
         public override async Task Process(PingPacket packet, IPacketContext context)
         {
             var diff = DateTime.UtcNow.Subtract(packet.Time);
