@@ -3,41 +3,36 @@ using System.Collections.Generic;
 
 namespace Networker.Common
 {
-    public class ObjectPool<T>
-    {
-        public int Capacity { get; }
-        readonly Stack<T> m_pool;
+	public class ObjectPool<T>
+	{
+		private readonly Stack<T> m_pool;
 
-        public ObjectPool(int capacity)
-        {
-            this.Capacity = capacity;
-            this.m_pool = new Stack<T>(capacity);
-        }
+		public ObjectPool(int capacity)
+		{
+			Capacity = capacity;
+			m_pool = new Stack<T>(capacity);
+		}
 
-        public int Count
-        {
-            get { return this.m_pool.Count; }
-        }
+		public int Capacity { get; }
 
-        public T Pop()
-        {
-            lock(this.m_pool)
-            {
-                return this.m_pool.Pop();
-            }
-        }
+		public int Count => m_pool.Count;
 
-        public void Push(T item)
-        {
-            if(item == null)
-            {
-                throw new ArgumentNullException("Items added to pool cannot be null");
-            }
+		public T Pop()
+		{
+			lock (m_pool)
+			{
+				return m_pool.Pop();
+			}
+		}
 
-            lock(this.m_pool)
-            {
-                this.m_pool.Push(item);
-            }
-        }
-    }
+		public void Push(T item)
+		{
+			if (item == null) throw new ArgumentNullException("Items added to pool cannot be null");
+
+			lock (m_pool)
+			{
+				m_pool.Push(item);
+			}
+		}
+	}
 }

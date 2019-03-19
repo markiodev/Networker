@@ -1,10 +1,9 @@
-﻿using System;
-using System.Net.Sockets;
+﻿using System.Net.Sockets;
 
 namespace Networker.Server.Abstractions
 {
-    public interface ITcpConnection
-    {
-        Socket Socket { get; set; }
-    }
+	public interface ITcpConnection
+	{
+		Socket Socket { get; set; }
+	}
 }

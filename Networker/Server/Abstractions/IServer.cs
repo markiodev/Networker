@@ -1,17 +1,16 @@
 ﻿using System;
-using Networker.Common;
 
 namespace Networker.Server.Abstractions
 {
-    public interface IServer
-    {
-        void Start();
-        void Stop();
-        ITcpConnections GetConnections();
-        EventHandler<ServerInformationEventArgs> ServerInformationUpdated { get; set; }
-        EventHandler<TcpConnectionConnectedEventArgs> ClientConnected { get; set; }
-        EventHandler<TcpConnectionDisconnectedEventArgs> ClientDisconnected { get; set; }
-        void Broadcast<T>(T packet);
-        IServerInformation Information { get; }
-    }
+	public interface IServer
+	{
+		IServerInformation Information { get; }
+		EventHandler<TcpConnectionConnectedEventArgs> ClientConnected { get; set; }
+		EventHandler<TcpConnectionDisconnectedEventArgs> ClientDisconnected { get; set; }
+		EventHandler<ServerInformationEventArgs> ServerInformationUpdated { get; set; }
+		void Broadcast<T>(T packet);
+		ITcpConnections GetConnections();
+		void Start();
+		void Stop();
+	}
 }

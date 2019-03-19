@@ -1,9 +1,6 @@
-﻿using System;
-
-namespace Networker.Common
+﻿namespace Networker.Common
 {
-    public class PacketHandlerModule : PacketHandlerModuleBase
-    {
-        
-    }
+	public class PacketHandlerModule : PacketHandlerModuleBase
+	{
+	}
 }

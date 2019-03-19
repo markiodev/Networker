@@ -1,9 +1,7 @@
-﻿using System;
-
-namespace Networker.Server.Abstractions
+﻿namespace Networker.Server.Abstractions
 {
-    public interface ITcpSocketListenerFactory
-    {
-        ITcpSocketListener Create();
-    }
+	public interface ITcpSocketListenerFactory
+	{
+		ITcpSocketListener Create();
+	}
 }

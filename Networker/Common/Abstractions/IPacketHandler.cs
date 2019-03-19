@@ -1,10 +1,9 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace Networker.Common.Abstractions
 {
-    public interface IPacketHandler
-    {
-	    Task Handle(IPacketContext packetContext);
-    }
+	public interface IPacketHandler
+	{
+		Task Handle(IPacketContext packetContext);
+	}
 }

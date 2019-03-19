@@ -1,13 +1,12 @@
-﻿using System;
-using Networker.Common;
+﻿using Networker.Common;
 
 namespace Networker.Example.ZeroFormatter.DefaultPackets
 {
-public class DefaultPacketHandlerModule : PacketHandlerModuleBase
-{
-    public DefaultPacketHandlerModule()
-    {
-        this.AddPacketHandler<PingPacket, PingPacketHandler>();
-    }
-}
+	public class DefaultPacketHandlerModule : PacketHandlerModuleBase
+	{
+		public DefaultPacketHandlerModule()
+		{
+			AddPacketHandler<PingPacket, PingPacketHandler>();
+		}
+	}
 }

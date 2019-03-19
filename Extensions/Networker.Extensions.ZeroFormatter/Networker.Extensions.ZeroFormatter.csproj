@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageId>Networker.Formatter.ZeroFormatter</PackageId>
+    <Authors>Networker</Authors>
+    <Product>Networker</Product>
+    <Version>1.0.0.0</Version>
+    <Description>The ZeroFormatter packet formatter for Networker</Description>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ZeroFormatter" Version="1.6.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Networker\Networker.csproj" />
+  </ItemGroup>
+
+</Project>

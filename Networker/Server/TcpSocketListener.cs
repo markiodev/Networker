@@ -5,204 +5,193 @@ using System.Net.Sockets;
 using System.Threading;
 using Microsoft.Extensions.Logging;
 using Networker.Common;
-using Networker.Common.Abstractions;
 using Networker.Server.Abstractions;
 
 namespace Networker.Server
 {
-    public class TcpSocketListener : ITcpSocketListener
-    {
-        private readonly IBufferManager bufferManager;
-        private readonly ILogger logger;
-        private readonly ITcpConnections tcpConnections;
-        readonly Semaphore maxNumberAcceptedClients;
-        private readonly ServerBuilderOptions serverBuilderOptions;
-        private readonly IServerPacketProcessor serverPacketProcessor;
-        private readonly ObjectPool<SocketAsyncEventArgs> socketEventArgsPool;
-        private Socket listenSocket;
+	public class TcpSocketListener : ITcpSocketListener
+	{
+		private readonly IBufferManager bufferManager;
+		private readonly ILogger logger;
+		private readonly Semaphore maxNumberAcceptedClients;
+		private readonly ServerBuilderOptions serverBuilderOptions;
+		private readonly IServerPacketProcessor serverPacketProcessor;
+		private readonly ObjectPool<SocketAsyncEventArgs> socketEventArgsPool;
+		private readonly ITcpConnections tcpConnections;
+		private Socket listenSocket;
 
-        public TcpSocketListener(ServerBuilderOptions serverBuilderOptions,
-            IServerPacketProcessor serverPacketProcessor,
-            IBufferManager bufferManager,
-            ILogger<TcpSocketListener> logger,
-            ITcpConnections tcpConnections)
-        {
-            this.serverBuilderOptions = serverBuilderOptions;
-            this.serverPacketProcessor = serverPacketProcessor;
-            this.bufferManager = bufferManager;
-            this.logger = logger;
-            this.tcpConnections = tcpConnections;
-            this.socketEventArgsPool =
-                new ObjectPool<SocketAsyncEventArgs>(serverBuilderOptions.TcpMaxConnections);
-            this.maxNumberAcceptedClients = new Semaphore(this.serverBuilderOptions.TcpMaxConnections,
-                this.serverBuilderOptions.TcpMaxConnections);
-        }
+		public TcpSocketListener(ServerBuilderOptions serverBuilderOptions,
+			IServerPacketProcessor serverPacketProcessor,
+			IBufferManager bufferManager,
+			ILogger<TcpSocketListener> logger,
+			ITcpConnections tcpConnections)
+		{
+			this.serverBuilderOptions = serverBuilderOptions;
+			this.serverPacketProcessor = serverPacketProcessor;
+			this.bufferManager = bufferManager;
+			this.logger = logger;
+			this.tcpConnections = tcpConnections;
+			socketEventArgsPool =
+				new ObjectPool<SocketAsyncEventArgs>(serverBuilderOptions.TcpMaxConnections);
+			maxNumberAcceptedClients = new Semaphore(this.serverBuilderOptions.TcpMaxConnections,
+				this.serverBuilderOptions.TcpMaxConnections);
+		}
 
-        public EventHandler<TcpConnectionConnectedEventArgs> ClientConnected { get; set; }
-        public EventHandler<TcpConnectionDisconnectedEventArgs> ClientDisconnected { get; set; }
+		public EventHandler<TcpConnectionConnectedEventArgs> ClientConnected { get; set; }
+		public EventHandler<TcpConnectionDisconnectedEventArgs> ClientDisconnected { get; set; }
 
-        public void EventArgCompleted(object sender, SocketAsyncEventArgs e)
-        {
-            this.ProcessAccept(e);
-        }
+		public Socket GetSocket()
+		{
+			return listenSocket;
+		}
 
-        public Socket GetSocket()
-        {
-            return this.listenSocket;
-        }
+		public void Listen()
+		{
+			listenSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+			listenSocket.Bind(new IPEndPoint(IPAddress.Any, serverBuilderOptions.TcpPort));
 
-        public void Listen()
-        {
-            this.listenSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            this.listenSocket.Bind(new IPEndPoint(IPAddress.Any, this.serverBuilderOptions.TcpPort));
+			for (var i = 0; i < serverBuilderOptions.TcpMaxConnections; i++)
+			{
+				var socketAsyncEventArgs = new SocketAsyncEventArgs();
+				socketAsyncEventArgs.Completed += Completed;
+				socketAsyncEventArgs.UserToken = new AsyncUserToken();
 
-            for(int i = 0; i < this.serverBuilderOptions.TcpMaxConnections; i++)
-            {
-                var socketAsyncEventArgs = new SocketAsyncEventArgs();
-                socketAsyncEventArgs.Completed += new EventHandler<SocketAsyncEventArgs>(this.Completed);
-                socketAsyncEventArgs.UserToken = new AsyncUserToken();
+				bufferManager.SetBuffer(socketAsyncEventArgs);
 
-                this.bufferManager.SetBuffer(socketAsyncEventArgs);
+				socketEventArgsPool.Push(socketAsyncEventArgs);
+			}
 
-                this.socketEventArgsPool.Push(socketAsyncEventArgs);
-            }
+			listenSocket.Listen(serverBuilderOptions.TcpMaxConnections);
+			StartAccept(null);
 
-            this.listenSocket.Listen(this.serverBuilderOptions.TcpMaxConnections);
-            this.StartAccept(null);
+			logger.LogInformation($"Started TCP listener on port {serverBuilderOptions.TcpPort}.");
+		}
 
-            this.logger.LogInformation($"Started TCP listener on port {this.serverBuilderOptions.TcpPort}.");
-        }
+		public void EventArgCompleted(object sender, SocketAsyncEventArgs e)
+		{
+			ProcessAccept(e);
+		}
 
-        private void CloseClientSocket(SocketAsyncEventArgs e)
-        {
-            AsyncUserToken token = e.UserToken as AsyncUserToken;
+		private void CloseClientSocket(SocketAsyncEventArgs e)
+		{
+			var token = e.UserToken as AsyncUserToken;
 
-            this.logger.LogInformation(
-                $"TCP Client Disconnected. IP: {(token.Socket.RemoteEndPoint as IPEndPoint).Address}");
+			logger.LogInformation(
+				$"TCP Client Disconnected. IP: {(token.Socket.RemoteEndPoint as IPEndPoint).Address}");
 
-            var connection =
-                this.tcpConnections.GetConnections().FirstOrDefault(f => f.Socket == ((AsyncUserToken)e.UserToken).Socket);
+			var connection = tcpConnections.GetConnections()
+				.FirstOrDefault(f => f.Socket == ((AsyncUserToken) e.UserToken).Socket);
 
-            if(connection != null)
-            {
-                this.tcpConnections.Remove(connection);
-            }
+			if (connection != null) tcpConnections.Remove(connection);
 
-            this.ClientDisconnected?.Invoke(this,
-                new TcpConnectionDisconnectedEventArgs(new TcpConnection(token.Socket)));
+			ClientDisconnected?.Invoke(this,
+				new TcpConnectionDisconnectedEventArgs(new TcpConnection(token.Socket)));
 
-            try
-            {
-                token.Socket.Shutdown(SocketShutdown.Send);
-            }
-            catch(Exception) { }
+			try
+			{
+				token.Socket.Shutdown(SocketShutdown.Send);
+			}
+			catch (Exception)
+			{
+			}
 
-            this.socketEventArgsPool.Push(e);
-        }
+			socketEventArgsPool.Push(e);
+		}
 
-        private void Completed(object sender, SocketAsyncEventArgs e)
-        {
-            switch(e.LastOperation)
-            {
-                case SocketAsyncOperation.Receive:
-                    this.ProcessReceive(e);
-                    break;
-                case SocketAsyncOperation.Send:
-                    this.ProcessSend(e);
-                    break;
-                default:
-                    throw new ArgumentException(
-                        "The last operation completed on the socket was not a receive or send");
-            }
-        }
+		private void Completed(object sender, SocketAsyncEventArgs e)
+		{
+			switch (e.LastOperation)
+			{
+				case SocketAsyncOperation.Receive:
+					ProcessReceive(e);
+					break;
+				case SocketAsyncOperation.Send:
+					ProcessSend(e);
+					break;
+				default:
+					throw new ArgumentException(
+						"The last operation completed on the socket was not a receive or send");
+			}
+		}
 
-        private void ProcessAccept(SocketAsyncEventArgs e)
-        {
-            SocketAsyncEventArgs readEventArgs = this.socketEventArgsPool.Pop();
+		private void ProcessAccept(SocketAsyncEventArgs e)
+		{
+			var readEventArgs = socketEventArgsPool.Pop();
 
-            ((AsyncUserToken)readEventArgs.UserToken).Socket = e.AcceptSocket;
+			((AsyncUserToken) readEventArgs.UserToken).Socket = e.AcceptSocket;
 
-            var connection = this.tcpConnections.Add(((AsyncUserToken)readEventArgs.UserToken).Socket);
+			var connection = tcpConnections.Add(((AsyncUserToken) readEventArgs.UserToken).Socket);
 
-            this.logger.LogDebug(
-                $"TCP Client Connected. IP: {(connection.Socket.RemoteEndPoint as IPEndPoint).Address}");
+			logger.LogDebug(
+				$"TCP Client Connected. IP: {(connection.Socket.RemoteEndPoint as IPEndPoint).Address}");
 
-            this.ClientConnected?.Invoke(this, new TcpConnectionConnectedEventArgs(connection));
+			ClientConnected?.Invoke(this, new TcpConnectionConnectedEventArgs(connection));
 
-            this.maxNumberAcceptedClients.WaitOne();
-            bool willRaiseEvent = e.AcceptSocket.ReceiveAsync(readEventArgs);
-            if(!willRaiseEvent)
-            {
-                this.ProcessReceive(readEventArgs);
-            }
+			maxNumberAcceptedClients.WaitOne();
+			var willRaiseEvent = e.AcceptSocket.ReceiveAsync(readEventArgs);
+			if (!willRaiseEvent) ProcessReceive(readEventArgs);
 
-            this.StartAccept(e);
-        }
+			StartAccept(e);
+		}
 
-        private void ProcessReceive(SocketAsyncEventArgs e)
-        {
-            try
-            {
-                if(e.BytesTransferred > 0 && e.SocketError == SocketError.Success)
-                {
-                    this.serverPacketProcessor.ProcessTcp(e);
+		private void ProcessReceive(SocketAsyncEventArgs e)
+		{
+			try
+			{
+				if (e.BytesTransferred > 0 && e.SocketError == SocketError.Success)
+				{
+					serverPacketProcessor.ProcessTcp(e);
 
-                    this.ProcessSend(e);
-                }
-                else
-                {
-                    this.CloseClientSocket(e);
-                }
-            }
-            catch(Exception exception)
-            {
-                this.logger.Error(exception);
-            }
-        }
+					ProcessSend(e);
+				}
+				else
+				{
+					CloseClientSocket(e);
+				}
+			}
+			catch (Exception exception)
+			{
+				logger.Error(exception);
+			}
+		}
 
-        private void ProcessSend(SocketAsyncEventArgs e)
-        {
-            if(e.SocketError == SocketError.Success)
-            {
-                AsyncUserToken token = (AsyncUserToken)e.UserToken;
+		private void ProcessSend(SocketAsyncEventArgs e)
+		{
+			if (e.SocketError == SocketError.Success)
+			{
+				var token = (AsyncUserToken) e.UserToken;
 
-                bool willRaiseEvent = token.Socket.ReceiveAsync(e);
-                if(!willRaiseEvent)
-                {
-                    this.ProcessReceive(e);
-                }
-            }
-            else
-            {
-                this.CloseClientSocket(e);
-            }
-        }
+				var willRaiseEvent = token.Socket.ReceiveAsync(e);
+				if (!willRaiseEvent) ProcessReceive(e);
+			}
+			else
+			{
+				CloseClientSocket(e);
+			}
+		}
 
-        private void StartAccept(SocketAsyncEventArgs acceptEventArg)
-        {
-            try
-            {
-                if(acceptEventArg == null)
-                {
-                    acceptEventArg = new SocketAsyncEventArgs();
-                    acceptEventArg.Completed +=
-                        new EventHandler<SocketAsyncEventArgs>(this.EventArgCompleted);
-                }
-                else
-                {
-                    acceptEventArg.AcceptSocket = null;
-                }
+		private void StartAccept(SocketAsyncEventArgs acceptEventArg)
+		{
+			try
+			{
+				if (acceptEventArg == null)
+				{
+					acceptEventArg = new SocketAsyncEventArgs();
+					acceptEventArg.Completed +=
+						EventArgCompleted;
+				}
+				else
+				{
+					acceptEventArg.AcceptSocket = null;
+				}
 
-                bool willRaiseEvent = this.listenSocket.AcceptAsync(acceptEventArg);
-                if(!willRaiseEvent)
-                {
-                    this.ProcessAccept(acceptEventArg);
-                }
-            }
-            catch(Exception e)
-            {
-                this.logger.Error(e);
-            }
-        }
-    }
+				var willRaiseEvent = listenSocket.AcceptAsync(acceptEventArg);
+				if (!willRaiseEvent) ProcessAccept(acceptEventArg);
+			}
+			catch (Exception e)
+			{
+				logger.Error(e);
+			}
+		}
+	}
 }

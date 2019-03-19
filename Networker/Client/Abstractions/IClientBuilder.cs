@@ -2,15 +2,17 @@
 
 namespace Networker.Client.Abstractions
 {
-    public interface IClientBuilder : IBuilder<IClientBuilder, IClient>
-    {
-        //Udp
-        IClientBuilder UseUdp(int port, int localPort);
+	public interface IClientBuilder : IBuilder<IClientBuilder, IClient>
+	{
+		T Build<T>()
+			where T : IClient;
 
-        //Info
-        IClientBuilder SetPacketBufferPoolSize(int size);
-        IClientBuilder UseIp(string ip);
+		//Info
+		IClientBuilder SetPacketBufferPoolSize(int size);
 
-        T Build<T>() where T : IClient;
-    }
+		IClientBuilder UseIp(string ip);
+
+		//Udp
+		IClientBuilder UseUdp(int port, int localPort);
+	}
 }

@@ -1,10 +1,9 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 
 namespace Networker.Server.Abstractions
 {
-    public interface IUdpSocketListener : ISocketListener
-    {
-        IPEndPoint GetEndPoint();
-    }
+	public interface IUdpSocketListener : ISocketListener
+	{
+		IPEndPoint GetEndPoint();
+	}
 }

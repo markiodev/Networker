@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Networker.Example.Json.Packets
+﻿namespace Networker.Example.Json.Packets
 {
 	public class JsonTestBanPlayerPacket : JsonTestPacket
 	{

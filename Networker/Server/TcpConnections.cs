@@ -1,58 +1,54 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Net.Sockets;
 using Networker.Common;
 using Networker.Server.Abstractions;
 
 namespace Networker.Server
 {
-    public class TcpConnections : ITcpConnections
-    {
-        private readonly List<ITcpConnection> connections;
-        private readonly ObjectPool<ITcpConnection> objectPool;
+	public class TcpConnections : ITcpConnections
+	{
+		private readonly List<ITcpConnection> connections;
+		private readonly ObjectPool<ITcpConnection> objectPool;
 
-        public TcpConnections(ServerBuilderOptions options)
-        {
-            this.objectPool = new ObjectPool<ITcpConnection>(options.TcpMaxConnections);
+		public TcpConnections(ServerBuilderOptions options)
+		{
+			objectPool = new ObjectPool<ITcpConnection>(options.TcpMaxConnections);
 
-            for(var i = 0; i < this.objectPool.Capacity; i++)
-            {
-                this.objectPool.Push(new TcpConnection(null));
-            }
+			for (var i = 0; i < objectPool.Capacity; i++) objectPool.Push(new TcpConnection(null));
 
-            this.connections = new List<ITcpConnection>();
-        }
+			connections = new List<ITcpConnection>();
+		}
 
-        public ITcpConnection Add(Socket socket)
-        {
-            var connection = this.objectPool.Pop();
-            connection.Socket = socket;
+		public ITcpConnection Add(Socket socket)
+		{
+			var connection = objectPool.Pop();
+			connection.Socket = socket;
 
-            lock(this.connections)
-            {
-                this.connections.Add(connection);
-            }
+			lock (connections)
+			{
+				connections.Add(connection);
+			}
 
-            return connection;
-        }
+			return connection;
+		}
 
-        public List<ITcpConnection> GetConnections()
-        {
-            lock(this.connections)
-            {
-                return this.connections;
-            }
-        }
+		public List<ITcpConnection> GetConnections()
+		{
+			lock (connections)
+			{
+				return connections;
+			}
+		}
 
-        public void Remove(ITcpConnection connection)
-        {
-            lock(this.connections)
-            {
-                this.connections.Remove(connection);
-            }
+		public void Remove(ITcpConnection connection)
+		{
+			lock (connections)
+			{
+				connections.Remove(connection);
+			}
 
-            connection.Socket = null;
-            this.objectPool.Push(connection);
-        }
-    }
+			connection.Socket = null;
+			objectPool.Push(connection);
+		}
+	}
 }

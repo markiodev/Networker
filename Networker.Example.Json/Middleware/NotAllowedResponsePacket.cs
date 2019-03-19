@@ -1,9 +1,6 @@
-﻿using System;
-
-namespace Networker.Example.Json.Middleware
+﻿namespace Networker.Example.Json.Middleware
 {
 	public class NotAllowedResponsePacket
 	{
-		
 	}
 }

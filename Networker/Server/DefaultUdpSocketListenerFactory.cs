@@ -7,9 +7,9 @@ namespace Networker.Server
 	{
 		private readonly ILogger<UdpClientListener> logger;
 		private readonly ServerBuilderOptions options;
+		private readonly IServerInformation serverInformation;
 		private readonly IServerPacketProcessor serverPacketProcessor;
 		private IUdpSocketListener _clientListener;
-		private readonly IServerInformation serverInformation;
 
 		public DefaultUdpSocketListenerFactory(ServerBuilderOptions options,
 			ILogger<UdpClientListener> logger,

@@ -1,11 +1,10 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 
 namespace Networker.Common.Abstractions
 {
-    public interface ISender
-    {
-        void Send<T>(T packet);
-        IPEndPoint EndPoint { get; }
-    }
+	public interface ISender
+	{
+		IPEndPoint EndPoint { get; }
+		void Send<T>(T packet);
+	}
 }

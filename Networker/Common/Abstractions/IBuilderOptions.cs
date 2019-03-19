@@ -1,13 +1,12 @@
-﻿
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 
 namespace Networker.Common.Abstractions
 {
-    public interface IBuilderOptions
-    {
-        int TcpPort { get; set; }
-        int UdpPort { get; set; }
-        int PacketSizeBuffer { get; set; }
-        LogLevel LogLevel { get; set; }
-    }
+	public interface IBuilderOptions
+	{
+		LogLevel LogLevel { get; set; }
+		int PacketSizeBuffer { get; set; }
+		int TcpPort { get; set; }
+		int UdpPort { get; set; }
+	}
 }

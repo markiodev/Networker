@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Networker.Common.Abstractions;
 using Networker.Example.Json.Middleware;
 
@@ -10,13 +9,11 @@ namespace Networker.Example.Json
 	{
 		public async Task Handle(IPacketContext packetContext)
 		{
-			if(packetContext.PacketName == "PacketType1")
+			if (packetContext.PacketName == "PacketType1")
 			{
-
 			}
-			else if(packetContext.PacketName == "PacketType2")
+			else if (packetContext.PacketName == "PacketType2")
 			{
-
 			}
 		}
 	}

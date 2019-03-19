@@ -2,17 +2,17 @@
 
 namespace Networker.Server.Abstractions
 {
-    public interface IServerBuilder : IBuilder<IServerBuilder, IServer>
-    {
-        //Tcp
-        IServerBuilder UseTcpSocketListener<T>()
-            where T: class, ITcpSocketListenerFactory;
+	public interface IServerBuilder : IBuilder<IServerBuilder, IServer>
+	{
+		//Info
+		IServerBuilder SetMaximumConnections(int maxConnections);
 
-        //Udp
-        IServerBuilder UseUdpSocketListener<T>()
-            where T: class, IUdpSocketListenerFactory;
+		//Tcp
+		IServerBuilder UseTcpSocketListener<T>()
+			where T : class, ITcpSocketListenerFactory;
 
-        //Info
-        IServerBuilder SetMaximumConnections(int maxConnections);
-    }
+		//Udp
+		IServerBuilder UseUdpSocketListener<T>()
+			where T : class, IUdpSocketListenerFactory;
+	}
 }

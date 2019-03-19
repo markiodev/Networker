@@ -1,11 +1,10 @@
-﻿using System;
-using System.Net.Sockets;
+﻿using System.Net.Sockets;
 
 namespace Networker.Server.Abstractions
 {
-    public interface ISocketListener
-    {
-        Socket GetSocket();
-        void Listen();
-    }
+	public interface ISocketListener
+	{
+		Socket GetSocket();
+		void Listen();
+	}
 }

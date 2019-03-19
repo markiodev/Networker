@@ -5,70 +5,63 @@ using Networker.Server.Abstractions;
 
 namespace Networker.Server
 {
-    public class ServerBuilder : BuilderBase<IServerBuilder, IServer, ServerBuilderOptions>, IServerBuilder
-    {
-        private Type tcpSocketListenerFactory;
-        private Type udpSocketListenerFactory;
+	public class ServerBuilder : BuilderBase<IServerBuilder, IServer, ServerBuilderOptions>, IServerBuilder
+	{
+		private Type tcpSocketListenerFactory;
+		private Type udpSocketListenerFactory;
 
-        public ServerBuilder() : base()
-        {
+		public override IServer Build()
+		{
+			SetupSharedDependencies();
 
-        }
+			if (tcpSocketListenerFactory == null)
+				serviceCollection
+					.AddSingleton<ITcpSocketListenerFactory, DefaultTcpSocketListenerFactory>();
 
-        public override IServer Build()
-        {
-            this.SetupSharedDependencies();
-			
-            if(this.tcpSocketListenerFactory == null)
-	            this.serviceCollection
-		            .AddSingleton<ITcpSocketListenerFactory, DefaultTcpSocketListenerFactory>();
+			if (udpSocketListenerFactory == null)
+				serviceCollection
+					.AddSingleton<IUdpSocketListenerFactory, DefaultUdpSocketListenerFactory>();
 
-            if (this.udpSocketListenerFactory == null)
-            {
-	            this.serviceCollection
-		            .AddSingleton<IUdpSocketListenerFactory, DefaultUdpSocketListenerFactory>();
-            }
+			serviceCollection.AddSingleton<ITcpConnections, TcpConnections>();
+			serviceCollection.AddSingleton<IServer, Server>();
+			serviceCollection.AddSingleton<IServerInformation, ServerInformation>();
+			serviceCollection.AddSingleton<IServerPacketProcessor, ServerPacketProcessor>();
+			serviceCollection.AddSingleton<IBufferManager>(new BufferManager(
+				options.PacketSizeBuffer * options.TcpMaxConnections * 5,
+				options.PacketSizeBuffer));
+			serviceCollection.AddSingleton<IUdpSocketSender, UdpSocketSender>();
 
-            this.serviceCollection.AddSingleton<ITcpConnections, TcpConnections>();
-            this.serviceCollection.AddSingleton<IServer, Server>();
-            this.serviceCollection.AddSingleton<IServerInformation, ServerInformation>();
-            this.serviceCollection.AddSingleton<IServerPacketProcessor, ServerPacketProcessor>();
-            this.serviceCollection.AddSingleton<IBufferManager>(new BufferManager(
-                this.options.PacketSizeBuffer * this.options.TcpMaxConnections * 5,
-                this.options.PacketSizeBuffer));
-            this.serviceCollection.AddSingleton<IUdpSocketSender, UdpSocketSender>();
-			
+			var serviceProvider = GetServiceProvider();
 
-            var serviceProvider = this.GetServiceProvider();
+			var udpSocketListener = serviceProvider.GetService<IUdpSocketListenerFactory>()
+				.Create();
+			serviceCollection.AddSingleton(udpSocketListener);
 
-            var udpSocketListener = serviceProvider.GetService<IUdpSocketListenerFactory>().Create();
-            this.serviceCollection.AddSingleton<IUdpSocketListener>(udpSocketListener);
+			serviceProvider = GetServiceProvider();
 
-            serviceProvider = this.GetServiceProvider();
+			return serviceProvider.GetService<IServer>();
+		}
 
-            return serviceProvider.GetService<IServer>();
-        }
+		public IServerBuilder SetMaximumConnections(int maxConnections)
+		{
+			options.TcpMaxConnections = maxConnections;
+			return this;
+		}
 
-        public IServerBuilder SetMaximumConnections(int maxConnections)
-        {
-            this.options.TcpMaxConnections = maxConnections;
-            return this;
-        }
+		public IServerBuilder UseTcpSocketListener<T>()
+			where T : class, ITcpSocketListenerFactory
+		{
+			tcpSocketListenerFactory = typeof(T);
+			serviceCollection.AddSingleton<ITcpSocketListenerFactory, T>();
+			return this;
+		}
 
-        public IServerBuilder UseTcpSocketListener<T>()
-            where T: class, ITcpSocketListenerFactory
-        {
-            this.tcpSocketListenerFactory = typeof(T);
-            this.serviceCollection.AddSingleton<ITcpSocketListenerFactory, T>();
-            return this;
-        }
-
-        public IServerBuilder UseUdpSocketListener<T>()
-            where T: class, IUdpSocketListenerFactory
-        {
-            this.udpSocketListenerFactory = typeof(T);
-            this.serviceCollection.AddSingleton<IUdpSocketListenerFactory, T>();
-            return this;
-        }
-    }
+		public IServerBuilder UseUdpSocketListener<T>()
+			where T : class, IUdpSocketListenerFactory
+		{
+			udpSocketListenerFactory = typeof(T);
+			serviceCollection.AddSingleton<IUdpSocketListenerFactory, T>();
+			return this;
+		}
+	}
 }
