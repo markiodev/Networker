@@ -15,7 +15,6 @@ Get involved and join us in Discord (https://discord.gg/NdEqhAe)
 * UDP
 * Socket pooling
 * Object pooling
-* Custom middleware (For custom authentication, logging etc)
 * Process thousands of requests per second
 * Dependency Injection using [Micrsoft.Extensions.DependencyInjection.ServiceCollection](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.dependencyinjection.servicecollection?view=aspnetcore-2.1)
 * Logging using [Microsoft.Extensions.Logging](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.logging?view=aspnetcore-2.2)
