@@ -5,19 +5,15 @@ VisualStudioVersion = 15.0.27004.2006
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Networker", "Networker\Networker.csproj", "{9BE176AA-8128-438D-B6AB-3075545DDB9F}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{B2B344C1-EABE-41DD-B4BF-6FCAA2E4474D}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Networker.Example.Json", "Networker.Example.Json\Networker.Example.Json.csproj", "{1A5A1D17-D976-4D33-BE30-4F79C1B8C20E}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{B83B1F14-CC19-4B40-B0F3-28B18CB56760}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Demos", "Demos", "{84C88291-7FC8-47AC-84FA-9CF5DF39028C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo.Basic", "Demos\Demo.Basic\Demo.Basic.csproj", "{8359AAA1-C41D-4FB7-9286-C8FBC0DC9E0F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo.Basic", "Demos\Demo.Basic\Demo.Basic.csproj", "{8359AAA1-C41D-4FB7-9286-C8FBC0DC9E0F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo.Common", "Demos\Demo.Common\Demo.Common.csproj", "{50CD08BC-5CB5-471E-A40E-B7EFFC86E853}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo.Common", "Demos\Demo.Common\Demo.Common.csproj", "{50CD08BC-5CB5-471E-A40E-B7EFFC86E853}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo.Middleware", "Demos\Demo.Middleware\Demo.Middleware.csproj", "{8DF05FEF-FBBB-4FBF-9595-44A270C972C5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo.Middleware", "Demos\Demo.Middleware\Demo.Middleware.csproj", "{8DF05FEF-FBBB-4FBF-9595-44A270C972C5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Extensions", "Extensions", "{C2A80735-2797-474C-9879-126B562DD2F5}"
 EndProject
@@ -27,17 +23,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Networker.Extensions.Protob
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Networker.Extensions.ZeroFormatter", "Extensions\Networker.Extensions.ZeroFormatter\Networker.Extensions.ZeroFormatter.csproj", "{4122B5B6-5888-4F9B-AECE-28C98A0BB7A9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Networker.Tests.ZeroFormatter", "Tests\Networker.Tests.ZeroFormatter\Networker.Tests.ZeroFormatter.csproj", "{C6FE3C36-AF81-41E8-88B0-3AAC9C56348F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Networker.Tests.ZeroFormatter", "Tests\Networker.Tests.ZeroFormatter\Networker.Tests.ZeroFormatter.csproj", "{C6FE3C36-AF81-41E8-88B0-3AAC9C56348F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Networker.Tests.Json", "Tests\Networker.Tests.Json\Networker.Tests.Json.csproj", "{BF2B363F-AB41-4BC8-A149-49EC59F06265}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Networker.Tests.Json", "Tests\Networker.Tests.Json\Networker.Tests.Json.csproj", "{BF2B363F-AB41-4BC8-A149-49EC59F06265}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Networker.Tests.ProtobufNet", "Tests\Networker.Tests.ProtobufNet\Networker.Tests.ProtobufNet.csproj", "{9F66679A-191B-4551-ADBC-65A3430F9356}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Networker.Tests.ProtobufNet", "Tests\Networker.Tests.ProtobufNet\Networker.Tests.ProtobufNet.csproj", "{9F66679A-191B-4551-ADBC-65A3430F9356}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tutorial.Server", "Demos\Tutorial.Server\Tutorial.Server.csproj", "{6ADC9B53-4FB7-487A-8D61-CC4981C30269}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tutorial.Client", "Demos\Tutorial.Client\Tutorial.Client.csproj", "{F7226539-2B8F-492F-B9BD-DA81E298AE67}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tutorial.Client", "Demos\Tutorial.Client\Tutorial.Client.csproj", "{F7226539-2B8F-492F-B9BD-DA81E298AE67}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tutorial.Common", "Demos\Tutorial.Common\Tutorial.Common.csproj", "{D6542750-89CB-4D09-9E7B-EAAA392D4E5D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tutorial.Common", "Demos\Tutorial.Common\Tutorial.Common.csproj", "{D6542750-89CB-4D09-9E7B-EAAA392D4E5D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -49,10 +45,6 @@ Global
 		{9BE176AA-8128-438D-B6AB-3075545DDB9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9BE176AA-8128-438D-B6AB-3075545DDB9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9BE176AA-8128-438D-B6AB-3075545DDB9F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1A5A1D17-D976-4D33-BE30-4F79C1B8C20E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1A5A1D17-D976-4D33-BE30-4F79C1B8C20E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1A5A1D17-D976-4D33-BE30-4F79C1B8C20E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1A5A1D17-D976-4D33-BE30-4F79C1B8C20E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8359AAA1-C41D-4FB7-9286-C8FBC0DC9E0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8359AAA1-C41D-4FB7-9286-C8FBC0DC9E0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8359AAA1-C41D-4FB7-9286-C8FBC0DC9E0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -106,8 +98,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{B2B344C1-EABE-41DD-B4BF-6FCAA2E4474D} = {84C88291-7FC8-47AC-84FA-9CF5DF39028C}
-		{1A5A1D17-D976-4D33-BE30-4F79C1B8C20E} = {B2B344C1-EABE-41DD-B4BF-6FCAA2E4474D}
 		{8359AAA1-C41D-4FB7-9286-C8FBC0DC9E0F} = {84C88291-7FC8-47AC-84FA-9CF5DF39028C}
 		{50CD08BC-5CB5-471E-A40E-B7EFFC86E853} = {84C88291-7FC8-47AC-84FA-9CF5DF39028C}
 		{8DF05FEF-FBBB-4FBF-9595-44A270C972C5} = {84C88291-7FC8-47AC-84FA-9CF5DF39028C}

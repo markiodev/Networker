@@ -6,19 +6,23 @@ using Tutorial.Common;
 
 namespace Tutorial.Server
 {
-	public class ChatPacketHandler : PacketHandlerBase<ChatPacket>
+public class ChatPacketHandler : PacketHandlerBase<ChatPacket>
+{
+	private readonly ILogger<ChatPacketHandler> _logger;
+
+	public ChatPacketHandler(ILogger<ChatPacketHandler> logger)
 	{
-		private readonly ILogger<ChatPacketHandler> _logger;
-
-		public ChatPacketHandler(ILogger<ChatPacketHandler> logger)
-		{
-			_logger = logger;
-		}
-
-		public override async Task Process(ChatPacket packet, IPacketContext packetContext)
-		{
-			_logger.LogDebug("I received the chat message: " + packet.Message);
-			packetContext.Sender.Send(packet);
-		}
+		_logger = logger;
 	}
+
+	public override async Task Process(ChatPacket packet, IPacketContext packetContext)
+	{
+		_logger.LogDebug("I received the chat message: " + packet.Message);
+
+		packetContext.Sender.Send(new ChatPacket
+		{
+			Message = "Hey, I got your message!"
+		});
+	}
+}
 }
