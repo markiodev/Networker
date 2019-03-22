@@ -2,8 +2,8 @@
 
 namespace Networker.Server.Abstractions
 {
-	public interface ITcpConnection
-	{
-		Socket Socket { get; set; }
-	}
+    public interface ITcpConnection
+    {
+        Socket Socket { get; set; }
+    }
 }

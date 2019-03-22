@@ -1,156 +1,188 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using Networker.Client.Abstractions;
+using Networker.Common;
+using Networker.Common.Abstractions;
+using System;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using Networker.Client.Abstractions;
-using Networker.Common;
-using Networker.Common.Abstractions;
 
 namespace Networker.Client
 {
-	public class Client : IClient
-	{
-		private readonly ILogger<Client> logger;
-		private readonly ClientBuilderOptions options;
-		private readonly IClientPacketProcessor packetProcessor;
-		private readonly IPacketSerialiser packetSerialiser;
-		private readonly PingOptions pingOptions;
-		private readonly byte[] pingPacketBuffer;
-		private bool isRunning = true;
-		private Socket tcpSocket;
-		private UdpClient udpClient;
-		private IPEndPoint udpEndpoint;
+    public class Client : IClient
+    {
+        private readonly ILogger<Client> logger;
+        private readonly ClientBuilderOptions options;
+        private readonly IClientPacketProcessor packetProcessor;
+        private readonly IPacketSerialiser packetSerialiser;
+        private readonly byte[] pingPacketBuffer;
+        private readonly PingOptions pingOptions;
 
-		public Client(ClientBuilderOptions options,
-			IPacketSerialiser packetSerialiser,
-			IClientPacketProcessor packetProcessor,
-			ILogger<Client> logger)
-		{
-			this.options = options;
-			this.packetSerialiser = packetSerialiser;
-			this.packetProcessor = packetProcessor;
-			this.logger = logger;
-			pingPacketBuffer = Encoding.ASCII.GetBytes("aaaaaaaaaaaaaaaaaaaaaaaa");
-			pingOptions = new PingOptions(64, true);
-		}
+        private bool isRunning = true;
+        private Socket tcpSocket;
+        private UdpClient udpClient;
+        private IPEndPoint udpEndpoint;
 
-		public EventHandler<Socket> Connected { get; set; }
-		public EventHandler<Socket> Disconnected { get; set; }
+        public EventHandler<Socket> Connected { get; set; }
+        public EventHandler<Socket> Disconnected { get; set; }
 
-		public void Connect()
-		{
-			if (options.TcpPort > 0 && tcpSocket == null)
-			{
-				tcpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-				tcpSocket.Connect(options.Ip, options.TcpPort);
-				Connected?.Invoke(this, tcpSocket);
+        public Client(ClientBuilderOptions options,
+            IPacketSerialiser packetSerialiser,
+            IClientPacketProcessor packetProcessor,
+            ILogger<Client> logger)
+        {
+            this.options = options;
+            this.packetSerialiser = packetSerialiser;
+            this.packetProcessor = packetProcessor;
+            this.logger = logger;
+            this.pingPacketBuffer = Encoding.ASCII.GetBytes("aaaaaaaaaaaaaaaaaaaaaaaa");
+            this.pingOptions = new PingOptions(64, true);
+        }
 
-				Task.Factory.StartNew(() =>
-				{
-					while (isRunning)
-					{
-						if (tcpSocket.Poll(10, SelectMode.SelectWrite)) packetProcessor.Process(tcpSocket);
+        /// <inheritdoc />
+        public ConnectResult Connect()
+        {
+            if (this.options.TcpPort > 0 && this.tcpSocket == null)
+            {
+                try
+                {
+                    this.tcpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                    this.tcpSocket.Connect(this.options.Ip, this.options.TcpPort);
+                }
+                catch (Exception exception)
+                {
+                    return new ConnectResult(exception.Message);
+                }
 
-						if (!tcpSocket.Connected)
-						{
-							Disconnected?.Invoke(this, tcpSocket);
-							break;
-						}
-					}
+                this.Connected?.Invoke(this, this.tcpSocket);
 
-					if (tcpSocket.Connected)
-					{
-						tcpSocket.Disconnect(false);
-						tcpSocket.Close();
-						Disconnected?.Invoke(this, tcpSocket);
-					}
+                StartTcpSocketThread();
+            }
 
-					tcpSocket = null;
-				});
-			}
+            if (this.options.UdpPort > 0 && this.udpClient == null)
+            {
+                try
+                {
+                    var address = IPAddress.Parse(this.options.Ip);
+                    this.udpClient = new UdpClient(this.options.UdpPortLocal);
+                    this.udpEndpoint = new IPEndPoint(address, this.options.UdpPort);
+                }
+                catch (Exception exception)
+                {
+                    return new ConnectResult(exception.Message);
+                }
 
-			if (options.UdpPort > 0 && udpClient == null)
-			{
-				udpClient = new UdpClient();
-				udpClient.ExclusiveAddressUse = false;
-				udpClient.Client.SetSocketOption(SocketOptionLevel.Socket,
-					SocketOptionName.ReuseAddress,
-					true);
+                StartUdpSocketThread();
+            }
 
-				var address = IPAddress.Parse(options.Ip);
-				udpEndpoint = new IPEndPoint(address, options.UdpPort);
-				udpClient.Client.Bind(udpEndpoint);
+            return new ConnectResult(true);
+        }
 
-				Task.Factory.StartNew(() =>
-				{
-					logger.LogInformation(
-						$"Connecting to UDP at {options.Ip}:{options.UdpPort}");
+        /// <inheritdoc />
+        public long Ping(int timeout)
+        {
+            var pingSender = new Ping();
+            var reply = pingSender.Send(this.options.Ip, timeout, this.pingPacketBuffer, this.pingOptions);
 
-					while (isRunning)
-						try
-						{
-							var data = udpClient.ReceiveAsync()
-								.GetAwaiter()
-								.GetResult();
+            if (reply.Status == IPStatus.Success)
+            {
+                return reply.RoundtripTime;
+            }
 
-							packetProcessor.Process(data);
-						}
-						catch (Exception ex)
-						{
-							logger.Error(ex);
-						}
+            this.logger.LogError($"Could not get ping {reply.Status}");
+            return -1;
+        }
 
-					udpClient = null;
-				});
-			}
-		}
+        /// <inheritdoc />
+        public void Send<T>(T packet) => Send(this.packetSerialiser.Serialise(packet));
 
-		public long Ping()
-		{
-			var pingSender = new Ping();
-			var timeout = 10000;
-			var reply = pingSender.Send(options.Ip, timeout, pingPacketBuffer, pingOptions);
+        /// <inheritdoc />
+        public void Send(byte[] packet)
+        {
+            if (this.tcpSocket == null)
+            {
+                throw new Exception("TCP client has not been initialised. Have you called .Connect()?");
+            }
 
-			if (reply.Status == IPStatus.Success) return reply.RoundtripTime;
+            this.tcpSocket.Send(packet);
+        }
 
-			logger.LogError("Could not get ping " + reply.Status);
-			return -1;
-		}
+        /// <inheritdoc />
+        public void SendUdp<T>(T packet) => SendUdp(this.packetSerialiser.Serialise(packet));
 
-		public void Send<T>(T packet)
-		{
-			if (tcpSocket == null)
-				throw new Exception("TCP client has not been initialised. Have you called .Connect()?");
+        /// <inheritdoc />
+        public void SendUdp(byte[] packet)
+        {
+            if (this.udpClient == null)
+            {
+                throw new Exception("UDP client has not been initialised. Have you called .Connect()?");
+            }
 
-			var serialisedPacket = packetSerialiser.Serialise(packet);
+            this.udpClient.Send(packet, packet.Length, this.udpEndpoint);
+        }
 
-			var result = tcpSocket.Send(serialisedPacket);
-		}
+        /// <inheritdoc />
+        public void Stop()
+        {
+            this.isRunning = false;
+        }
 
-		public void SendUdp(byte[] packet)
-		{
-			if (udpClient == null)
-				throw new Exception("UDP client has not been initialised. Have you called .Connect()?");
+        private void StartTcpSocketThread()
+        {
+            Task.Factory.StartNew(() =>
+            {
+                while (this.isRunning)
+                {
+                    if (this.tcpSocket.Poll(10, SelectMode.SelectWrite))
+                    {
+                        this.packetProcessor.Process(this.tcpSocket);
+                    }
 
-			udpClient.Send(packet, packet.Length, udpEndpoint);
-		}
+                    if (!this.tcpSocket.Connected)
+                    {
+                        this.Disconnected?.Invoke(this, this.tcpSocket);
+                        break;
+                    }
+                }
 
-		public void SendUdp<T>(T packet)
-		{
-			if (udpClient == null)
-				throw new Exception("UDP client has not been initialised. Have you called .Connect()?");
+                if (this.tcpSocket.Connected)
+                {
+                    this.tcpSocket.Disconnect(false);
+                    this.tcpSocket.Close();
+                    this.Disconnected?.Invoke(this, this.tcpSocket);
+                }
 
-			var serialisedPacket = packetSerialiser.Serialise(packet);
+                this.tcpSocket = null;
+            });
+        }
 
-			udpClient.Send(serialisedPacket, serialisedPacket.Length, udpEndpoint);
-		}
+        private void StartUdpSocketThread()
+        {
+            Task.Factory.StartNew(() =>
+            {
+                this.logger.LogInformation(
+                    $"Connecting to UDP at {this.options.Ip}:{this.options.UdpPort}");
 
-		public void Stop()
-		{
-			isRunning = false;
-		}
-	}
+                while (this.isRunning)
+                {
+                    try
+                    {
+                        var data = this.udpClient.ReceiveAsync()
+                                        .GetAwaiter()
+                                        .GetResult();
+
+                        this.packetProcessor.Process(data);
+                    }
+                    catch (Exception ex)
+                    {
+                        this.logger.Error(ex);
+                    }
+                }
+
+                this.udpClient = null;
+            });
+        }
+    }
 }

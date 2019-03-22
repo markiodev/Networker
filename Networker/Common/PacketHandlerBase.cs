@@ -1,16 +1,33 @@
-﻿using System.Threading.Tasks;
-using Networker.Common.Abstractions;
+﻿using Networker.Common.Abstractions;
+using System.Threading.Tasks;
 
 namespace Networker.Common
 {
-	public abstract class PacketHandlerBase<T> : IPacketHandler
-		where T : class
-	{
-		public async Task Handle(IPacketContext packetContext)
-		{
-			await Process(packetContext.GetPacket<T>(), packetContext);
-		}
+    public abstract class PacketHandlerBase<T> : IPacketHandler
+        where T : class
+    {
+        public IPacketSerialiser PacketSerialiser { get; }
 
-		public abstract Task Process(T packet, IPacketContext packetContext);
-	}
+        protected PacketHandlerBase(IPacketSerialiser packetSerialiser)
+        {
+            this.PacketSerialiser = packetSerialiser;
+        }
+
+        protected PacketHandlerBase()
+        {
+            this.PacketSerialiser = PacketSerialiserProvider.Provide();
+        }
+
+        public async Task Handle(byte[] packet, IPacketContext context)
+        {
+            await this.Process(this.PacketSerialiser.Deserialise<T>(packet), context);
+        }
+
+        public async Task Handle(byte[] packet, int offset, int length, IPacketContext context)
+        {
+            await this.Process(this.PacketSerialiser.Deserialise<T>(packet, offset, length), context);
+        }
+
+        public abstract Task Process(T packet, IPacketContext context);
+    }
 }

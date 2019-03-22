@@ -1,7 +1,7 @@
 ﻿namespace Networker.Server.Abstractions
 {
-	public interface IUdpSocketListenerFactory
-	{
-		IUdpSocketListener Create();
-	}
+    public interface IUdpSocketListenerFactory
+    {
+        IUdpSocketListener Create();
+    }
 }

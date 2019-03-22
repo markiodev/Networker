@@ -2,10 +2,10 @@
 
 namespace Networker.Server.Abstractions
 {
-	public interface IUdpSocketSender
-	{
-		void Broadcast<T>(T packet);
-		void SendTo(byte[] packetBytes, IPEndPoint endpoint);
-		void SendTo<T>(T packet, IPEndPoint endpoint);
-	}
+    public interface IUdpSocketSender
+    {
+        void SendTo(byte[] packetBytes, IPEndPoint endpoint);
+        void SendTo<T>(T packet, IPEndPoint endpoint);
+        void Broadcast<T>(T packet);
+    }
 }

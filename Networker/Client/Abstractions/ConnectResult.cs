@@ -3,27 +3,28 @@ using System.Linq;
 
 namespace Networker.Client.Abstractions
 {
-	public class ConnectResult
-	{
-		public ConnectResult(bool success)
-		{
-			Success = success;
-			Errors = null;
-		}
+    public class ConnectResult
+    {
+        public bool Success { get; }
 
-		public ConnectResult(IEnumerable<string> errors)
-		{
-			Success = errors.Count() == 0;
-			Errors = errors;
-		}
+        public IEnumerable<string> Errors { get; }
 
-		public ConnectResult(params string[] errors)
-		{
-			Success = errors.Count() == 0;
-			Errors = errors;
-		}
+        public ConnectResult(bool success)
+        {
+            this.Success = success;
+            this.Errors = null;
+        }
 
-		public IEnumerable<string> Errors { get; }
-		public bool Success { get; }
-	}
+        public ConnectResult(IEnumerable<string> errors)
+        {
+            this.Success = errors.Count() == 0;
+            this.Errors = errors;
+        }
+
+        public ConnectResult(params string[] errors)
+        {
+            this.Success = errors.Count() == 0;
+            this.Errors = errors;
+        }
+    }
 }
