@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -15,20 +16,25 @@ namespace Networker.Example.Json.Middleware
 			this.logger = logger;
 		}
 
-		public async Task<bool> Process(IPacketContext context)
+		public async Task Process(IPacketContext context, Action nextMiddleware)
 		{
 			var roleAttribute = context.Handler.GetType()
 				.GetCustomAttribute<RoleRequired>();
 
 			if (roleAttribute == null)
-				return true;
+			{
+				nextMiddleware.Invoke();
+				return;
+			}
 
-			if (roleAttribute.RoleName == "Admin" && IsAdmin(context.Sender)) return true;
+			if (roleAttribute.RoleName == "Admin" && IsAdmin(context.Sender))
+			{
+				nextMiddleware.Invoke();
+				return;
+			}
 
 			logger.LogCritical("Somebody tried to do something they did not have permission for!");
 			context.Sender.Send(new NotAllowedResponsePacket());
-
-			return false;
 		}
 
 		private bool IsAdmin(ISender contextSender)

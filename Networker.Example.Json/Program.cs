@@ -24,7 +24,7 @@ namespace Networker.Example.Json
 					loggingBuilder.SetMinimumLevel(
 						LogLevel.Debug);
 				})
-				.RegisterMiddleware<RoleCheckMiddleware>()
+				//.RegisterMiddleware<RoleCheckMiddleware>()
 				.RegisterPacketHandler<JsonTestPacket,
 					JsonTestPacketHandler<JsonTestPacket>>()
 				.RegisterPacketHandler<JsonTestPacketChild,

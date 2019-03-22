@@ -1,9 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace Networker.Common.Abstractions
 {
 	public interface IMiddlewareHandler
 	{
-		Task<bool> Process(IPacketContext context);
+		Task Process(IPacketContext context, Action nextMiddleware);
 	}
 }

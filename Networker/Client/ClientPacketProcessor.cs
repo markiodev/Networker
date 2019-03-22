@@ -156,6 +156,7 @@ namespace Networker.Client
 				{
 				    context.PacketBytes = buffer;
 				   // packetHandler.Handle(buffer, currentPosition, packetSize, context).GetAwaiter().GetResult();
+				   //todo: Resupport this use case, not used at the moment.
 				}
 				else
 				{

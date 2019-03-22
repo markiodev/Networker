@@ -127,11 +127,7 @@ namespace Networker.Server
 						packetContext.PacketBytes = new byte[packetSize];
 						Buffer.BlockCopy(buffer, currentPosition, packetContext.PacketBytes, 0, packetSize);
 					}
-
-					foreach (var middlewareHandler in middlewares)
-						if (!await middlewareHandler.Process(packetContext))
-							break;
-
+					
 					await packetHandler.Handle(packetContext);
 
 					packetContextObjectPool.Push(packetContext);

@@ -16,8 +16,8 @@ namespace Networker.Common.Abstractions
 
 		IServiceProvider GetServiceProvider();
 
-		TBuilder RegisterMiddleware<T>()
-			where T : class, IMiddlewareHandler;
+		//TBuilder RegisterMiddleware<T>()
+		//	where T : class, IMiddlewareHandler;
 
 		//Packet Handler
 		TBuilder RegisterPacketHandler<TPacket, TPacketHandler>()

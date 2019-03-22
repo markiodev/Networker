@@ -79,12 +79,12 @@ namespace Networker.Common.Abstractions
 			return serviceProvider;
 		}
 
-		public TBuilder RegisterMiddleware<T>()
-			where T : class, IMiddlewareHandler
-		{
-			serviceCollection.AddSingleton<IMiddlewareHandler, T>();
-			return this as TBuilder;
-		}
+		//public TBuilder RegisterMiddleware<T>()
+		//	where T : class, IMiddlewareHandler
+		//{
+		//	serviceCollection.AddSingleton<IMiddlewareHandler, T>();
+		//	return this as TBuilder;
+		//}
 
 		public TBuilder RegisterPacketHandler<TPacket, TPacketHandler>()
 			where TPacket : class where TPacketHandler : IPacketHandler
