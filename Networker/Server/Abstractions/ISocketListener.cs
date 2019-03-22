@@ -2,9 +2,9 @@
 
 namespace Networker.Server.Abstractions
 {
-	public interface ISocketListener
-	{
-		Socket GetSocket();
-		void Listen();
-	}
+    public interface ISocketListener
+    {
+        Socket GetSocket();
+        void Listen();
+    }
 }
