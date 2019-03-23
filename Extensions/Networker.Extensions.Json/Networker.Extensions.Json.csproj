@@ -2,6 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageId>Networker.Extensions.Json</PackageId>
+    <Authors>Networker</Authors>
+    <Product>Networker</Product>
+    <Version>1.0.0.0</Version>
+    <Description>The JSON packet formatter for Networker</Description>
+<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
