@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <PackageId>Networker.Extension.ZeroFormatter</PackageId>
+    <PackageId>Networker.Extensions.ZeroFormatter</PackageId>
     <Authors>Networker</Authors>
     <Product>Networker</Product>
     <Version>1.0.0.0</Version>
