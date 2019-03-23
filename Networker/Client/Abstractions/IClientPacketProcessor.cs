@@ -1,13 +1,12 @@
-﻿using System;
-using System.Net.Sockets;
+﻿using System.Net.Sockets;
 using Networker.Server.Abstractions;
 
 namespace Networker.Client.Abstractions
 {
-    public interface IClientPacketProcessor
-    {
-        void Process(Socket socket);
-        void Process(UdpReceiveResult data);
-        void SetUdpSocketSender(IUdpSocketSender socketSender);
-    }
+	public interface IClientPacketProcessor
+	{
+		void Process(Socket socket);
+		void Process(UdpReceiveResult data);
+		void SetUdpSocketSender(IUdpSocketSender socketSender);
+	}
 }

@@ -45,7 +45,10 @@ namespace Networker.Client
             _packetContextObjectPool = new ObjectPool<IPacketContext>(options.ObjectPoolSize * 2);
 
             for (var i = 0; i < _packetContextObjectPool.Capacity; i++)
-                _packetContextObjectPool.Push(new PacketContext());
+                _packetContextObjectPool.Push(new PacketContext()
+                {
+					Serialiser = this.packetSerialiser
+                });
 
             bytePool = new ObjectPool<byte[]>(options.ObjectPoolSize);
 
@@ -133,7 +136,7 @@ namespace Networker.Client
 
                     if (string.IsNullOrEmpty(packetTypeName))
                     {
-                        logger.Error(new Exception("Packet was lost - Invalid"));
+                        //logger.Error(new Exception("Packet was lost - Invalid"));
                         return;
                     }
                 }
@@ -148,18 +151,19 @@ namespace Networker.Client
 
                 var context = _packetContextObjectPool.Pop();
                 context.Sender = sender;
-
+				
                 if (packetSerialiser.CanReadOffset)
                 {
                     context.PacketBytes = buffer;
-                    packetHandler.Handle(buffer, currentPosition, packetSize, context).GetAwaiter().GetResult();
+                    //packetHandler.Handle(buffer, currentPosition, packetSize, context).GetAwaiter().GetResult();
+					//Not required/supported right now
                 }
                 else
                 {
                     var packetBytes = new byte[packetSize];
                     Buffer.BlockCopy(buffer, currentPosition, packetBytes, 0, packetSize);
                     context.PacketBytes = packetBytes;
-                    packetHandler.Handle(packetBytes, context).GetAwaiter().GetResult();
+                    packetHandler.Handle(context).GetAwaiter().GetResult();
                 }
 
                 _packetContextObjectPool.Push(context);

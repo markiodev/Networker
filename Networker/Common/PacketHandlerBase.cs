@@ -6,26 +6,9 @@ namespace Networker.Common
     public abstract class PacketHandlerBase<T> : IPacketHandler
         where T : class
     {
-        public IPacketSerialiser PacketSerialiser { get; }
-
-        protected PacketHandlerBase(IPacketSerialiser packetSerialiser)
+        public async Task Handle(IPacketContext context)
         {
-            this.PacketSerialiser = packetSerialiser;
-        }
-
-        protected PacketHandlerBase()
-        {
-            this.PacketSerialiser = PacketSerialiserProvider.Provide();
-        }
-
-        public async Task Handle(byte[] packet, IPacketContext context)
-        {
-            await this.Process(this.PacketSerialiser.Deserialise<T>(packet), context);
-        }
-
-        public async Task Handle(byte[] packet, int offset, int length, IPacketContext context)
-        {
-            await this.Process(this.PacketSerialiser.Deserialise<T>(packet, offset, length), context);
+            await this.Process(context.Serialiser.Deserialise<T>(context.PacketBytes), context);
         }
 
         public abstract Task Process(T packet, IPacketContext context);

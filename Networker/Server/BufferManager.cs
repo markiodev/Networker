@@ -1,54 +1,51 @@
-﻿using Networker.Server.Abstractions;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Net.Sockets;
+using Networker.Server.Abstractions;
 
 namespace Networker.Server
 {
-    public class BufferManager : IBufferManager
-    {
-        byte[] m_buffer;
-        readonly int m_bufferSize;
-        int m_currentIndex;
-        readonly Stack<int> m_freeIndexPool;
-        readonly int m_numBytes;
+	public class BufferManager : IBufferManager
+	{
+		private readonly int m_bufferSize;
+		private readonly Stack<int> m_freeIndexPool;
+		private readonly int m_numBytes;
+		private byte[] m_buffer;
+		private int m_currentIndex;
 
-        public BufferManager(int totalBytes, int bufferSize)
-        {
-            this.m_numBytes = totalBytes;
-            this.m_currentIndex = 0;
-            this.m_bufferSize = bufferSize;
-            this.m_freeIndexPool = new Stack<int>();
-        }
+		public BufferManager(int totalBytes, int bufferSize)
+		{
+			m_numBytes = totalBytes;
+			m_currentIndex = 0;
+			m_bufferSize = bufferSize;
+			m_freeIndexPool = new Stack<int>();
+		}
 
-        public void FreeBuffer(SocketAsyncEventArgs args)
-        {
-            this.m_freeIndexPool.Push(args.Offset);
-            args.SetBuffer(null, 0, 0);
-        }
+		public void FreeBuffer(SocketAsyncEventArgs args)
+		{
+			m_freeIndexPool.Push(args.Offset);
+			args.SetBuffer(null, 0, 0);
+		}
 
-        public void InitBuffer()
-        {
-            this.m_buffer = new byte[this.m_numBytes];
-        }
+		public void InitBuffer()
+		{
+			m_buffer = new byte[m_numBytes];
+		}
 
-        public bool SetBuffer(SocketAsyncEventArgs args)
-        {
-            if(this.m_freeIndexPool.Count > 0)
-            {
-                args.SetBuffer(this.m_buffer, this.m_freeIndexPool.Pop(), this.m_bufferSize);
-            }
-            else
-            {
-                if((this.m_numBytes - this.m_bufferSize) < this.m_currentIndex)
-                {
-                    return false;
-                }
+		public bool SetBuffer(SocketAsyncEventArgs args)
+		{
+			if (m_freeIndexPool.Count > 0)
+			{
+				args.SetBuffer(m_buffer, m_freeIndexPool.Pop(), m_bufferSize);
+			}
+			else
+			{
+				if (m_numBytes - m_bufferSize < m_currentIndex) return false;
 
-                args.SetBuffer(this.m_buffer, this.m_currentIndex, this.m_bufferSize);
-                this.m_currentIndex += this.m_bufferSize;
-            }
+				args.SetBuffer(m_buffer, m_currentIndex, m_bufferSize);
+				m_currentIndex += m_bufferSize;
+			}
 
-            return true;
-        }
-    }
+			return true;
+		}
+	}
 }

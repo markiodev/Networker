@@ -1,15 +1,14 @@
-﻿using System;
-using Networker.Common.Abstractions;
+﻿using Networker.Common.Abstractions;
 
 namespace Networker.Common
 {
-    public class PacketSerialiserProvider
-    {
-        public static IPacketSerialiser PacketSerialiser { get; set; }
+	public class PacketSerialiserProvider
+	{
+		public static IPacketSerialiser PacketSerialiser { get; set; }
 
-        public static IPacketSerialiser Provide()
-        {
-            return PacketSerialiser;
-        }
-    }
+		public static IPacketSerialiser Provide()
+		{
+			return PacketSerialiser;
+		}
+	}
 }

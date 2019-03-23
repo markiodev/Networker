@@ -13,31 +13,32 @@ Get involved and join us in Discord (https://discord.gg/NdEqhAe)
 ## Features
 * TCP
 * UDP
-* Socket Pooling
-* Object Pooling
+* Socket pooling
+* Object pooling
 * Process thousands of requests per second
 * Dependency Injection using [Micrsoft.Extensions.DependencyInjection.ServiceCollection](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.dependencyinjection.servicecollection?view=aspnetcore-2.1)
 * Logging using [Microsoft.Extensions.Logging](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.logging?view=aspnetcore-2.2)
 * Works with [Unity Game Engine](https://unity3d.com)
 
 ## Installation
-V3 is currently in pre-release. Get the latest build below.
 **NuGet Package Manager**
 ```
-Install-Package Networker -IncludePrerelease
+Install-Package Networker
 ```
 
 **You must then install one of the following formatters**
 
-#### ZeroFormatter 
-[Networker.Formatter.ZeroFormatter](https://www.nuget.org/packages/Networker.Formatter.ZeroFormatter)
+#### ZeroFormatter
 ```
-Install-Package Networker.Formatter.ZeroFormatter
+Install-Package Networker.Extensions.ZeroFormatter
 ```
 #### Protobuf-net 
-[Networker.Formatter.ProtoBufNet](https://www.nuget.org/packages/Networker.Formatter.ProtoBufNet)
 ```
-Install-Package Networker.Formatter.ProtoBufNet
+Install-Package Networker.Extensions.ProtoBufNet
+```
+#### JSON (Utf8Json)
+```
+Install-Package Networker.Extensions.Json
 ```
 
 ## Tutorial - Creating a Basic Unity Multiplayer Game with Networker
@@ -68,21 +69,23 @@ server.Start();
 You can handle a packet easily using dependency injection, logging and built-in deserialisation.
 
 ````csharp
-public class PingPacketHandler : PacketHandlerBase<PingPacket>
+public class ChatPacketHandler : PacketHandlerBase<ChatPacket>
 {
-    private readonly ILogger logger;
+	private readonly ILogger<ChatPacketHandler> _logger;
 
-    public PingPacketHandler(ILogger<PingPacketHandler> logger)
-    {
-        this.logger = logger;
-    }
+	public ChatPacketHandler(ILogger<ChatPacketHandler> logger)
+	{
+		_logger = logger;
+	}
 
-    public override async Task Process(PingPacket packet, ISender sender)
-    {
-        this.logger.Debug("Received a ping packet from " + sender.EndPoint);
-    }
+	public override async Task Process(ChatPacket packet, IPacketContext packetContext)
+	{
+		_logger.LogDebug("I received the chat message: " + packet.Message);
+
+		packetContext.Sender.Send(new ChatPacket
+		{
+			Message = "Hey, I got your message!"
+		});
+	}
 }
 ````
-
-## Older Versions
-Version 3 included a large rewrite and various breaking changes. To use V2 please see [V2 Branch](https://github.com/MarkioE/Networker/tree/features/v2.1)

@@ -1,12 +1,9 @@
-﻿using System;
-
-namespace Networker.DefaultFormatter
+﻿namespace Networker.DefaultFormatter
 {
-    public abstract class DefaultNetworkerPacketBase
-    {
-        protected DefaultNetworkerPacketBase(byte[] packetBytes)
-        {
-            
-        }
-    }
+	public abstract class DefaultNetworkerPacketBase
+	{
+		protected DefaultNetworkerPacketBase(byte[] packetBytes)
+		{
+		}
+	}
 }
