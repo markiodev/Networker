@@ -9,6 +9,6 @@ namespace Networker.Server.Abstractions
         /// <summary>
         /// Store a custom object on this connection.
         /// </summary>
-        object UserTag { get; set; }
+        object ConnectionIdentifier { get; set; }
     }
 }
