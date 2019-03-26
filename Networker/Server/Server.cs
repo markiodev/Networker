@@ -37,7 +37,6 @@ namespace Networker.Server
             bufferManager.InitBuffer();
 
             if (options.TcpPort > 0) TcpListener = tcpSocketListenerFactory.Create();
-
             if (options.UdpPort > 0) UdpListener = udpSocketListener;
 
             Task.Factory.StartNew(() =>

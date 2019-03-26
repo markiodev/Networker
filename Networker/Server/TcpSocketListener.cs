@@ -88,7 +88,7 @@ namespace Networker.Server
             }
 
             this.ClientDisconnected?.Invoke(this,
-                new TcpConnectionDisconnectedEventArgs(new TcpConnection(token.Socket)));
+                new TcpConnectionDisconnectedEventArgs(new TcpConnection(token.Socket, connection?.ConnectionIdentifier)));
 
             try
             {
