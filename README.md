@@ -32,6 +32,10 @@ Install-Package Networker
 ```
 Install-Package Networker.Extensions.ZeroFormatter
 ```
+#### MessagePack
+```
+Install-Package Networker.Extensions.MessagePack
+```
 #### Protobuf-net 
 ```
 Install-Package Networker.Extensions.ProtoBufNet
