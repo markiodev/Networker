@@ -131,6 +131,11 @@ namespace Networker.Client
 
                 if (packetSerialiser.CanReadName)
                 {
+                    if (buffer.Length - currentPosition < packetTypeNameLength)
+                    {
+                        return;
+                    }
+
                     packetTypeName = Encoding.ASCII.GetString(buffer, currentPosition, packetTypeNameLength);
                     currentPosition += packetTypeNameLength;
 
