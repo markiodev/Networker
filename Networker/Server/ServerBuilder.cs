@@ -43,6 +43,8 @@ namespace Networker.Server
 
             var serviceProvider = this.GetServiceProvider();
 
+
+            serviceProvider.GetService<IServerPacketProcessor>().SetUdpSender(serviceProvider.GetService<IUdpSocketSender>());
             return serviceProvider.GetService<IServer>();
         }
 
