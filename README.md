@@ -9,6 +9,7 @@ Get involved and join us in Discord (https://discord.gg/NdEqhAe)
 
 ## Supported Frameworks
 * .NET Standard 2.0
+* .NET Framework 4.7+ for Unity
 
 ## Features
 * TCP
@@ -18,7 +19,7 @@ Get involved and join us in Discord (https://discord.gg/NdEqhAe)
 * Process thousands of requests per second
 * Dependency Injection using [Micrsoft.Extensions.DependencyInjection.ServiceCollection](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.dependencyinjection.servicecollection?view=aspnetcore-2.1)
 * Logging using [Microsoft.Extensions.Logging](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.logging?view=aspnetcore-2.2)
-* Works with [Unity Game Engine](https://unity3d.com)
+* Works with [Unity Game Engine](https://unity3d.com) (.NET Framework only)
 
 ## Installation
 **NuGet Package Manager**
