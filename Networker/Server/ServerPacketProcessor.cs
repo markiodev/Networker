@@ -203,12 +203,14 @@ namespace Networker.Server
 			udpSenderObjectPool.Push(sender);
 		}
 
-		public void SetUdpSender(IUdpSocketSender sender)
-		{
-			_socketSender = sender;
-		}
+        public void SetUdpSender(IUdpSocketSender sender)
+        {
+            _socketSender = sender;
+            for (var i = 0; i < udpSenderObjectPool.Capacity; i++)
+                udpSenderObjectPool.Push(new UdpSender(_socketSender));
+        }
 
-		private void ProcessPacketsFromSocketEventArgs(ISender sender,
+        private void ProcessPacketsFromSocketEventArgs(ISender sender,
 			SocketAsyncEventArgs eventArgs,
 			bool isTcp = true)
 		{
