@@ -4,9 +4,6 @@
 # Networker
 A simple to use TCP and UDP networking library for .NET, designed to be flexible, scalable and FAST.
 
-## Contributing
-Get involved and join us in Discord (https://discord.gg/NdEqhAe)
-
 ## Supported Frameworks
 * .NET Standard 2.0
 * .NET Framework 4.7+ for Unity
