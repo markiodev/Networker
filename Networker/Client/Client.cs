@@ -25,7 +25,10 @@ namespace Networker.Client
         private UdpClient udpClient;
         private IPEndPoint udpEndpoint;
 
+        /// <inheritdoc />
         public EventHandler<Socket> Connected { get; set; }
+
+        /// <inheritdoc />
         public EventHandler<Socket> Disconnected { get; set; }
 
         public Client(ClientBuilderOptions options,
@@ -96,7 +99,10 @@ namespace Networker.Client
         }
 
         /// <inheritdoc />
-        public void Send<T>(T packet) => Send(this.packetSerialiser.Serialise(packet));
+        public void Send<T>(T packet)
+        {
+            Send(this.packetSerialiser.Serialise(packet));
+        }
 
         /// <inheritdoc />
         public void Send(byte[] packet)
@@ -110,7 +116,10 @@ namespace Networker.Client
         }
 
         /// <inheritdoc />
-        public void SendUdp<T>(T packet) => SendUdp(this.packetSerialiser.Serialise(packet));
+        public void SendUdp<T>(T packet)
+        {
+            SendUdp(this.packetSerialiser.Serialise(packet));
+        }
 
         /// <inheritdoc />
         public void SendUdp(byte[] packet)
